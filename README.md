@@ -40,3 +40,35 @@ Run `react-native run-android`
 If you get an error about 'Unsupported major.minor version', you may need to set JAVA_HOME to point to the correct jdk.
 
 For example, `export JAVA_HOME=/usr/lib/jvm/java-8-openjdk/jre/`
+
+## Developing
+
+You probably want to run `react-native log-android` so you can read the console output, and have an easier log of what's going on as you're developing. Errors will get printed to the device, but console.log won't, and it's a little hard to read.
+
+You probably also want to enable hot reloading. Hit "Ctrl-M" in your emulator, or type `adb shell input keyevent 82` to open the developer menu, and enable both `Live Reload` and `Hot Reloading`.
+
+## Running natively on your Android device
+
+Follow [this](https://facebook.github.io/react-native/docs/running-on-device.html) guide.
+
+## Building an APK
+
+Follow [this](https://facebook.github.io/react-native/docs/signed-apk-android.html) guide.
+
+Once you have finished:
+
+`cd android`
+
+Compile the APK:
+
+`./gradlew assembleRelease`
+
+You may need to uninstall a previous version of the app:
+
+`adb uninstall "com.tonchan"`
+
+Install the APK on your device:
+
+`./gradlew installRelease`
+
+If it all works, you can then upload to the play store.

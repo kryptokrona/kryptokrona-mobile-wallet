@@ -78,6 +78,7 @@ class CreateWalletScreen extends React.Component {
                 </View>
                 <Text style={{fontWeight: 'bold'}}>Your New Wallet:</Text>
                 <AddressComponent></AddressComponent>
+                <Text style={{color: 'red', padding: 10}}>Please save the seed and/or keys somewhere safe, so you can restore your wallet later</Text>
             </View>
         );
     }
@@ -87,7 +88,13 @@ class AddressComponent extends React.Component {
     constructor(props) {
         super(props);
 
+        console.log('Creating address: ' + new Date());
+
         const addressData = CN.createNewAddress();
+
+        console.log('Finished created address: ' + new Date());
+
+        console.log(addressData);
 
         this.state = {
             address: addressData.address,
