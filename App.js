@@ -2,21 +2,18 @@
 //
 // Please see the included LICENSE file for more information.
 
-import './shim';
-
 import React from 'react';
 import { StyleSheet, Text, View, Image, Button } from 'react-native';
 import { createStackNavigator, createAppContainer } from 'react-navigation';
 
 import CryptoUtils from 'turtlecoin-utils';
 
-const CN = new CryptoUtils();
+import config from './config';
 
-/*
-import CryptoNote from './bundle';
-
-const CN = new CryptoNote();
-*/
+const CN = new CryptoUtils({
+    coinUnitPlaces: config.decimalPlaces,
+    addressPrefix: config.addressPrefix
+});
 
 class HomeScreen extends React.Component {
     static navigationOptions = {

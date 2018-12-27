@@ -72,3 +72,15 @@ Install the APK on your device:
 `./gradlew installRelease`
 
 If it all works, you can then upload to the play store.
+
+## Forking
+
+#### Modifying icon
+
+Replace `assets/img/icon.png` with your icon image. Make sure it is 1024x1024.
+
+Run `npm install -g yo generator-rn-toolbox` (You may need to run this with sudo)
+
+Run `yo rn-toolbox:assets --icon assets/img/icon.png --force`
+
+When it asks for the name of your react-native project, enter `tonchan` (Not ton-chan!)
