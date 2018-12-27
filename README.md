@@ -83,10 +83,16 @@ Run `npm install -g yo generator-rn-toolbox` (You may need to run this with sudo
 
 Run `yo rn-toolbox:assets --icon assets/img/icon.png --force`
 
-When it asks for the name of your react-native project, enter `tonchan` (Not ton-chan!)
+When it asks for the name of your react-native project, enter `TonChan` (Not ton-chan!)
 
 #### Renaming app
 
 Run `npm install -g react-native-rename` (You may need to run this with sudo)
 
 Run `react-native-name your-new-project-name` from this directory. (Obviously, replace with the desired name)
+
+This might confuse the build system. You probably should do this before installing.
+
+#### Config
+
+Edit `config.js`. The fields should be self explanatory. Make sure to recompile.
