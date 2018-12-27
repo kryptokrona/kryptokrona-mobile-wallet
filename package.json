@@ -6,8 +6,7 @@
     "start": "./node_modules/.bin/react-native run-android",
     "build-android": "adb -d uninstall \"com.TonChan\"; cd android; ./gradlew assembleRelease; cd ..",
     "deploy-android": "adb -d uninstall \"com.TonChan\"; cd android; ./gradlew installRelease; cd ..",
-    "postinstall": "./node_modules/.bin/rn-nodeify --install fs,dgram,process,path,console,crypto,buffer,stream,vm --hack; ./node_modules/.bin/react-native link",
-    "test": "jest"
+    "postinstall": "./node_modules/.bin/rn-nodeify --install fs,dgram,process,path,console,crypto,buffer,stream,vm --hack; ./node_modules/.bin/react-native link"
   },
   "dependencies": {
     "asyncstorage-down": "^4.1.2",
