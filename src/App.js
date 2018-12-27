@@ -86,13 +86,7 @@ class AddressComponent extends React.Component {
     constructor(props) {
         super(props);
 
-        console.log('Creating address: ' + new Date());
-
         const addressData = CN.createNewAddress();
-
-        console.log('Finished created address: ' + new Date());
-
-        console.log(addressData);
 
         this.state = {
             address: addressData.address,
