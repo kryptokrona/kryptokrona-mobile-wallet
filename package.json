@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "start": "./node_modules/.bin/react-native run-android",
-    "build-android": "adb -d uninstall \"com.TonChan\"; cd android; ./gradlew assembleRelease; cd ..",
-    "deploy-android": "adb -d uninstall \"com.TonChan\"; cd android; ./gradlew installRelease; cd ..",
+    "build-android": "adb -d uninstall \"com.tonchan\"; cd android; ./gradlew assembleRelease; cd ..",
+    "deploy-android": "adb -d uninstall \"com.tonchan\"; cd android; ./gradlew installRelease; cd ..",
     "postinstall": "./node_modules/.bin/rn-nodeify --install fs,dgram,process,path,console,crypto,buffer,stream,vm --hack; ./node_modules/.bin/react-native link"
   },
   "dependencies": {
@@ -25,7 +25,7 @@
     "readable-stream": "^1.0.33",
     "rn-nodeify": "^10.0.1",
     "stream-browserify": "^1.0.0",
-    "turtlecoin-utils": "zpalmtree/turtlecoin-utils",
+    "turtlecoin-utils": "github:zpalmtree/turtlecoin-utils",
     "vm-browserify": "0.0.4"
   },
   "devDependencies": {

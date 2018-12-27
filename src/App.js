@@ -12,7 +12,8 @@ import config from './config';
 
 const CN = new CryptoUtils({
     coinUnitPlaces: config.decimalPlaces,
-    addressPrefix: config.addressPrefix
+    addressPrefix: config.addressPrefix,
+    keccakIterations: 1
 });
 
 class HomeScreen extends React.Component {
@@ -25,7 +26,7 @@ class HomeScreen extends React.Component {
             <View style={{ flex: 1, justifyContent: 'flex-start'}}>
                 <View style={{justifyContent: 'center', alignItems: 'center'}}>
                     <Image
-                        source={require('./assets/img/logo.png')}
+                        source={require('../assets/img/logo.png')}
                         style={styles.logo}
                     />
                 </View>
@@ -69,7 +70,7 @@ class CreateWalletScreen extends React.Component {
             <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center'}}>
                 <View style={{justifyContent: 'center', alignItems: 'center'}}>
                     <Image
-                        source={require('./assets/img/logo.png')}
+                        source={require('../assets/img/logo.png')}
                         style={styles.logo}
                     />
                 </View>
@@ -146,7 +147,7 @@ class OpenWalletScreen extends React.Component {
             <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center'}}>
                 <View style={{justifyContent: 'center', alignItems: 'center'}}>
                     <Image
-                        source={require('./assets/img/logo.png')}
+                        source={require('../assets/img/logo.png')}
                         style={styles.logo}
                     />
                 </View>
@@ -166,7 +167,7 @@ class ImportWalletScreen extends React.Component {
             <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center'}}>
                 <View style={{justifyContent: 'center', alignItems: 'center'}}>
                     <Image
-                        source={require('./assets/img/logo.png')}
+                        source={require('../assets/img/logo.png')}
                         style={styles.logo}
                     />
                 </View>

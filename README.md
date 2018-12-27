@@ -65,7 +65,7 @@ Compile the APK:
 
 You may need to uninstall a previous version of the app:
 
-`adb -d uninstall "com.TonChan"`
+`adb -d uninstall "com.tonchan"`
 
 Install the APK on your device:
 
