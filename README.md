@@ -65,7 +65,7 @@ Compile the APK:
 
 You may need to uninstall a previous version of the app:
 
-`adb uninstall "com.tonchan"`
+`adb -d uninstall "com.TonChan"`
 
 Install the APK on your device:
 
@@ -84,3 +84,9 @@ Run `npm install -g yo generator-rn-toolbox` (You may need to run this with sudo
 Run `yo rn-toolbox:assets --icon assets/img/icon.png --force`
 
 When it asks for the name of your react-native project, enter `tonchan` (Not ton-chan!)
+
+#### Renaming app
+
+Run `npm install -g react-native-rename` (You may need to run this with sudo)
+
+Run `react-native-name your-new-project-name` from this directory. (Obviously, replace with the desired name)
