@@ -11,7 +11,11 @@ Clone the repo:
 Install npm if you don't have it already:
 
 * Ubuntu - `sudo apt-get install nodejs npm -y`
-* Arch Linux - `pacman -S npm`
+* Arch Linux - `pacman -S nvm` (follow the instructions), then `nvm install 10; nvm use 10`
+
+Note that Node 11 is currently not supported: https://github.com/realm/realm-js/issues/2149
+
+Look into `nvm` if your distro provides Node 11 or greater.
 
 Install the code dependencies:
 

@@ -8,6 +8,8 @@ import { createStackNavigator, createAppContainer } from 'react-navigation';
 
 import CryptoUtils from 'turtlecoin-utils';
 
+import DatabaseComponent from './Database'
+
 import config from './config';
 
 const CN = new CryptoUtils({
@@ -15,6 +17,8 @@ const CN = new CryptoUtils({
     addressPrefix: config.addressPrefix,
     keccakIterations: 1
 });
+
+const request = require('request');
 
 class HomeScreen extends React.Component {
     static navigationOptions = {
@@ -146,6 +150,7 @@ class OpenWalletScreen extends React.Component {
                     />
                 </View>
                 <Text>Open a wallet!</Text>
+                <DatabaseComponent></DatabaseComponent>
             </View>
         );
     }
@@ -155,7 +160,7 @@ class ImportWalletScreen extends React.Component {
     static navigationOptions = {
         title: 'Import',
     };
-
+    
     render() {
         return(
             <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center'}}>

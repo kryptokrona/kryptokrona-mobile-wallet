@@ -3,6 +3,7 @@ package com.tonchan;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import io.realm.react.RealmReactPackage;
 import com.tradle.react.UdpSocketsModule;
 import com.bitgo.randombytes.RandomBytesPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
@@ -26,6 +27,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RealmReactPackage(),
             new UdpSocketsModule(),
             new RandomBytesPackage(),
             new RNGestureHandlerPackage()

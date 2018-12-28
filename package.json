@@ -23,6 +23,7 @@
     "react-native-udp": "^2.3.1",
     "react-navigation": "^3.0.9",
     "readable-stream": "^1.0.33",
+    "realm": "^2.21.1",
     "rn-nodeify": "^10.0.1",
     "stream-browserify": "^1.0.0",
     "turtlecoin-utils": "github:zpalmtree/turtlecoin-utils",
