@@ -6,19 +6,11 @@ import React from 'react';
 import { StyleSheet, Text, View, Image, Button } from 'react-native';
 import { createStackNavigator, createAppContainer } from 'react-navigation';
 
-import CryptoUtils from 'turtlecoin-utils';
-
 import DatabaseComponent from './Database'
 
-import config from './config';
+import { WalletBackend, ConventionalDaemon } from 'turtlecoin-wallet-backend';
 
-const CN = new CryptoUtils({
-    coinUnitPlaces: config.decimalPlaces,
-    addressPrefix: config.addressPrefix,
-    keccakIterations: 1
-});
-
-const request = require('request');
+import request from 'request';
 
 class HomeScreen extends React.Component {
     static navigationOptions = {
@@ -90,13 +82,15 @@ class AddressComponent extends React.Component {
     constructor(props) {
         super(props);
 
-        const addressData = CN.createNewAddress();
+        const daemon: ConventionalDaemon = new ConventionalDaemon('127.0.0.1', 11898);
+        const wallet: WalletBackend = WalletBackend.createWallet(daemon);
+        const [privateSpendKey, privateViewKey] = wallet.getPrimaryAddressPrivateKeys();
 
         this.state = {
-            address: addressData.address,
-            privateSpendKey: addressData.spend.privateKey,
-            privateViewKey: addressData.view.privateKey,
-            mnemonicSeed: addressData.mnemonic,
+            address: wallet.getPrimaryAddress(),
+            privateSpendKey: privateSpendKey,
+            privateViewKey: privateViewKey,
+            mnemonicSeed: wallet.getMnemonicSeed(),
         }
     }
 
@@ -161,6 +155,21 @@ class ImportWalletScreen extends React.Component {
         title: 'Import',
     };
     
+    constructor(props) {
+        super(props);
+        this.state = { msg: 'loading...' };
+    }
+
+    componentWillMount() {
+        request('http://www.example.com', (error, response, body) => {
+            if (error) {
+                this.setState({msg: error});
+            } else {
+                this.setState({msg: body});
+            }
+        });
+    }
+
     render() {
         return(
             <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center'}}>
@@ -171,6 +180,7 @@ class ImportWalletScreen extends React.Component {
                     />
                 </View>
                 <Text>Import a wallet!</Text>
+                <Text>{this.state.msg}</Text>
             </View>
         );
     }

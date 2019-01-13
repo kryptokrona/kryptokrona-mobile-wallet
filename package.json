@@ -6,12 +6,16 @@
     "start": "./node_modules/.bin/react-native run-android",
     "build-android": "adb -d uninstall \"com.tonchan\"; cd android; ./gradlew assembleRelease; cd ..",
     "deploy-android": "adb -d uninstall \"com.tonchan\"; cd android; ./gradlew installRelease; cd ..",
-    "postinstall": "./node_modules/.bin/rn-nodeify --install fs,dgram,process,path,console,crypto,buffer,stream,vm --hack; ./node_modules/.bin/react-native link"
+    "postinstall": "./node_modules/.bin/rn-nodeify --install fs,dgram,process,path,console,crypto,buffer,stream,vm,http,https,url,zlib,net,assert,tls --hack; ./node_modules/.bin/react-native link"
   },
   "dependencies": {
+    "@tradle/react-native-http": "^2.0.1",
+    "assert": "^1.4.1",
     "asyncstorage-down": "^4.1.2",
+    "browserify-zlib": "^0.1.4",
     "buffer": "^4.9.1",
     "console-browserify": "^1.1.0",
+    "https-browserify": "0.0.1",
     "path-browserify": "0.0.0",
     "process": "^0.11.10",
     "react": "16.6.3",
@@ -20,13 +24,16 @@
     "react-native-gesture-handler": "^1.0.12",
     "react-native-level-fs": "^3.0.1",
     "react-native-randombytes": "^3.5.1",
+    "react-native-tcp": "^3.3.0",
     "react-native-udp": "^2.3.1",
     "react-navigation": "^3.0.9",
     "readable-stream": "^1.0.33",
     "realm": "^2.21.1",
+    "request": "^2.88.0",
     "rn-nodeify": "^10.0.1",
     "stream-browserify": "^1.0.0",
-    "turtlecoin-utils": "github:zpalmtree/turtlecoin-utils",
+    "turtlecoin-wallet-backend": "git+https://github.com/zpalmtree/turtlecoin-wallet-backend.git",
+    "url": "^0.10.3",
     "vm-browserify": "0.0.4"
   },
   "devDependencies": {
@@ -50,7 +57,12 @@
     "_stream_passthrough": "readable-stream/passthrough",
     "dgram": "react-native-udp",
     "stream": "stream-browserify",
-    "vm": "vm-browserify"
+    "vm": "vm-browserify",
+    "http": "@tradle/react-native-http",
+    "https": "https-browserify",
+    "zlib": "browserify-zlib",
+    "net": "react-native-tcp",
+    "tls": false
   },
   "browser": {
     "console": "console-browserify",
@@ -64,6 +76,11 @@
     "_stream_passthrough": "readable-stream/passthrough",
     "dgram": "react-native-udp",
     "stream": "stream-browserify",
-    "vm": "vm-browserify"
+    "vm": "vm-browserify",
+    "http": "@tradle/react-native-http",
+    "https": "https-browserify",
+    "zlib": "browserify-zlib",
+    "net": "react-native-tcp",
+    "tls": false
   }
 }
