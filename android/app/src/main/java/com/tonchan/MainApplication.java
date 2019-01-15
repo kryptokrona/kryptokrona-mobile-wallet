@@ -32,7 +32,8 @@ public class MainApplication extends Application implements ReactApplication {
             new RealmReactPackage(),
             new UdpSocketsModule(),
             new RandomBytesPackage(),
-            new RNGestureHandlerPackage()
+            new RNGestureHandlerPackage(),
+            new TurtleCoinPackage()
       );
     }
 

@@ -12,12 +12,27 @@ import { WalletBackend, ConventionalDaemon } from 'turtlecoin-wallet-backend';
 
 import request from 'request';
 
+import TurtleCoin from './TurtleCoin';
+
+async function underivePublicKey() {
+    try {
+        let str = await TurtleCoin.underivePublicKey();
+        console.log(str);
+    } catch (e) {
+        console.error(e);
+    }
+}
+
 class HomeScreen extends React.Component {
     static navigationOptions = {
         title: 'Home',
     };
 
     render() {
+        (async () => {
+          await underivePublicKey();
+        })();
+
         return(
             <View style={{ flex: 1, justifyContent: 'flex-start'}}>
                 <View style={{justifyContent: 'center', alignItems: 'center'}}>

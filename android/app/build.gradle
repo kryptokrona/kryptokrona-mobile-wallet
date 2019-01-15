@@ -105,6 +105,14 @@ android {
         versionName "1.0"
         ndk {
             abiFilters "armeabi-v7a", "x86"
+            moduleName "TurtleCoin_jni"
+            ldLibs "log"
+            stl "stlport_static"
+        }
+    }
+    externalNativeBuild {
+        ndkBuild {
+            path "src/main/jni/Android.mk"
         }
     }
     signingConfigs {
