@@ -6,7 +6,7 @@
     "start": "./node_modules/.bin/react-native run-android",
     "build-android": "adb -d uninstall \"com.tonchan\"; cd android; ./gradlew assembleRelease; cd ..",
     "deploy-android": "adb -d uninstall \"com.tonchan\"; cd android; ./gradlew installRelease; cd ..",
-    "postinstall": "./node_modules/.bin/rn-nodeify --install fs,dgram,process,path,console,crypto,buffer,stream,vm,http,https,url,zlib,net,assert,tls --hack; ./node_modules/.bin/react-native link"
+    "postinstall": "./node_modules/.bin/rn-nodeify --install fs,dgram,process,path,console,crypto,buffer,stream,vm,http,https,url,zlib,net,assert,tls --hack --yarn; ./node_modules/.bin/react-native link"
   },
   "dependencies": {
     "@tradle/react-native-http": "^2.0.1",
@@ -16,6 +16,7 @@
     "buffer": "^4.9.1",
     "console-browserify": "^1.1.0",
     "https-browserify": "0.0.1",
+    "lodash": "^4.17.11",
     "path-browserify": "0.0.0",
     "process": "^0.11.10",
     "react": "16.6.3",
@@ -32,7 +33,7 @@
     "request": "^2.88.0",
     "rn-nodeify": "^10.0.1",
     "stream-browserify": "^1.0.0",
-    "turtlecoin-wallet-backend": "git+https://github.com/zpalmtree/turtlecoin-wallet-backend.git",
+    "turtlecoin-wallet-backend": "https://github.com/turtlecoin/turtlecoin-wallet-backend-js",
     "url": "^0.10.3",
     "vm-browserify": "0.0.4"
   },

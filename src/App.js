@@ -2,26 +2,19 @@
 //
 // Please see the included LICENSE file for more information.
 
+import * as _ from 'lodash';
+
 import React from 'react';
-import { StyleSheet, Text, View, Image, Button } from 'react-native';
+
+import {
+    StyleSheet, Text, View, Image, Button, Platform, Clipboard, ToastAndroid
+} from 'react-native';
+
 import { createStackNavigator, createAppContainer } from 'react-navigation';
 
-import DatabaseComponent from './Database'
-
-import { WalletBackend, ConventionalDaemon } from 'turtlecoin-wallet-backend';
-
-import request from 'request';
-
-import TurtleCoin from './TurtleCoin';
-
-async function underivePublicKey() {
-    try {
-        let str = await TurtleCoin.underivePublicKey();
-        console.log(str);
-    } catch (e) {
-        console.error(e);
-    }
-}
+import { 
+    BlockchainCacheApi, ConventionalDaemon, WalletBackend
+} from 'turtlecoin-wallet-backend';
 
 class HomeScreen extends React.Component {
     static navigationOptions = {
@@ -29,10 +22,6 @@ class HomeScreen extends React.Component {
     };
 
     render() {
-        (async () => {
-          await underivePublicKey();
-        })();
-
         return(
             <View style={{ flex: 1, justifyContent: 'flex-start'}}>
                 <View style={{justifyContent: 'center', alignItems: 'center'}}>
@@ -44,7 +33,7 @@ class HomeScreen extends React.Component {
 
                 <View style={styles.buttonContainer}>
                     <Button
-                        title="Create a wallet"
+                        title='Create a wallet'
                         onPress={() => this.props.navigation.navigate('CreateWallet')}
                         color='#40C18E'
                     />
@@ -52,7 +41,7 @@ class HomeScreen extends React.Component {
 
                 <View style={styles.buttonContainer}>
                     <Button
-                        title="Open a wallet"
+                        title='Open a wallet'
                         onPress={() => this.props.navigation.navigate('OpenWallet')}
                         color='#40C18E'
                     />
@@ -60,7 +49,7 @@ class HomeScreen extends React.Component {
 
                 <View style={styles.buttonContainer}>
                     <Button
-                        title="Import a wallet"
+                        title='Import a wallet'
                         onPress={() => this.props.navigation.navigate('ImportWallet')}
                         color='#40C18E'
                     />
@@ -76,78 +65,151 @@ class CreateWalletScreen extends React.Component {
         title: 'Create',
     };
 
+    constructor(props) {
+        super(props);
+
+        const daemon = new BlockchainCacheApi('blockapi.turtlepay.io', true);
+        const wallet = WalletBackend.createWallet(daemon);
+
+        this.state = {
+            daemon,
+            wallet
+        };
+    }
+
     render() {
         return(
-            <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center'}}>
+            <View style={{flex: 1, alignItems: 'stretch', justifyContent: 'flex-start'}}>
                 <View style={{justifyContent: 'center', alignItems: 'center'}}>
                     <Image
                         source={require('../assets/img/logo.png')}
                         style={styles.logo}
                     />
                 </View>
-                <Text style={{fontWeight: 'bold'}}>Your New Wallet:</Text>
-                <AddressComponent></AddressComponent>
-                <Text style={{color: 'red', padding: 10}}>Please save the seed and/or keys somewhere safe, so you can restore your wallet later</Text>
+
+                <View style={{alignItems: 'center'}}>
+                    <Text style={{margin: 10, textAlignVertical: 'center', textAlign: 'center'}}>
+                        <Text style={{fontWeight: 'bold'}}>
+                            Your wallet has been created!{"\n\n"}
+                        </Text>
+                        Please save the following backup words somewhere safe.{"\n\n"}
+                        <Text style={{fontWeight: 'bold', color: 'red'}}>
+                            Without this seed, if your phone gets lost, or your wallet gets corrupted,
+                            you cannot restore your wallet, and your funds will be lost forever!
+                        </Text>
+                    </Text>
+                    <SeedComponent seed={this.state.wallet.getMnemonicSeed()}>
+                    </SeedComponent>
+                </View>
+
+                <View style={[styles.buttonContainer, {bottom: 30, position: 'absolute', alignItems: 'stretch', justifyContent: 'center', width: '100%'}]}>
+                    <Button
+                        title='Continue'
+                        onPress={() => this.props.navigation.navigate('Main', {
+                            wallet: this.state.wallet
+                        })}
+                        color='#40C18E'
+                    />
+                </View>
             </View>
         );
     }
 }
 
-class AddressComponent extends React.Component {
+class SeedComponent extends React.Component {
     constructor(props) {
         super(props);
 
-        const daemon: ConventionalDaemon = new ConventionalDaemon('127.0.0.1', 11898);
-        const wallet: WalletBackend = WalletBackend.createWallet(daemon);
-        const [privateSpendKey, privateViewKey] = wallet.getPrimaryAddressPrivateKeys();
+        const { navigation } = this.props;
 
         this.state = {
-            address: wallet.getPrimaryAddress(),
-            privateSpendKey: privateSpendKey,
-            privateViewKey: privateViewKey,
-            mnemonicSeed: wallet.getMnemonicSeed(),
-        }
+            wallet: props.wallet
+        };
+    }
+
+    render() {
+        const split = this.props.seed.split(' ');
+        const lines = _.chunk(split, 5);
+
+        return(
+            <View>
+                <View style={{alignItems: 'center', marginTop: 10, borderWidth: 1, borderColor: 'red', padding: 10}}>
+                    <TextFixedWidth>{lines[0].join(' ')}</TextFixedWidth>
+                    <TextFixedWidth>{lines[1].join(' ')}</TextFixedWidth>
+                    <TextFixedWidth>{lines[2].join(' ')}</TextFixedWidth>
+                    <TextFixedWidth>{lines[3].join(' ')}</TextFixedWidth>
+                    <TextFixedWidth>{lines[4].join(' ')}</TextFixedWidth>
+                </View>
+                <CopyButton></CopyButton>
+            </View>
+        );
+    }
+}
+
+function toastPopUp(message) {
+    /* IOS doesn't have toast support */
+    /* TODO */
+    if (Platform.OS === 'ios') {
+        return;
+    }
+
+    ToastAndroid.show(message, ToastAndroid.SHORT);
+}
+
+class CopyButton extends React.Component {
+    constructor(props) {
+        super(props);
     }
 
     render() {
         return(
-            <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center', paddingHorizontal: 15}}>
-                <Text style={{fontWeight: 'bold', padding: 10}}>
-                    Address:{'\n'}
-                    <Text style={{fontWeight: 'normal'}}>
-                        {this.state.address}
-                    </Text>
-                </Text>
-
-                <Text style={{fontWeight: 'bold', padding: 10}}>
-                    Mnemonic Seed:{'\n'}
-                    <Text style={{fontWeight: 'normal'}}>
-                        {this.state.mnemonicSeed}
-                    </Text>
-                </Text>
-
-                <Text style={{fontWeight: 'bold', padding: 10}}>
-                    Private Spend Key:{'\n'}
-                    <Text style={{fontWeight: 'normal'}}>
-                        {this.state.privateSpendKey}
-                    </Text>
-                </Text>
-
-                <Text style={{fontWeight: 'bold', padding: 10}}>
-                    Private View Key:{'\n'}
-                    <Text style={{fontWeight: 'normal'}}>
-                        {this.state.privateViewKey}
-                    </Text>
-                </Text>
+            <View style={[styles.buttonContainer, {alignItems: 'flex-end', padding: 0, marginTop: 5}]}>
+                <Button
+                    title='Copy'
+                    onPress={() => {
+                        Clipboard.setString(this.props.seed);
+                        toastPopUp('Seed copied');
+                    }}
+                    color='#40C18E'
+                />
             </View>
         );
     }
+}
+
+function prettyPrintSeed(seed) {
+    let result = '';
+    let i = 1;
+
+    for (const word of seed.split(' ')) {
+        result += word + ' ';
+
+        if (i % 5 == 0) {
+            result += '\n';
+        }
+
+        i++;
+    }
+
+    return result;
+}
+
+function TextFixedWidth ({ children }) {
+    const fontFamily = Platform.OS === 'ios' ? 'Courier' : 'monospace'
+
+    return (
+        <Text style={{fontFamily}}>{ children }</Text>
+    )
 }
 
 class OpenWalletScreen extends React.Component {
     static navigationOptions = {
         title: 'Open',
     };
+
+    constructor(props) {
+        super(props);
+    }
 
     render() {
         return(
@@ -159,7 +221,6 @@ class OpenWalletScreen extends React.Component {
                     />
                 </View>
                 <Text>Open a wallet!</Text>
-                <DatabaseComponent></DatabaseComponent>
             </View>
         );
     }
@@ -172,17 +233,6 @@ class ImportWalletScreen extends React.Component {
     
     constructor(props) {
         super(props);
-        this.state = { msg: 'loading...' };
-    }
-
-    componentWillMount() {
-        request('http://www.example.com', (error, response, body) => {
-            if (error) {
-                this.setState({msg: error});
-            } else {
-                this.setState({msg: body});
-            }
-        });
     }
 
     render() {
@@ -195,7 +245,36 @@ class ImportWalletScreen extends React.Component {
                     />
                 </View>
                 <Text>Import a wallet!</Text>
-                <Text>{this.state.msg}</Text>
+            </View>
+        );
+    }
+}
+
+class MainScreen extends React.Component {
+    static navigationOptions = {
+        title: 'Wallet',
+    };
+
+    constructor(props) {
+        super(props);
+
+        const { navigation } = this.props;
+
+        this.state = {
+            wallet: navigation.getParam('wallet'),
+        };
+    }
+
+    render() {
+        return(
+            <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center'}}>
+                <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                    <Image
+                        source={require('../assets/img/logo.png')}
+                        style={styles.logo}
+                    />
+                </View>
+                <Text>Your wallet address: {this.state.wallet.getPrimaryAddress()}</Text>
             </View>
         );
     }
@@ -206,7 +285,8 @@ const AppNavigator = createStackNavigator(
         Home: HomeScreen,
         CreateWallet: CreateWalletScreen,
         OpenWallet: OpenWalletScreen,
-        ImportWallet: ImportWalletScreen
+        ImportWallet: ImportWalletScreen,
+        Main: MainScreen,
     },
     {
         initialRouteName: 'Home',
