@@ -2,24 +2,19 @@
 
 ## Setup
 
-Clone the repo:
+* Clone the repo:
 
 `git clone https://github.com/zpalmtree/ton-chan.git`
 
 `cd ton-chan`
 
-Install npm if you don't have it already:
+* Install yarn if you don't have it already:
 
-* Ubuntu - `sudo apt-get install nodejs npm -y`
-* Arch Linux - `pacman -S nvm` (follow the instructions), then `nvm install 10; nvm use 10`
+`npm install -g yarn`
 
-Note that Node 11 is currently not supported: https://github.com/realm/realm-js/issues/2149
+* Install the dependencies:
 
-Look into `nvm` if your distro provides Node 11 or greater.
-
-Install the code dependencies:
-
-`npm install`
+`yarn install`
 
 * Next, we need to setup the Android JDK and development environment.
 
@@ -39,7 +34,9 @@ Skip the 'Creating a new application' header, and continue on to 'Preparing the 
 
 Once you have your virtual device setup, you can launch the app itself.
 
-Run `react-native run-android`
+* Run the program:
+
+`react-native run-android`
 
 If you get an error about 'Unsupported major.minor version', you may need to set JAVA_HOME to point to the correct jdk.
 
