@@ -9,6 +9,7 @@ import React from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import PINCode from '@haskkor/react-native-pincode';
 
 import {
     StyleSheet, Text, View, Image, Button, Platform, Clipboard, ToastAndroid
@@ -50,7 +51,7 @@ class LoadScreen extends React.Component {
                 <View style={[styles.buttonContainer, {bottom: 100, position: 'absolute', alignItems: 'stretch', justifyContent: 'center', width: '100%'}]}>
                     <Button
                         title='Create New Wallet'
-                        onPress={() => this.props.navigation.navigate('CreateWallet')}
+                        onPress={() => this.props.navigation.navigate('SetPin')}
                         color={config.theme.primaryColour}
                     />
                 </View>
@@ -68,6 +69,38 @@ class LoadScreen extends React.Component {
     }
 }
 
+class SetPinScreen extends React.Component {
+    static navigationOptions = {
+        title: 'Set Pin',
+        header: null,
+    }
+
+    constructor(props) {
+        super(props);
+    }
+    
+    continue(pinCode) {
+        this.props.navigation.navigate('CreateWallet', {
+            pinCode: pinCode
+        });
+    }
+
+    render() {
+        const subtitle = `To keep your ${config.coinName} secure`;
+
+        return(
+            <View style={{flex: 1}}>
+                <PINCode
+                    status={'choose'}
+                    finishProcess={this.continue.bind(this)}
+                    subtitleChoose={subtitle}
+                    passwordLength={6}
+                />
+            </View>
+        );
+    }
+}
+
 class CreateWalletScreen extends React.Component {
     static navigationOptions = {
         title: 'Create',
@@ -78,12 +111,14 @@ class CreateWalletScreen extends React.Component {
 
         const daemon = new BlockchainCacheApi('blockapi.turtlepay.io', true);
         wallet = WalletBackend.createWallet(daemon);
+        /* TODO: Save wallet here, with pin */
 
         this.state = {
             daemon,
-            wallet
+            wallet,
+            pinCode: this.props.navigation.state.params.pinCode,
         };
-    }
+    };
 
     render() {
         return(
@@ -156,8 +191,10 @@ class MainScreen extends React.Component {
     constructor(props) {
         super(props);
 
+        console.log(this.props.navigation);
+
         this.state = {
-            wallet: wallet,
+            wallet: this.props.navigation.state.params.wallet,
         };
     }
 
@@ -366,6 +403,7 @@ function toastPopUp(message) {
 const MenuNavigator = createStackNavigator(
     {
         Load: LoadScreen,
+        SetPin: SetPinScreen,
         CreateWallet: CreateWalletScreen,
         ImportWallet: ImportWalletScreen,
     },

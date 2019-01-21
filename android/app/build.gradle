@@ -157,6 +157,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-keychain')
     compile project(':react-native-vector-icons')
     compile project(':react-native-tcp')
     compile project(':realm')

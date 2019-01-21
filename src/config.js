@@ -10,7 +10,8 @@ const config = {
         primaryColour: '#40C18E',
 
         secondaryColour: '#00853D',
-    }
+    },
+    coinName: 'TurtleCoin',
 };
 
 module.exports = config;

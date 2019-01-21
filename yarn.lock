@@ -607,7 +607,7 @@
     pirates "^4.0.0"
     source-map-support "^0.5.9"
 
-"@babel/runtime@^7.0.0":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.2.0":
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.2.0.tgz#b03e42eeddf5898e00646e4c840fa07ba8dcad7f"
   integrity sha512-oouEibCbHMVdZSDlJBO6bZmID/zA/G/Qx3H1d3rSNPTD+L8UNKvCat7aKWSJ74zYbm5zWGh0GQN0hKj8zYFTCg==
@@ -646,6 +646,19 @@
     esutils "^2.0.2"
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
+
+"@haskkor/react-native-pincode@^1.11.0":
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/@haskkor/react-native-pincode/-/react-native-pincode-1.11.0.tgz#9a9b15a18a1e3ddd0f258291fe08a8d731a3d316"
+  integrity sha512-w+DIALYE64G3x6ByZqp0G4SLQRzerolcqwT0s0Q+5SLhMLxrc/8BEWX97y7xsR3SeYPAl26gOToU0kxAJJE91Q==
+  dependencies:
+    d3-ease "^1.0.3"
+    lodash "^4.17.5"
+    react-move "^2.7.0"
+    react-native-easy-grid "^0.2.0"
+    react-native-keychain "^3.0.0-rc.3"
+    react-native-touch-id "^4.1.0"
+    react-native-vector-icons "^4.5.0"
 
 "@react-navigation/core@3.0.2":
   version "3.0.2"
@@ -1969,6 +1982,28 @@ cssstyle@^1.0.0:
   integrity sha512-364AI1l/M5TYcFH83JnOH/pSqgaNnKmYgKrm0didZMGKWjQB60dymwWy1rKUgL3J1ffdq9xVi2yGLHdSjjSNog==
   dependencies:
     cssom "0.3.x"
+
+d3-color@1:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/d3-color/-/d3-color-1.2.3.tgz#6c67bb2af6df3cc8d79efcc4d3a3e83e28c8048f"
+  integrity sha512-x37qq3ChOTLd26hnps36lexMRhNXEtVxZ4B25rL0DVdDsGQIJGB18S7y9XDwlDD6MD/ZBzITCf4JjGMM10TZkw==
+
+d3-ease@^1.0.3:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/d3-ease/-/d3-ease-1.0.5.tgz#8ce59276d81241b1b72042d6af2d40e76d936ffb"
+  integrity sha512-Ct1O//ly5y5lFM9YTdu+ygq7LleSgSE4oj7vUt9tPLHUi8VCV7QoizGpdWRWAwCO9LdYzIrQDg97+hGVdsSGPQ==
+
+d3-interpolate@^1.3.2:
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/d3-interpolate/-/d3-interpolate-1.3.2.tgz#417d3ebdeb4bc4efcc8fd4361c55e4040211fd68"
+  integrity sha512-NlNKGopqaz9qM1PXh9gBF1KSCVh+jSFErrSlD/4hybwoNX/gt1d8CDbDW+3i+5UOHhjC6s6nMvRxcuoMVNgL2w==
+  dependencies:
+    d3-color "1"
+
+d3-timer@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/d3-timer/-/d3-timer-1.0.9.tgz#f7bb8c0d597d792ff7131e1c24a36dd471a471ba"
+  integrity sha512-rT34J5HnQUHhcLvhSB9GjCkN0Ddd5Y8nCwDBG2u6wQEeYxT/Lf51fTFFkldeib/sE/J0clIe0pnCfs6g/lRbyg==
 
 d64@^1.0.0:
   version "1.0.0"
@@ -4251,7 +4286,7 @@ lodash.throttle@^4.1.1:
   resolved "https://registry.yarnpkg.com/lodash.throttle/-/lodash.throttle-4.1.1.tgz#c23e91b710242ac70c37f1e1cda9274cc39bf2f4"
   integrity sha1-wj6RtxAkKscMN/HhzaknTMOb8vQ=
 
-lodash@^4.0.0, lodash@^4.13.1, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.3.0, lodash@^4.6.1:
+lodash@^4.0.0, lodash@^4.11.1, lodash@^4.13.1, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.3.0, lodash@^4.6.1:
   version "4.17.11"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
   integrity sha512-cQKh8igo5QUhZ7lg38DYWAxMvjSAKG0A8wGSVimP07SIUEK2UO+arSRKbRZWtelMtN5V0Hkwh5ryOto/SshYIg==
@@ -5538,6 +5573,16 @@ react-lifecycles-compat@^3.0.4:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
+react-move@^2.7.0:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/react-move/-/react-move-2.9.0.tgz#1ce67dee141479714388f15af064b58062a58683"
+  integrity sha512-VCjPgj+GCjUZAc4TjIXPSll0WfRIEoYfJyRZB7mWB+SuXJarHySAN6pF7c8E62BClxBHKuORxkVVXF31I9rLyw==
+  dependencies:
+    "@babel/runtime" "^7.2.0"
+    d3-interpolate "^1.3.2"
+    d3-timer "^1.0.9"
+    prop-types "^15.6.2"
+
 react-native-crypto@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/react-native-crypto/-/react-native-crypto-2.1.2.tgz#cfe68cad51cd1f73a4202b7ac164f96c1144cb2a"
@@ -5553,6 +5598,13 @@ react-native-crypto@^2.1.2:
     pbkdf2 "3.0.8"
     public-encrypt "^4.0.0"
 
+react-native-easy-grid@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-easy-grid/-/react-native-easy-grid-0.2.0.tgz#4718031aa1baaa2613b829fc807da288eb0d2797"
+  integrity sha512-ZTi84+nJq2wwov55s1rHez0twk/8bs/AGnA5ERF8eYsMbOhBhOzzclj+TyY+/woB/2REAd9QQmWmIT/L999n6Q==
+  dependencies:
+    lodash "^4.11.1"
+
 react-native-gesture-handler@^1.0.0, react-native-gesture-handler@^1.0.12:
   version "1.0.12"
   resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.0.12.tgz#99a22f90212df299245357dbd3a9a01c788f310b"
@@ -5561,6 +5613,11 @@ react-native-gesture-handler@^1.0.0, react-native-gesture-handler@^1.0.12:
     hoist-non-react-statics "^2.3.1"
     invariant "^2.2.2"
     prop-types "^15.5.10"
+
+react-native-keychain@^3.0.0-rc.3:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-keychain/-/react-native-keychain-3.0.0.tgz#29da1dfa43c2581f76bf9420914fd38a1558cf18"
+  integrity sha512-0incABt1+aXsZvG34mDV57KKanSB+iMHmxvWv+N6lgpNLaSoqrCxazjbZdeqD4qJ7Z+Etp5CLf/4v1aI+sNLBw==
 
 react-native-level-fs@^3.0.1:
   version "3.0.1"
@@ -5609,6 +5666,11 @@ react-native-tcp@^3.3.0:
     process "^0.11.9"
     util "^0.10.3"
 
+react-native-touch-id@^4.1.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/react-native-touch-id/-/react-native-touch-id-4.3.0.tgz#c25abd1d03d1ce5075f73ca87b18b47e7d60fa71"
+  integrity sha512-c9VB8Q5+d1H/bXz3gKmlPeWgEIcIeSiLK6jIhx0gUHPD9Geaquhq7NwOFGVt3WkGyvyqfKQTjZTWmuWY1g7hLg==
+
 react-native-udp@^2.3.1:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/react-native-udp/-/react-native-udp-2.3.1.tgz#88eb0f548ed8c7e35065392526ecf8ce2e2be91e"
@@ -5619,6 +5681,15 @@ react-native-udp@^2.3.1:
     inherits "^2.0.1"
     ip-regex "^1.0.3"
     util "^0.10.3"
+
+react-native-vector-icons@^4.5.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/react-native-vector-icons/-/react-native-vector-icons-4.6.0.tgz#e4014311ffa6de397d914ffc31b7097a874cc8d5"
+  integrity sha512-rpfhfPiXCK2PX1nrNhdxSMrEGB/Gw/SvKoPM0G2wAkSoqynnes19K0VYI+Up7DqR1rFIpE4hP2erpT1tNx2tfg==
+  dependencies:
+    lodash "^4.0.0"
+    prop-types "^15.5.10"
+    yargs "^8.0.2"
 
 react-native-vector-icons@^6.1.0:
   version "6.1.0"
