@@ -10,9 +10,11 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import PINCode from '@haskkor/react-native-pincode';
+import { hasUserSetPinCode } from '@haskkor/react-native-pincode';
 
 import {
-    StyleSheet, Text, View, Image, Button, Platform, Clipboard, ToastAndroid
+    StyleSheet, Text, View, Image, Button, Platform, Clipboard, ToastAndroid,
+    Animated,
 } from 'react-native';
 
 import {
@@ -29,6 +31,116 @@ import { saveToDatabase, loadFromDatabase } from './Database';
 /* Blegh - we need to access our wallet from everywhere, really */
 let wallet = undefined;
 
+class SplashScreen extends React.Component {
+    static navigationOptions = {
+        title: 'SplashScreen',
+        header: null,
+    };
+
+    constructor(props) {
+        super(props);
+
+        (async () => {
+            if (await hasUserSetPinCode()) {
+                this.props.navigation.navigate('RequestPin', {
+                    wallet: wallet
+                });
+            } else {
+                this.props.navigation.navigate('Load');
+            }
+        })().catch(err => {
+            this.props.navigation.navigate('Load');
+            console.log('Error loading from DB: ' + err);
+        });
+    }
+
+    render() {
+        return(
+            <View style={{flex: 1, alignItems: 'stretch', justifyContent: 'center'}}>
+                <Spinner></Spinner>
+            </View>
+        )
+    }
+}
+
+class Spinner extends React.Component {
+    constructor(props) {
+        super(props);
+        this.animation = new Animated.Value(0);
+    }
+
+    componentDidMount() {
+        Animated.loop(
+            Animated.timing(this.animation, {toValue: 1, duration: 2000, useNativeDriver: true})
+        ).start();
+    }
+
+    render() {
+        const rotation = this.animation.interpolate({
+            inputRange: [0, 1],
+            outputRange: ['0deg', '360deg']
+        });
+
+        return(
+            <Animated.View style={{transform: [{rotate: rotation}], justifyContent: 'center', alignItems: 'center'}}>
+                <Image
+                    source={require('../assets/img/spinner.png')}
+                    style={{resizeMode: 'contain', width: 200, height: 200}}
+                />
+            </Animated.View>
+        );
+    }
+}
+
+class RequestPinScreen extends React.Component {
+    static navigationOptions = {
+        title: 'Set Pin',
+        header: null,
+    }
+
+    constructor(props) {
+        super(props);
+    }
+    
+    async continue(pinCode) {
+        (async () => {
+            let walletData = await loadFromDatabase();
+            const daemon = new BlockchainCacheApi('blockapi.turtlepay.io', true);
+
+            if (walletData !== undefined) {
+                wallet = WalletBackend.loadWalletFromJSON(daemon, walletData);
+
+                this.props.navigation.navigate('Main', {
+                    wallet: wallet
+                });
+            }
+        })().catch(err => {
+            console.log('Error loading from DB: ' + err);
+
+            /* TODO: Clear DB, or something, this will infinite loop rn */
+            this.props.navigation.navigate('Load', {
+                wallet: wallet
+            });
+        });
+    }
+
+    render() {
+        const subtitle = `To keep your ${config.coinName} secure`;
+
+        return(
+            <View style={{flex: 1}}>
+                <PINCode
+                    status={'enter'}
+                    finishProcess={this.continue.bind(this)}
+                    subtitleChoose={subtitle}
+                    passwordLength={6}
+                    touchIDDisabled={true}
+                />
+            </View>
+        );
+    }
+}
+
 class LoadScreen extends React.Component {
     static navigationOptions = {
         title: 'Load',
@@ -39,13 +151,8 @@ class LoadScreen extends React.Component {
         super(props);
 
         (async () => {
-            let walletData = await loadFromDatabase();
-            const daemon = new BlockchainCacheApi('blockapi.turtlepay.io', true);
-
-            if (walletData !== undefined) {
-                wallet = WalletBackend.loadWalletFromJSON(daemon, walletData);
-
-                this.props.navigation.navigate('Main', {
+            if (await hasUserSetPinCode()) {
+                this.props.navigation.navigate('RequestPin', {
                     wallet: wallet
                 });
             }
@@ -115,6 +222,7 @@ class SetPinScreen extends React.Component {
                     finishProcess={this.continue.bind(this)}
                     subtitleChoose={subtitle}
                     passwordLength={6}
+                    touchIDDisabled={true}
                 />
             </View>
         );
@@ -450,12 +558,14 @@ const MenuNavigator = createStackNavigator(
     {
         Load: LoadScreen,
         SetPin: SetPinScreen,
+        RequestPin: RequestPinScreen,
+        Splash: SplashScreen,
         CreateWallet: CreateWalletScreen,
         ImportWallet: ImportWalletScreen,
         Home: TabNavigator,
     },
     {
-        initialRouteName: 'Load',
+        initialRouteName: 'Splash',
         defaultNavigationOptions: {
             headerStyle: {
                 backgroundColor: config.theme.primaryColour,
