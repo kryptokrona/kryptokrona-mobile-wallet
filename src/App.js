@@ -365,23 +365,6 @@ const styles = StyleSheet.create({
     }
 });
 
-function prettyPrintSeed(seed) {
-    let result = '';
-    let i = 1;
-
-    for (const word of seed.split(' ')) {
-        result += word + ' ';
-
-        if (i % 5 == 0) {
-            result += '\n';
-        }
-
-        i++;
-    }
-
-    return result;
-}
-
 function TextFixedWidth ({ children }) {
     const fontFamily = Platform.OS === 'ios' ? 'Courier' : 'monospace'
 
@@ -400,42 +383,15 @@ function toastPopUp(message) {
     ToastAndroid.show(message, ToastAndroid.SHORT);
 }
 
-const MenuNavigator = createStackNavigator(
-    {
-        Load: LoadScreen,
-        SetPin: SetPinScreen,
-        CreateWallet: CreateWalletScreen,
-        ImportWallet: ImportWalletScreen,
-    },
-    {
-        initialRouteName: 'Load',
-        defaultNavigationOptions: {
-            headerStyle: {
-                backgroundColor: config.theme.primaryColour,
-            },
-            headerTintColor: 'white',
-            headerTitleStyle: {
-                fontWeight: 'bold',
-                color: 'white'
-            }
-        },
-    }
-);
-
-MenuNavigator.navigationOptions = {
-    tabBarVisible: false
-};
-
 const TabNavigator = createBottomTabNavigator(
     {
-        Load: MenuNavigator,
         Main: MainScreen,
         Transfer: TransferScreen,
         Transactions: TransactionsScreen,
-        Settings: SettingsScreen,
+        Settings: SettingsScreen
     },
     {
-        initialRouteName: 'Load',
+        initialRouteName: 'Main',
         tabBarOptions: {
             activeTintColor: config.theme.primaryColour,
         },
@@ -469,11 +425,37 @@ const TabNavigator = createBottomTabNavigator(
     }
 );
 
+TabNavigator.navigationOptions = {
+    header: null,
+}
+
+const MenuNavigator = createStackNavigator(
+    {
+        Load: LoadScreen,
+        SetPin: SetPinScreen,
+        CreateWallet: CreateWalletScreen,
+        ImportWallet: ImportWalletScreen,
+        Home: TabNavigator,
+    },
+    {
+        initialRouteName: 'Load',
+        defaultNavigationOptions: {
+            headerStyle: {
+                backgroundColor: config.theme.primaryColour,
+            },
+            headerTintColor: 'white',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+                color: 'white'
+            }
+        },
+    }
+);
+
 const MenuContainer = createAppContainer(MenuNavigator);
-const AppContainer = createAppContainer(TabNavigator);
 
 export default class App extends React.Component {
     render() {
-        return <AppContainer/>;
+        return <MenuContainer/>;
     }
 }
