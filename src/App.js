@@ -23,7 +23,8 @@ import {
     BlockchainCacheApi, ConventionalDaemon, WalletBackend
 } from 'turtlecoin-wallet-backend';
 
-import config from './config';
+import config from './Config';
+import { saveToDatabase, loadFromDatabase } from './Database';
 
 /* Blegh - we need to access our wallet from everywhere, really */
 let wallet = undefined;
@@ -33,6 +34,25 @@ class LoadScreen extends React.Component {
         title: 'Load',
         header: null,
     };
+
+    constructor(props) {
+        super(props);
+
+        (async () => {
+            let walletData = await loadFromDatabase();
+            const daemon = new BlockchainCacheApi('blockapi.turtlepay.io', true);
+
+            if (walletData !== undefined) {
+                wallet = WalletBackend.loadWalletFromJSON(daemon, walletData);
+
+                this.props.navigation.navigate('Main', {
+                    wallet: wallet
+                });
+            }
+        })().catch(err => {
+            console.log('Error loading from DB: ' + err);
+        });
+    }
 
     render() {
         return(
@@ -111,12 +131,11 @@ class CreateWalletScreen extends React.Component {
 
         const daemon = new BlockchainCacheApi('blockapi.turtlepay.io', true);
         wallet = WalletBackend.createWallet(daemon);
-        /* TODO: Save wallet here, with pin */
+        saveToDatabase(wallet, this.props.navigation.state.params.pinCode);
 
         this.state = {
             daemon,
             wallet,
-            pinCode: this.props.navigation.state.params.pinCode,
         };
     };
 
@@ -190,8 +209,6 @@ class MainScreen extends React.Component {
 
     constructor(props) {
         super(props);
-
-        console.log(this.props.navigation);
 
         this.state = {
             wallet: this.props.navigation.state.params.wallet,
