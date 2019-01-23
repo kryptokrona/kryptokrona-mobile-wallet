@@ -7,14 +7,15 @@ import * as _ from 'lodash';
 import React from 'react';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
+
 import Entypo from 'react-native-vector-icons/Entypo';
+
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import PINCode from '@haskkor/react-native-pincode';
-import { hasUserSetPinCode } from '@haskkor/react-native-pincode';
+
+import PINCode, { hasUserSetPinCode } from '@haskkor/react-native-pincode';
 
 import {
-    StyleSheet, Text, View, Image, Button, Platform, Clipboard, ToastAndroid,
-    Animated,
+    StyleSheet, Text, View, Image, Button, Clipboard, Animated,
 } from 'react-native';
 
 import {
@@ -28,6 +29,9 @@ import {
 
 import config from './Config';
 import { saveToDatabase, loadFromDatabase } from './Database';
+import { Spinner } from './Spinner';
+import { FadeView } from './FadeView';
+import { delay, toastPopUp, TextFixedWidth } from './Utilities';
 
 /* Blegh - we need to access our wallet from everywhere, really */
 let wallet = undefined;
@@ -42,11 +46,16 @@ class SplashScreen extends React.Component {
         super(props);
 
         (async () => {
+            let hasPinCode: false;
+
             if (await hasUserSetPinCode()) {
-                this.props.navigation.dispatch(navigateWithDisabledBack('RequestPin'));
-            } else {
-                this.props.navigation.dispatch(navigateWithDisabledBack('Load'));
+                hasPinCode = true;
             }
+
+            await delay(2000);
+
+            this.props.navigation.dispatch(navigateWithDisabledBack(hasPinCode ? 'RequestPin' : 'Load'));
+
         })().catch(err => {
             console.log('Error loading from DB: ' + err);
             this.props.navigation.dispatch(navigateWithDisabledBack('Load'));
@@ -55,38 +64,9 @@ class SplashScreen extends React.Component {
 
     render() {
         return(
-            <View style={{flex: 1, alignItems: 'stretch', justifyContent: 'center'}}>
+            <FadeView startValue={1} endValue={0} style={{flex: 1, alignItems: 'stretch', justifyContent: 'center'}}>
                 <Spinner></Spinner>
-            </View>
-        )
-    }
-}
-
-class Spinner extends React.Component {
-    constructor(props) {
-        super(props);
-        this.animation = new Animated.Value(0);
-    }
-
-    componentDidMount() {
-        Animated.loop(
-            Animated.timing(this.animation, {toValue: 1, duration: 2000, useNativeDriver: true})
-        ).start();
-    }
-
-    render() {
-        const rotation = this.animation.interpolate({
-            inputRange: [0, 1],
-            outputRange: ['0deg', '360deg']
-        });
-
-        return(
-            <Animated.View style={{transform: [{rotate: rotation}], justifyContent: 'center', alignItems: 'center'}}>
-                <Image
-                    source={require('../assets/img/spinner.png')}
-                    style={{resizeMode: 'contain', width: 200, height: 200}}
-                />
-            </Animated.View>
+            </FadeView>
         );
     }
 }
@@ -100,7 +80,7 @@ class RequestPinScreen extends React.Component {
     constructor(props) {
         super(props);
     }
-    
+
     async continue(pinCode) {
         (async () => {
             /* Decrypt wallet data from DB */
@@ -124,15 +104,15 @@ class RequestPinScreen extends React.Component {
 
     render() {
         return(
-            <View style={{flex: 1}}>
+            <FadeView duration={1500} startValue={0.2} style={{flex: 1}}>
                 <PINCode
                     status={'enter'}
                     finishProcess={this.continue.bind(this)}
-                    subtitleChoose="to unlock your wallet"
+                    subtitleEnter="to unlock your wallet"
                     passwordLength={6}
                     touchIDDisabled={true}
                 />
-            </View>
+            </FadeView>
         );
     }
 }
@@ -486,24 +466,6 @@ function navigateWithDisabledBack(route, routeParams) {
             }),
         ]
     });
-}
-
-function TextFixedWidth ({ children }) {
-    const fontFamily = Platform.OS === 'ios' ? 'Courier' : 'monospace'
-
-    return (
-        <Text style={{fontFamily}}>{ children }</Text>
-    )
-}
-
-function toastPopUp(message) {
-    /* IOS doesn't have toast support */
-    /* TODO */
-    if (Platform.OS === 'ios') {
-        return;
-    }
-
-    ToastAndroid.show(message, ToastAndroid.SHORT);
 }
 
 const TabNavigator = createBottomTabNavigator(
