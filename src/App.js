@@ -93,6 +93,11 @@ class RequestPinScreen extends React.Component {
                 wallet = WalletBackend.loadWalletFromJSON(daemon, walletData);
 
                 this.props.navigation.dispatch(navigateWithDisabledBack('Home'));
+            } else {
+                console.log('Wallet not found in DB...');
+
+                /* TODO: Clear DB, or something, this will infinite loop rn */
+                this.props.navigation.dispatch(navigateWithDisabledBack('Load'));
             }
         })().catch(err => {
             console.log('Error loading from DB: ' + err);
@@ -107,7 +112,7 @@ class RequestPinScreen extends React.Component {
             <FadeView duration={1500} startValue={0.2} style={{flex: 1}}>
                 <PINCode
                     status={'enter'}
-                    finishProcess={this.continue.bind(this)}
+                    endProcessFunction={this.continue.bind(this)}
                     subtitleEnter="to unlock your wallet"
                     passwordLength={6}
                     touchIDDisabled={true}
@@ -173,7 +178,11 @@ class SetPinScreen extends React.Component {
     }
     
     continue(pinCode) {
-        /* TODO: Save wallet with pin here */
+        /* TODO */
+        if (pinCode === undefined) {
+            pinCode = '111111';
+        }
+
         this.props.navigation.dispatch(navigateWithDisabledBack('CreateWallet', {pinCode: pinCode}));
     }
 

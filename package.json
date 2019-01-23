@@ -17,6 +17,7 @@
     "buffer": "^4.9.1",
     "console-browserify": "^1.1.0",
     "https-browserify": "0.0.1",
+    "js-sha512": "^0.8.0",
     "lodash": "^4.17.11",
     "path-browserify": "0.0.0",
     "process": "^0.11.10",

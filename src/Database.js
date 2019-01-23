@@ -3,6 +3,7 @@
 // Please see the included LICENSE file for more information.
 
 import Realm from 'realm';
+import { sha512 } from 'js-sha512';
 
 import Constants from './Constants';
 
@@ -286,25 +287,35 @@ function realmToWalletJSON(realmObj) {
 }
 
 export function saveToDatabase(wallet, pinCode) {
+    /* Delete old wallet */
+    /* TODO: Would be a good idea to backup old file, in case saving fails */
     Realm.deleteFile({});
 
+    /* Get encryption key from pin code */
+    var key = sha512.arrayBuffer(pinCode.toString());
+
+    /* Open the DB */
     Realm.open({
         schema: [
             WalletSchema, WalletSynchronizerSchema, SubWalletSchema,
             TransactionSchema, SubWalletsSchema, TxPrivateKeysSchema,
             TransfersSchema, TransactionInputSchema, UnconfirmedInputSchema,
             SynchronizationStatusSchema
-        ]
+        ],
+        encryptionKey: key,
     }).then(realm => {
+        /* Write the wallet to the DB */
         realm.write(() => {
             walletToRealm(wallet, realm)
-        });
+        })
     }).catch(err => {
         console.log('Err saving wallet: ' + err);
     });
 }
 
 export async function loadFromDatabase(pinCode) {
+    var key = sha512.arrayBuffer(pinCode.toString());
+
     try {
         let realm = await Realm.open({
             schema: [
@@ -312,7 +323,8 @@ export async function loadFromDatabase(pinCode) {
                 TransactionSchema, SubWalletsSchema, TxPrivateKeysSchema,
                 TransfersSchema, TransactionInputSchema, UnconfirmedInputSchema,
                 SynchronizationStatusSchema
-            ]
+            ],
+            encryptionKey: key,
         });
 
         if (realm.objects('Wallet').length >= 0) {

@@ -2,6 +2,8 @@
 //
 // Please see the included LICENSE file for more information.
 
+import React from 'react';
+
 import { Text, Platform, ToastAndroid } from 'react-native';
 
 export function delay(ms: number) {
