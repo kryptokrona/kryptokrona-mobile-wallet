@@ -18,7 +18,8 @@ import {
 } from 'react-native';
 
 import {
-    createStackNavigator, createAppContainer, createBottomTabNavigator
+    createStackNavigator, createAppContainer, createBottomTabNavigator,
+    NavigationActions, StackActions,
 } from 'react-navigation';
 
 import { 
@@ -42,15 +43,13 @@ class SplashScreen extends React.Component {
 
         (async () => {
             if (await hasUserSetPinCode()) {
-                this.props.navigation.navigate('RequestPin', {
-                    wallet: wallet
-                });
+                this.props.navigation.dispatch(navigateWithDisabledBack('RequestPin'));
             } else {
-                this.props.navigation.navigate('Load');
+                this.props.navigation.dispatch(navigateWithDisabledBack('Load'));
             }
         })().catch(err => {
-            this.props.navigation.navigate('Load');
             console.log('Error loading from DB: ' + err);
+            this.props.navigation.dispatch(navigateWithDisabledBack('Load'));
         });
     }
 
@@ -104,35 +103,32 @@ class RequestPinScreen extends React.Component {
     
     async continue(pinCode) {
         (async () => {
-            let walletData = await loadFromDatabase();
+            /* Decrypt wallet data from DB */
+            let walletData = await loadFromDatabase(pinCode);
+
             const daemon = new BlockchainCacheApi('blockapi.turtlepay.io', true);
 
+            /* Load from JSON if we got it from the DB */
             if (walletData !== undefined) {
                 wallet = WalletBackend.loadWalletFromJSON(daemon, walletData);
 
-                this.props.navigation.navigate('Main', {
-                    wallet: wallet
-                });
+                this.props.navigation.dispatch(navigateWithDisabledBack('Home'));
             }
         })().catch(err => {
             console.log('Error loading from DB: ' + err);
 
             /* TODO: Clear DB, or something, this will infinite loop rn */
-            this.props.navigation.navigate('Load', {
-                wallet: wallet
-            });
+            this.props.navigation.dispatch(navigateWithDisabledBack('Load'));
         });
     }
 
     render() {
-        const subtitle = `To keep your ${config.coinName} secure`;
-
         return(
             <View style={{flex: 1}}>
                 <PINCode
                     status={'enter'}
                     finishProcess={this.continue.bind(this)}
-                    subtitleChoose={subtitle}
+                    subtitleChoose="to unlock your wallet"
                     passwordLength={6}
                     touchIDDisabled={true}
                 />
@@ -149,16 +145,6 @@ class LoadScreen extends React.Component {
 
     constructor(props) {
         super(props);
-
-        (async () => {
-            if (await hasUserSetPinCode()) {
-                this.props.navigation.navigate('RequestPin', {
-                    wallet: wallet
-                });
-            }
-        })().catch(err => {
-            console.log('Error loading from DB: ' + err);
-        });
     }
 
     render() {
@@ -207,13 +193,12 @@ class SetPinScreen extends React.Component {
     }
     
     continue(pinCode) {
-        this.props.navigation.navigate('CreateWallet', {
-            pinCode: pinCode
-        });
+        /* TODO: Save wallet with pin here */
+        this.props.navigation.dispatch(navigateWithDisabledBack('CreateWallet', {pinCode: pinCode}));
     }
 
     render() {
-        const subtitle = `To keep your ${config.coinName} secure`;
+        const subtitle = `to keep your ${config.coinName} secure`;
 
         return(
             <View style={{flex: 1}}>
@@ -275,9 +260,7 @@ class CreateWalletScreen extends React.Component {
                 <View style={[styles.buttonContainer, {bottom: 30, position: 'absolute', alignItems: 'stretch', justifyContent: 'center', width: '100%'}]}>
                     <Button
                         title='Continue'
-                        onPress={() => this.props.navigation.navigate('Main', {
-                            wallet: this.state.wallet
-                        })}
+                        onPress={() => this.props.navigation.dispatch(navigateWithDisabledBack('RequestPin'))}
                         color={config.theme.primaryColour}
                     />
                 </View>
@@ -319,7 +302,7 @@ class MainScreen extends React.Component {
         super(props);
 
         this.state = {
-            wallet: this.props.navigation.state.params.wallet,
+            wallet: wallet
         };
     }
 
@@ -489,6 +472,21 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25
     }
 });
+
+/* Navigate to a route, resetting the stack, so the user cannot go back.
+   We want to do this so when we go from the splash screen to the menu screen,
+   the user can't return, and get stuck there. */
+function navigateWithDisabledBack(route, routeParams) {
+    return StackActions.reset({
+        index: 0,
+        actions: [
+            NavigationActions.navigate({ 
+                routeName: route,
+                params: routeParams,
+            }),
+        ]
+    });
+}
 
 function TextFixedWidth ({ children }) {
     const fontFamily = Platform.OS === 'ios' ? 'Courier' : 'monospace'
