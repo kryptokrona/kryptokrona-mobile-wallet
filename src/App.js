@@ -249,7 +249,7 @@ class CreateWalletScreen extends React.Component {
                 <View style={[styles.buttonContainer, {bottom: 30, position: 'absolute', alignItems: 'stretch', justifyContent: 'center', width: '100%'}]}>
                     <Button
                         title='Continue'
-                        onPress={() => this.props.navigation.dispatch(navigateWithDisabledBack('RequestPin'))}
+                        onPress={() => this.props.navigation.dispatch(navigateWithDisabledBack('Home'))}
                         color={config.theme.primaryColour}
                     />
                 </View>
