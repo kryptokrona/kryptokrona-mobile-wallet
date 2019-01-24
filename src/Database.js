@@ -289,8 +289,6 @@ function realmToWalletJSON(realmObj) {
     json.subWallets = realmToSubWalletsJSON(realmObj.subWallets);
     json.walletSynchronizer = realmToWalletSynchronizerJSON(realmObj.walletSynchronizer);
 
-    console.log(json);
-
     return JSON.stringify(json);
 }
 

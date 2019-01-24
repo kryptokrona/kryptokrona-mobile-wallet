@@ -32,6 +32,7 @@ import { saveToDatabase, loadFromDatabase } from './Database';
 import { Spinner } from './Spinner';
 import { FadeView } from './FadeView';
 import { delay, toastPopUp, TextFixedWidth } from './Utilities';
+import { ProgressBar } from './ProgressBar';
 
 /* Blegh - we need to access our wallet from everywhere, really */
 let wallet = undefined;
@@ -341,16 +342,35 @@ class MainScreen extends React.Component {
             walletHeight,
             localHeight,
             networkHeight,
+            progress: 0,
+            percent: '0.00',
         };
     }
 
     tick() {
         const [walletHeight, localHeight, networkHeight] = wallet.getSyncStatus();
 
+        /* Don't divide by zero */
+        let progress = networkHeight === 0 ? 0 : walletHeight / networkHeight;
+
+        let percent = 100 * progress;
+
+        /* Prevent bar looking full when it's not */
+        if (progress > 0.99 && progress < 1) {
+            progress = 0.99;
+        }
+
+        /* Prevent 100% when just under */
+        if (percent > 99.99 && percent < 100) {
+            percent = 99.99;
+        }
+
         this.setState({
             walletHeight,
             localHeight,
             networkHeight,
+            progress,
+            percent: percent.toFixed(2),
         });
     }
 
@@ -362,15 +382,22 @@ class MainScreen extends React.Component {
         clearInterval(this.interval);
     }
 
-    render() {
+    syncComponent() {
         return(
-            <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center'}}>
+            <View style={{ flex: 1, justifyContent: 'flex-end', alignItems: 'center', marginBottom: 10}}>
                 <Text>
-                    Sync status: {this.state.walletHeight} / {this.state.networkHeight}{"\n"}
-                    Network sync status: {this.state.localHeight} / {this.state.networkHeight}
+                    {this.state.walletHeight} / {this.state.networkHeight} - {this.state.percent}%
                 </Text>
+                <ProgressBar
+                    progress={this.state.progress}
+                    style={{justifyContent: 'flex-end', alignItems: 'center', width: 300, marginTop: 10}}
+                />
             </View>
         );
+    }
+
+    render() {
+        return this.syncComponent();
     }
 }
 

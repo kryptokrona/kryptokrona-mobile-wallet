@@ -2,16 +2,14 @@
 //
 // Please see the included LICENSE file for more information.
 
-const config = {
+const Config = {
     theme: {
         /**
          * The primary colour used by the wallet, for TurtleCoin this is green
          */
         primaryColour: '#40C18E',
-
-        secondaryColour: '#00853D',
     },
     coinName: 'TurtleCoin',
 };
 
-module.exports = config;
+module.exports = Config;
