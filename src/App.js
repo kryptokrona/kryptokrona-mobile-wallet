@@ -27,15 +27,23 @@ import {
     BlockchainCacheApi, ConventionalDaemon, WalletBackend, LogLevel
 } from 'turtlecoin-wallet-backend';
 
-import config from './Config';
+import Config from './Config';
 import { saveToDatabase, loadFromDatabase } from './Database';
 import { Spinner } from './Spinner';
 import { FadeView } from './FadeView';
 import { delay, toastPopUp, TextFixedWidth } from './Utilities';
 import { ProgressBar } from './ProgressBar';
 
-/* Blegh - we need to access our wallet from everywhere, really */
-let wallet = undefined;
+const Globals = {
+    /* Blegh - we need to access our wallet from everywhere, really */
+    wallet: undefined,
+
+    /* Also need to be able to save the wallet from everywhere */
+    pinCode: undefined,
+
+    /* Need to be able to cancel the background saving if we make a new wallet */
+    backgroundSaveTimer: undefined,
+};
 
 /**
  * Launch screen. See if the user has a pin, if so, request pin to unlock.
@@ -101,6 +109,8 @@ class RequestPinScreen extends React.Component {
      */
     async continue(pinCode) {
         (async () => {
+            Globals.pinCode = pinCode;
+
             /* Decrypt wallet data from DB */
             let walletData = await loadFromDatabase(pinCode);
 
@@ -108,10 +118,11 @@ class RequestPinScreen extends React.Component {
 
             /* Load from JSON if we got it from the DB */
             if (walletData !== undefined) {
-                wallet = WalletBackend.loadWalletFromJSON(daemon, walletData);
+                let wallet = WalletBackend.loadWalletFromJSON(daemon, walletData);
 
                 /* TODO: Dedupe this stuff */
                 if (wallet instanceof WalletBackend) {
+                    Globals.wallet = wallet;
                     this.props.navigation.dispatch(navigateWithDisabledBack('Home'));
                 } else {
                     console.log('Error loading wallet: ' + wallet);
@@ -179,7 +190,7 @@ class CreateScreen extends React.Component {
                         title='Create New Wallet'
                         /* Request a pin for the new wallet */
                         onPress={() => this.props.navigation.navigate('SetPin')}
-                        color={config.theme.primaryColour}
+                        color={Config.theme.primaryColour}
                     />
                 </View>
 
@@ -188,7 +199,7 @@ class CreateScreen extends React.Component {
                         title='Recover Wallet'
                         /* Get the import data */
                         onPress={() => this.props.navigation.navigate('ImportWallet')}
-                        color={config.theme.primaryColour}
+                        color={Config.theme.primaryColour}
                     />
                 </View>
 
@@ -211,11 +222,12 @@ class SetPinScreen extends React.Component {
     
     /* Pin entered, go create a wallet */
     continue(pinCode) {
-        this.props.navigation.dispatch(navigateWithDisabledBack('CreateWallet', {pinCode: pinCode}));
+        this.globals.pinCode = pinCode;
+        this.props.navigation.dispatch(navigateWithDisabledBack('CreateWallet'));
     }
 
     render() {
-        const subtitle = `to keep your ${config.coinName} secure`;
+        const subtitle = `to keep your ${Config.coinName} secure`;
 
         return(
             <View style={{flex: 1}}>
@@ -243,14 +255,13 @@ class CreateWalletScreen extends React.Component {
         super(props);
 
         const daemon = new BlockchainCacheApi('blockapi.turtlepay.io', true);
-        wallet = WalletBackend.createWallet(daemon);
+        Globals.wallet = WalletBackend.createWallet(daemon);
 
         /* Encrypt wallet with pincode in DB */
-        saveToDatabase(wallet, this.props.navigation.state.params.pinCode);
+        saveToDatabase(wallet, Globals.pinCode);
 
         this.state = {
             daemon,
-            wallet,
         };
     };
 
@@ -275,7 +286,7 @@ class CreateWalletScreen extends React.Component {
                             you cannot restore your wallet, and your funds will be lost forever!
                         </Text>
                     </Text>
-                    <SeedComponent seed={this.state.wallet.getMnemonicSeed()}>
+                    <SeedComponent seed={Globals.wallet.getMnemonicSeed()}>
                     </SeedComponent>
                 </View>
 
@@ -284,7 +295,7 @@ class CreateWalletScreen extends React.Component {
                         title='Continue'
                         /* Go to the menu screen */
                         onPress={() => this.props.navigation.dispatch(navigateWithDisabledBack('Home'))}
-                        color={config.theme.primaryColour}
+                        color={Config.theme.primaryColour}
                     />
                 </View>
             </View>
@@ -323,22 +334,19 @@ class ImportWalletScreen extends React.Component {
  * Sync screen, balance
  */
 class MainScreen extends React.Component {
-    static navigationOptions = {
-        title: 'Wallet',
-    };
-
     constructor(props) {
         super(props);
 
         /* Start syncing */
-        wallet.start();
+        Globals.wallet.start();
 
-        wallet.setLogLevel(LogLevel.DEBUG);
+        Globals.wallet.setLogLevel(LogLevel.DEBUG);
 
-        const [walletHeight, localHeight, networkHeight] = wallet.getSyncStatus();
+        Globals.backgroundSaveTimer = setInterval(backgroundSave, Config.walletSaveFrequency);
+
+        const [walletHeight, localHeight, networkHeight] = Globals.wallet.getSyncStatus();
 
         this.state = {
-            wallet,
             walletHeight,
             localHeight,
             networkHeight,
@@ -348,7 +356,7 @@ class MainScreen extends React.Component {
     }
 
     tick() {
-        const [walletHeight, localHeight, networkHeight] = wallet.getSyncStatus();
+        const [walletHeight, localHeight, networkHeight] = Globals.wallet.getSyncStatus();
 
         /* Don't divide by zero */
         let progress = networkHeight === 0 ? 0 : walletHeight / networkHeight;
@@ -411,10 +419,6 @@ class TransactionsScreen extends React.Component {
 
     constructor(props) {
         super(props);
-
-        this.state = {
-            wallet: wallet,
-        };
     }
 
     render() {
@@ -426,7 +430,7 @@ class TransactionsScreen extends React.Component {
                         style={styles.logo}
                     />
                 </View>
-                <Text>Your wallet address: {this.state.wallet.getPrimaryAddress()}</Text>
+                <Text>Your wallet address: {Globals.wallet.getPrimaryAddress()}</Text>
             </View>
         );
     }
@@ -442,10 +446,6 @@ class TransferScreen extends React.Component {
 
     constructor(props) {
         super(props);
-
-        this.state = {
-            wallet: wallet,
-        }
     }
 
     render() {
@@ -457,7 +457,7 @@ class TransferScreen extends React.Component {
                         style={styles.logo}
                     />
                 </View>
-                <Text>Your wallet address: {this.state.wallet.getPrimaryAddress()}</Text>
+                <Text>Your wallet address: {Globals.wallet.getPrimaryAddress()}</Text>
             </View>
         );
     }
@@ -473,10 +473,6 @@ class SettingsScreen extends React.Component {
 
     constructor(props) {
         super(props);
-
-        this.state = {
-            wallet: wallet,
-        }
     }
 
     render() {
@@ -488,7 +484,7 @@ class SettingsScreen extends React.Component {
                         style={styles.logo}
                     />
                 </View>
-                <Text>Your wallet address: {this.state.wallet.getPrimaryAddress()}</Text>
+                <Text>Your wallet address: {Globals.wallet.getPrimaryAddress()}</Text>
             </View>
         );
     }
@@ -538,7 +534,7 @@ class CopyButton extends React.Component {
                         Clipboard.setString(this.props.seed);
                         toastPopUp('Seed copied');
                     }}
-                    color={config.theme.primaryColour}
+                    color={Config.theme.primaryColour}
                 />
             </View>
         );
@@ -579,6 +575,16 @@ function navigateWithDisabledBack(route, routeParams) {
     });
 }
 
+function backgroundSave() {
+    console.log('Saving wallet...');
+
+    try {
+        saveToDatabase(Globals.wallet, Globals.pinCode);
+    } catch (err) {
+        console.log('Failed to background save: ' + err);
+    }
+}
+
 /**
  * Bottom tabs for our main screens
  */
@@ -592,7 +598,7 @@ const TabNavigator = createBottomTabNavigator(
     {
         initialRouteName: 'Main',
         tabBarOptions: {
-            activeTintColor: config.theme.primaryColour,
+            activeTintColor: Config.theme.primaryColour,
         },
         defaultNavigationOptions: ({ navigation }) => ({
             tabBarIcon: ({focused, horizontal, tintColor}) => {
@@ -642,7 +648,7 @@ const MenuNavigator = createStackNavigator(
         initialRouteName: 'Splash',
         defaultNavigationOptions: {
             headerStyle: {
-                backgroundColor: config.theme.primaryColour,
+                backgroundColor: Config.theme.primaryColour,
             },
             headerTintColor: 'white',
             headerTitleStyle: {
