@@ -48,7 +48,7 @@ For example, `export JAVA_HOME=/usr/lib/jvm/java-8-openjdk/jre/`
 
 You probably want to run `react-native log-android` so you can read the console output, and have an easier log of what's going on as you're developing. Errors will get printed to the device, but console.log won't, and it's a little hard to read.
 
-You probably also want to enable hot reloading. Hit "Ctrl-M" in your emulator, or type `adb shell input keyevent 82` to open the developer menu, and enable both `Live Reload` and `Hot Reloading`.
+You probably also want to enable live reloading. Hit "Ctrl-M" in your emulator, or type `adb shell input keyevent 82` to open the developer menu, and enable `Live Reload`. You probably don't want to use Hot Reloading, it's pretty buggy.
 
 ## Running natively on your Android device
 

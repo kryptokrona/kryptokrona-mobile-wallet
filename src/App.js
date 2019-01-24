@@ -7,15 +7,16 @@ import * as _ from 'lodash';
 import React from 'react';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
 import Entypo from 'react-native-vector-icons/Entypo';
-
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 import PINCode, { hasUserSetPinCode } from '@haskkor/react-native-pincode';
 
+import { List, ListItem } from 'react-native-elements';
+
 import {
-    StyleSheet, Text, View, Image, Button, Clipboard, Animated,
+    StyleSheet, Text, View, Image, Button, Clipboard, Animated, FlatList,
 } from 'react-native';
 
 import {
@@ -222,7 +223,7 @@ class SetPinScreen extends React.Component {
     
     /* Pin entered, go create a wallet */
     continue(pinCode) {
-        this.globals.pinCode = pinCode;
+        Globals.pinCode = pinCode;
         this.props.navigation.dispatch(navigateWithDisabledBack('CreateWallet'));
     }
 
@@ -258,7 +259,7 @@ class CreateWalletScreen extends React.Component {
         Globals.wallet = WalletBackend.createWallet(daemon);
 
         /* Encrypt wallet with pincode in DB */
-        saveToDatabase(wallet, Globals.pinCode);
+        saveToDatabase(Globals.wallet, Globals.pinCode);
 
         this.state = {
             daemon,
@@ -477,15 +478,40 @@ class SettingsScreen extends React.Component {
 
     render() {
         return(
-            <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center'}}>
-                <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                    <Image
-                        source={require('../assets/img/logo.png')}
-                        style={styles.logo}
-                    />
-                </View>
-                <Text>Your wallet address: {Globals.wallet.getPrimaryAddress()}</Text>
-            </View>
+            <List>
+                <FlatList
+                    data={[
+                        {
+                            title: 'Delete Wallet',
+                            description: 'Delete your wallet to create or import another',
+                            icon: {
+                                iconName: 'delete',
+                                IconType: AntDesign,
+                            }
+                        },
+                        {
+                            title: 'Reset Wallet',
+                            description: 'Discard sync data and resync from scratch',
+                            icon: {
+                                iconName: 'ios-search',
+                                IconType: Ionicons,
+                            }
+                        },
+                    ]}
+                    keyExtractor={item => item.title}
+                    renderItem={({item}) => (
+                        <ListItem
+                            title={item.title}
+                            subtitle={item.description}
+                            leftIcon={
+                                <View style={{width: 30, alignItems: 'center', justifyContent: 'center', marginRight: 10}}>
+                                    <item.icon.IconType name={item.icon.iconName} size={22} color={Config.theme.primaryColour}/>
+                                </View>
+                            }
+                        />
+                    )}
+                />
+            </List>
         );
     }
 }
