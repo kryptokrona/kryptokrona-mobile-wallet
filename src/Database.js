@@ -262,7 +262,13 @@ function realmToSubWalletsJSON(realmObj) {
 }
 
 function realmToTransactionSynchronizerJSON(realmObj) {
-    return JSON.parse(JSON.stringify(realmObj));
+    let json = {};
+
+    json.blockHashCheckpoints = realmObj.blockHashCheckpoints.map(x => x);
+    json.lastKnownBlockHashes = realmObj.lastKnownBlockHashes.map(x => x);
+    json.lastKnownBlockHeight = realmObj.lastKnownBlockHeight;
+
+    return json;
 }
 
 function realmToWalletSynchronizerJSON(realmObj) {
@@ -282,6 +288,8 @@ function realmToWalletJSON(realmObj) {
     json.walletFileFormatVersion = realmObj.walletFileFormatVersion;
     json.subWallets = realmToSubWalletsJSON(realmObj.subWallets);
     json.walletSynchronizer = realmToWalletSynchronizerJSON(realmObj.walletSynchronizer);
+
+    console.log(json);
 
     return JSON.stringify(json);
 }

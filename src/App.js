@@ -24,7 +24,7 @@ import {
 } from 'react-navigation';
 
 import { 
-    BlockchainCacheApi, ConventionalDaemon, WalletBackend
+    BlockchainCacheApi, ConventionalDaemon, WalletBackend, LogLevel
 } from 'turtlecoin-wallet-backend';
 
 import config from './Config';
@@ -36,9 +36,12 @@ import { delay, toastPopUp, TextFixedWidth } from './Utilities';
 /* Blegh - we need to access our wallet from everywhere, really */
 let wallet = undefined;
 
+/**
+ * Launch screen. See if the user has a pin, if so, request pin to unlock.
+ * Otherwise, go to the create/import screen
+ */
 class SplashScreen extends React.Component {
     static navigationOptions = {
-        title: 'SplashScreen',
         header: null,
     };
 
@@ -48,22 +51,31 @@ class SplashScreen extends React.Component {
         (async () => {
             let hasPinCode: false;
 
+            /* See if the user has set a pin code. If they have, they should
+               have a corresponding saved wallet */
             if (await hasUserSetPinCode()) {
                 hasPinCode = true;
             }
 
+            /* Above operation takes some time. Loading animation is pretty ugly
+               if it only stays for 0.5 seconds, and too slow if we don't have
+               any animation at all..
+               This way it looks nice, even if delaying interaction by a couple
+               of seconds */
             await delay(2000);
 
-            this.props.navigation.dispatch(navigateWithDisabledBack(hasPinCode ? 'RequestPin' : 'Load'));
+            /* Get the pin, or create a wallet if no pin */
+            this.props.navigation.dispatch(navigateWithDisabledBack(hasPinCode ? 'RequestPin' : 'Create'));
 
         })().catch(err => {
             console.log('Error loading from DB: ' + err);
-            this.props.navigation.dispatch(navigateWithDisabledBack('Load'));
+            this.props.navigation.dispatch(navigateWithDisabledBack('Create'));
         });
     }
 
     render() {
         return(
+            /* Fade in a spinner logo */
             <FadeView startValue={1} endValue={0} style={{flex: 1, alignItems: 'stretch', justifyContent: 'center'}}>
                 <Spinner></Spinner>
             </FadeView>
@@ -71,9 +83,11 @@ class SplashScreen extends React.Component {
     }
 }
 
+/**
+ * Prompt for the stored pin to unlock the wallet
+ */
 class RequestPinScreen extends React.Component {
     static navigationOptions = {
-        title: 'Set Pin',
         header: null,
     }
 
@@ -81,6 +95,9 @@ class RequestPinScreen extends React.Component {
         super(props);
     }
 
+    /**
+     * Called once the pin has been correctly been entered
+     */
     async continue(pinCode) {
         (async () => {
             /* Decrypt wallet data from DB */
@@ -92,27 +109,30 @@ class RequestPinScreen extends React.Component {
             if (walletData !== undefined) {
                 wallet = WalletBackend.loadWalletFromJSON(daemon, walletData);
 
+                /* TODO: Dedupe this stuff */
                 if (wallet instanceof WalletBackend) {
                     this.props.navigation.dispatch(navigateWithDisabledBack('Home'));
                 } else {
-                    this.props.navigation.dispatch(navigateWithDisabledBack('Load'));
+                    console.log('Error loading wallet: ' + wallet);
+                    this.props.navigation.dispatch(navigateWithDisabledBack('Create'));
                 }
             } else {
                 console.log('Wallet not found in DB...');
 
                 /* TODO: Clear DB, or something, this will infinite loop rn */
-                this.props.navigation.dispatch(navigateWithDisabledBack('Load'));
+                this.props.navigation.dispatch(navigateWithDisabledBack('Create'));
             }
         })().catch(err => {
             console.log('Error loading from DB: ' + err);
 
             /* TODO: Clear DB, or something, this will infinite loop rn */
-            this.props.navigation.dispatch(navigateWithDisabledBack('Load'));
+            this.props.navigation.dispatch(navigateWithDisabledBack('Create'));
         });
     }
 
     render() {
         return(
+            /* Fade in over 1.5 secs */
             <FadeView duration={1500} startValue={0.2} style={{flex: 1}}>
                 <PINCode
                     status={'enter'}
@@ -126,9 +146,11 @@ class RequestPinScreen extends React.Component {
     }
 }
 
-class LoadScreen extends React.Component {
+/**
+ * Create or import a wallet
+ */
+class CreateScreen extends React.Component {
     static navigationOptions = {
-        title: 'Load',
         header: null,
     };
 
@@ -138,6 +160,7 @@ class LoadScreen extends React.Component {
 
     render() {
         return(
+            /* Fade in over 1.5 secs */
             <FadeView duration={1500} startValue={0.2} style={{ flex: 1, justifyContent: 'flex-start'}}>
 
                 <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 50}}>
@@ -153,6 +176,7 @@ class LoadScreen extends React.Component {
                 <View style={[styles.buttonContainer, {bottom: 100, position: 'absolute', alignItems: 'stretch', justifyContent: 'center', width: '100%'}]}>
                     <Button
                         title='Create New Wallet'
+                        /* Request a pin for the new wallet */
                         onPress={() => this.props.navigation.navigate('SetPin')}
                         color={config.theme.primaryColour}
                     />
@@ -161,6 +185,7 @@ class LoadScreen extends React.Component {
                 <View style={[styles.buttonContainer, {bottom: 40, position: 'absolute', alignItems: 'stretch', justifyContent: 'center', width: '100%'}]}>
                     <Button
                         title='Recover Wallet'
+                        /* Get the import data */
                         onPress={() => this.props.navigation.navigate('ImportWallet')}
                         color={config.theme.primaryColour}
                     />
@@ -171,9 +196,11 @@ class LoadScreen extends React.Component {
     }
 }
 
+/**
+ * Enter a pin for the new wallet
+ */
 class SetPinScreen extends React.Component {
     static navigationOptions = {
-        title: 'Set Pin',
         header: null,
     }
 
@@ -181,6 +208,7 @@ class SetPinScreen extends React.Component {
         super(props);
     }
     
+    /* Pin entered, go create a wallet */
     continue(pinCode) {
         this.props.navigation.dispatch(navigateWithDisabledBack('CreateWallet', {pinCode: pinCode}));
     }
@@ -202,6 +230,9 @@ class SetPinScreen extends React.Component {
     }
 }
 
+/**
+ * Create a new wallet
+ */
 class CreateWalletScreen extends React.Component {
     static navigationOptions = {
         title: 'Create',
@@ -212,6 +243,8 @@ class CreateWalletScreen extends React.Component {
 
         const daemon = new BlockchainCacheApi('blockapi.turtlepay.io', true);
         wallet = WalletBackend.createWallet(daemon);
+
+        /* Encrypt wallet with pincode in DB */
         saveToDatabase(wallet, this.props.navigation.state.params.pinCode);
 
         this.state = {
@@ -248,6 +281,7 @@ class CreateWalletScreen extends React.Component {
                 <View style={[styles.buttonContainer, {bottom: 30, position: 'absolute', alignItems: 'stretch', justifyContent: 'center', width: '100%'}]}>
                     <Button
                         title='Continue'
+                        /* Go to the menu screen */
                         onPress={() => this.props.navigation.dispatch(navigateWithDisabledBack('Home'))}
                         color={config.theme.primaryColour}
                     />
@@ -257,6 +291,9 @@ class CreateWalletScreen extends React.Component {
     }
 }
 
+/**
+ * Import a wallet from keys/seed
+ */
 class ImportWalletScreen extends React.Component {
     static navigationOptions = {
         title: 'Import',
@@ -281,6 +318,9 @@ class ImportWalletScreen extends React.Component {
     }
 }
 
+/**
+ * Sync screen, balance
+ */
 class MainScreen extends React.Component {
     static navigationOptions = {
         title: 'Wallet',
@@ -289,26 +329,54 @@ class MainScreen extends React.Component {
     constructor(props) {
         super(props);
 
+        /* Start syncing */
+        wallet.start();
+
+        wallet.setLogLevel(LogLevel.DEBUG);
+
+        const [walletHeight, localHeight, networkHeight] = wallet.getSyncStatus();
+
         this.state = {
-            wallet: wallet
+            wallet,
+            walletHeight,
+            localHeight,
+            networkHeight,
         };
+    }
+
+    tick() {
+        const [walletHeight, localHeight, networkHeight] = wallet.getSyncStatus();
+
+        this.setState({
+            walletHeight,
+            localHeight,
+            networkHeight,
+        });
+    }
+
+    componentDidMount() {
+        this.interval = setInterval(() => this.tick(), 1000);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.interval);
     }
 
     render() {
         return(
             <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center'}}>
-                <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                    <Image
-                        source={require('../assets/img/logo.png')}
-                        style={styles.logo}
-                    />
-                </View>
-                <Text>Your wallet address: {this.state.wallet.getPrimaryAddress()}</Text>
+                <Text>
+                    Sync status: {this.state.walletHeight} / {this.state.networkHeight}{"\n"}
+                    Network sync status: {this.state.localHeight} / {this.state.networkHeight}
+                </Text>
             </View>
         );
     }
 }
 
+/**
+ * List of transactions sent + recieved
+ */
 class TransactionsScreen extends React.Component {
     static navigationOptions = {
         title: 'Transactions',
@@ -337,6 +405,9 @@ class TransactionsScreen extends React.Component {
     }
 }
 
+/**
+ * Send a transaction
+ */
 class TransferScreen extends React.Component {
     static navigationOptions = {
         title: 'Transfer',
@@ -365,6 +436,9 @@ class TransferScreen extends React.Component {
     }
 }
 
+/**
+ * Fuck w/ stuff
+ */
 class SettingsScreen extends React.Component {
     static navigationOptions = {
         title: 'Settings',
@@ -393,13 +467,12 @@ class SettingsScreen extends React.Component {
     }
 }
 
+/**
+ * Display the seed in a nice way
+ */
 class SeedComponent extends React.Component {
     constructor(props) {
         super(props);
-
-        this.state = {
-            wallet: props.wallet
-        };
     }
 
     render() {
@@ -421,6 +494,9 @@ class SeedComponent extends React.Component {
     }
 }
 
+/**
+ * Copy the seed to clipboard
+ */
 class CopyButton extends React.Component {
     constructor(props) {
         super(props);
@@ -476,6 +552,9 @@ function navigateWithDisabledBack(route, routeParams) {
     });
 }
 
+/**
+ * Bottom tabs for our main screens
+ */
 const TabNavigator = createBottomTabNavigator(
     {
         Main: MainScreen,
@@ -495,10 +574,7 @@ const TabNavigator = createBottomTabNavigator(
                 let iconName;
                 let IconComponent;
 
-                if (routeName === 'Load') {
-                    IconComponent = MaterialCommunityIcons;
-                    iconName = 'lock-open';
-                } else if (routeName === 'Main') {
+                if (routeName === 'Main') {
                     IconComponent = Entypo;
                     iconName = 'wallet';
                 } else if (routeName === 'Transactions') {
@@ -522,9 +598,12 @@ TabNavigator.navigationOptions = {
     header: null,
 }
 
+/**
+ * Forward/back navigation for before we reach the main menu with tabs
+ */
 const MenuNavigator = createStackNavigator(
     {
-        Load: LoadScreen,
+        Create: CreateScreen,
         SetPin: SetPinScreen,
         RequestPin: RequestPinScreen,
         Splash: SplashScreen,
