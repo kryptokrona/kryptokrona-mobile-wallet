@@ -647,10 +647,10 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@haskkor/react-native-pincode@^1.11.0":
-  version "1.11.0"
-  resolved "https://registry.yarnpkg.com/@haskkor/react-native-pincode/-/react-native-pincode-1.11.0.tgz#9a9b15a18a1e3ddd0f258291fe08a8d731a3d316"
-  integrity sha512-w+DIALYE64G3x6ByZqp0G4SLQRzerolcqwT0s0Q+5SLhMLxrc/8BEWX97y7xsR3SeYPAl26gOToU0kxAJJE91Q==
+"@haskkor/react-native-pincode@^1.12.2":
+  version "1.12.2"
+  resolved "https://registry.yarnpkg.com/@haskkor/react-native-pincode/-/react-native-pincode-1.12.2.tgz#f08d878d2d11644001d2b7f048a346c785731ca8"
+  integrity sha512-jzDe5TwtKilW1fYeZEYK4BA8hO9zsdDfQl5qBNKuqW07kYnIhA5PnopXo7OI5BqxUCORqWmWf1qtUMy/GpJBKw==
   dependencies:
     d3-ease "^1.0.3"
     lodash "^4.17.5"

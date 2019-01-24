@@ -9,7 +9,7 @@
     "postinstall": "./node_modules/.bin/rn-nodeify --install fs,dgram,process,path,console,crypto,buffer,stream,vm,http,https,url,zlib,net,assert,tls --hack --yarn; ./node_modules/.bin/react-native link"
   },
   "dependencies": {
-    "@haskkor/react-native-pincode": "^1.11.0",
+    "@haskkor/react-native-pincode": "^1.12.2",
     "@tradle/react-native-http": "^2.0.1",
     "assert": "^1.4.1",
     "asyncstorage-down": "^4.1.2",

@@ -92,7 +92,11 @@ class RequestPinScreen extends React.Component {
             if (walletData !== undefined) {
                 wallet = WalletBackend.loadWalletFromJSON(daemon, walletData);
 
-                this.props.navigation.dispatch(navigateWithDisabledBack('Home'));
+                if (wallet instanceof WalletBackend) {
+                    this.props.navigation.dispatch(navigateWithDisabledBack('Home'));
+                } else {
+                    this.props.navigation.dispatch(navigateWithDisabledBack('Load'));
+                }
             } else {
                 console.log('Wallet not found in DB...');
 
@@ -112,7 +116,7 @@ class RequestPinScreen extends React.Component {
             <FadeView duration={1500} startValue={0.2} style={{flex: 1}}>
                 <PINCode
                     status={'enter'}
-                    endProcessFunction={this.continue.bind(this)}
+                    finishProcess={this.continue.bind(this)}
                     subtitleEnter="to unlock your wallet"
                     passwordLength={6}
                     touchIDDisabled={true}
@@ -134,7 +138,7 @@ class LoadScreen extends React.Component {
 
     render() {
         return(
-            <View style={{ flex: 1, justifyContent: 'flex-start'}}>
+            <FadeView duration={1500} startValue={0.2} style={{ flex: 1, justifyContent: 'flex-start'}}>
 
                 <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 50}}>
                     <Image
@@ -162,7 +166,7 @@ class LoadScreen extends React.Component {
                     />
                 </View>
 
-            </View>
+            </FadeView>
         );
     }
 }
@@ -178,11 +182,6 @@ class SetPinScreen extends React.Component {
     }
     
     continue(pinCode) {
-        /* TODO */
-        if (pinCode === undefined) {
-            pinCode = '111111';
-        }
-
         this.props.navigation.dispatch(navigateWithDisabledBack('CreateWallet', {pinCode: pinCode}));
     }
 
