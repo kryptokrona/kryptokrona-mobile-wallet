@@ -9,7 +9,12 @@ import Constants from './Constants';
 
 const WalletSchema = {
     name: 'Wallet',
+    /* Designate the 'primaryKey' property as the primary key. We can use
+       this so we can update the wallet, rather than having to delete the old
+       one, and resave it */
+    primaryKey: 'primaryKey',
     properties: {
+        primaryKey: 'int',
         walletFileFormatVersion: 'int',
         subWallets: 'SubWallets',
         walletSynchronizer: 'WalletSynchronizer',
@@ -193,10 +198,12 @@ function walletToRealm(wallet, realm) {
     let json = JSON.parse(wallet.toJSONString());
 
     return realm.create('Wallet', {
+        /* Only one wallet stored in the DB, so this can be constant at 0 */
+        primaryKey: 0,
         walletFileFormatVersion: Constants.walletFileFormatVersion,
         subWallets: subWalletsToRealm(json.subWallets, realm),
         walletSynchronizer: walletSynchronizerToRealm(json.walletSynchronizer, realm),
-    });
+    }, true /* Update with new wallet based on primary key */);
 }
 
 function realmToTransactionInputJSON(realmObj) {
@@ -293,10 +300,6 @@ function realmToWalletJSON(realmObj) {
 }
 
 export function saveToDatabase(wallet, pinCode) {
-    /* Delete old wallet */
-    /* TODO: Would be a good idea to backup old file, in case saving fails */
-    Realm.deleteFile({});
-
     /* Get encryption key from pin code */
     var key = sha512.arrayBuffer(pinCode.toString());
 
@@ -310,7 +313,7 @@ export function saveToDatabase(wallet, pinCode) {
         ],
         encryptionKey: key,
     }).then(realm => {
-        /* Write the wallet to the DB */
+        /* Write the wallet to the DB, overwriting old wallet */
         realm.write(() => {
             walletToRealm(wallet, realm)
         })

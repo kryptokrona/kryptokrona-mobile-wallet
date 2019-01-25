@@ -6,17 +6,22 @@ import * as _ from 'lodash';
 
 import React from 'react';
 
+import Realm from 'realm';
+
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
-import PINCode, { hasUserSetPinCode } from '@haskkor/react-native-pincode';
+import PINCode, {
+    hasUserSetPinCode, deleteUserPinCode
+} from '@haskkor/react-native-pincode';
 
 import { List, ListItem } from 'react-native-elements';
 
 import {
     StyleSheet, Text, View, Image, Button, Clipboard, Animated, FlatList,
+    Alert,
 } from 'react-native';
 
 import {
@@ -482,21 +487,25 @@ class SettingsScreen extends React.Component {
                 <FlatList
                     data={[
                         {
-                            title: 'Delete Wallet',
-                            description: 'Delete your wallet to create or import another',
-                            icon: {
-                                iconName: 'delete',
-                                IconType: AntDesign,
-                            }
-                        },
-                        {
                             title: 'Reset Wallet',
                             description: 'Discard sync data and resync from scratch',
                             icon: {
                                 iconName: 'ios-search',
                                 IconType: Ionicons,
-                            }
+                            },
+                            /* TODO */
+                            onClick: () => {},
                         },
+                        {
+                            title: 'Delete Wallet',
+                            description: 'Delete your wallet to create or import another',
+                            icon: {
+                                iconName: 'delete',
+                                IconType: AntDesign,
+                            },
+                            onClick: () => { deleteWallet(this.props.navigation) },
+                        },
+
                     ]}
                     keyExtractor={item => item.title}
                     renderItem={({item}) => (
@@ -508,6 +517,7 @@ class SettingsScreen extends React.Component {
                                     <item.icon.IconType name={item.icon.iconName} size={22} color={Config.theme.primaryColour}/>
                                 </View>
                             }
+                            onPress={item.onClick}
                         />
                     )}
                 />
@@ -609,6 +619,35 @@ function backgroundSave() {
     } catch (err) {
         console.log('Failed to background save: ' + err);
     }
+}
+
+function deleteWallet(navigation) {
+    Alert.alert(
+        'Delete Wallet?',
+        'Are you sure you want to delete your wallet? If your seed is not backed up, your funds will be lost!',
+        [
+            {text: 'Delete', onPress: () => {
+                /* Disabling saving */
+                clearInterval(Globals.backgroundSaveTimer);
+
+                /* Delete pin code */
+                deleteUserPinCode();
+
+                /* Delete old wallet */
+                Realm.deleteFile({});
+
+                Globals.wallet.stop();
+
+                Globals.wallet = undefined;
+                Globals.pinCode = undefined;
+                Globals.backgroundSaveTimer = undefined;
+
+                /* And head back to the create screen */
+                navigation.dispatch(navigateWithDisabledBack('Create'));
+            }},
+            {text: 'Cancel', style: 'cancel'},
+        ],
+    )
 }
 
 /**
