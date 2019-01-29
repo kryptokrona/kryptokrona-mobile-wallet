@@ -5,12 +5,13 @@
 import React from 'react';
 
 import {
-    View, Image, Text
+    View, Image, Text, Clipboard, Button
 } from 'react-native';
 
 import Globals from './Globals';
 
 import { Styles } from './Styles';
+import { toastPopUp } from './Utilities';
 
 /**
  * Send a transaction
@@ -34,6 +35,14 @@ export class TransferScreen extends React.Component {
                     />
                 </View>
                 <Text>Your wallet address: {Globals.wallet.getPrimaryAddress()}</Text>
+                <Button
+                    title='Log wallet to console + Copy'
+                    onPress={() => {
+                        console.log(Globals.wallet.getPrimaryAddress());
+                        Clipboard.setString(Globals.wallet.getPrimaryAddress());
+                        toastPopUp('Address copied');
+                    }}>
+                </Button>
             </View>
         );
     }

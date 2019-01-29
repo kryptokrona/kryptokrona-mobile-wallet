@@ -7,7 +7,7 @@ import React from 'react';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 
 import {
-    Text, View, Image,
+    Text, View, Image, Platform
 } from 'react-native';
 
 import { 
@@ -19,6 +19,7 @@ import Globals from './Globals';
 
 import { ProgressBar } from './ProgressBar';
 import { saveToDatabase } from './Database';
+import { processBlockOutputs } from './NativeCode';
 
 /**
  * Sync screen, balance
@@ -26,6 +27,12 @@ import { saveToDatabase } from './Database';
 export class MainScreen extends React.Component {
     constructor(props) {
         super(props);
+
+        /* Use our native C++ func to process blocks, provided we're on android */
+        /* TODO: iOS support */
+        if (Platform.OS === 'android') {
+            Globals.wallet.setBlockOutputProcessFunc(processBlockOutputs);
+        }
 
         /* Start syncing */
         Globals.wallet.start();

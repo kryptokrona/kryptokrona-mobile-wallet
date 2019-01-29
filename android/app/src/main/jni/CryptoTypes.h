@@ -27,6 +27,11 @@ namespace Crypto
     struct PublicKey
     {
         uint8_t data[32];
+
+        bool operator==(const PublicKey &other) const
+        {
+            return std::equal(std::begin(data), std::end(data), std::begin(other.data));
+        }
     };
 
     struct SecretKey
@@ -47,5 +52,22 @@ namespace Crypto
     struct Signature
     {
         uint8_t data[64];
+    };
+
+    inline size_t hash_value(const PublicKey &publicKey)
+    {
+        return reinterpret_cast<const size_t &>(publicKey);
+    } 
+}
+
+namespace std
+{
+    /* For using in std::unordered_* containers */
+    template<> struct hash<Crypto::PublicKey>
+    {
+        size_t operator()(const Crypto::PublicKey &publicKey) const
+        {
+            return reinterpret_cast<const size_t &>(publicKey);
+        }
     };
 }
