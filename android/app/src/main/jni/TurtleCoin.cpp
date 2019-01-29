@@ -6,9 +6,6 @@ jclass      WALLET_BLOCK_INFO;
 jmethodID   WALLET_BLOCK_INFO_CONST;
 jfieldID    WALLET_BLOCK_INFO_COINBASE_TRANSACTION;
 jfieldID    WALLET_BLOCK_INFO_TRANSACTIONS;
-jfieldID    WALLET_BLOCK_INFO_BLOCK_HEIGHT;
-jfieldID    WALLET_BLOCK_INFO_BLOCK_HASH;
-jfieldID    WALLET_BLOCK_INFO_BLOCK_TIMESTAMP;
 
 jclass      RAW_TRANSACTION;
 jmethodID   RAW_TRANSACTION_CONST;
@@ -32,12 +29,10 @@ jclass      TRANSACTION_INPUT;
 jmethodID   TRANSACTION_INPUT_CONST;
 jfieldID    TRANSACTION_INPUT_KEY_IMAGE;
 jfieldID    TRANSACTION_INPUT_AMOUNT;
-jfieldID    TRANSACTION_INPUT_BLOCK_HEIGHT;
 jfieldID    TRANSACTION_INPUT_TRANSACTION_PUBLIC_KEY;
 jfieldID    TRANSACTION_INPUT_TRANSACTION_INDEX;
 jfieldID    TRANSACTION_INPUT_GLOBAL_OUTPUT_INDEX;
 jfieldID    TRANSACTION_INPUT_KEY;
-jfieldID    TRANSACTION_INPUT_SPEND_HEIGHT;
 jfieldID    TRANSACTION_INPUT_UNLOCK_TIME;
 
 jclass      SPEND_KEY;
@@ -67,23 +62,18 @@ extern "C" jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     RAW_TRANSACTION_UNLOCK_TIME = env->GetFieldID(RAW_TRANSACTION, "unlockTime", "J");
 
     WALLET_BLOCK_INFO = (jclass) env->NewGlobalRef(env->FindClass("com/tonchan/WalletBlockInfo"));
-    WALLET_BLOCK_INFO_CONST = env->GetMethodID(WALLET_BLOCK_INFO, "<init>", "(Lcom/tonchan/RawTransaction;[Lcom/tonchan/RawTransaction;JLjava/lang/String;J)V");
+    WALLET_BLOCK_INFO_CONST = env->GetMethodID(WALLET_BLOCK_INFO, "<init>", "(Lcom/tonchan/RawTransaction;[Lcom/tonchan/RawTransaction;)V");
     WALLET_BLOCK_INFO_COINBASE_TRANSACTION = env->GetFieldID(WALLET_BLOCK_INFO, "coinbaseTransaction", "Lcom/tonchan/RawTransaction;");
     WALLET_BLOCK_INFO_TRANSACTIONS = env->GetFieldID(WALLET_BLOCK_INFO, "transactions", "[Lcom/tonchan/RawTransaction;");
-    WALLET_BLOCK_INFO_BLOCK_HEIGHT = env->GetFieldID(WALLET_BLOCK_INFO, "blockHeight", "J");
-    WALLET_BLOCK_INFO_BLOCK_HASH = env->GetFieldID(WALLET_BLOCK_INFO, "blockHash", "Ljava/lang/String;");
-    WALLET_BLOCK_INFO_BLOCK_TIMESTAMP = env->GetFieldID(WALLET_BLOCK_INFO, "blockTimestamp", "J");
 
     TRANSACTION_INPUT = (jclass) env->NewGlobalRef(env->FindClass("com/tonchan/TransactionInput"));
-    TRANSACTION_INPUT_CONST = env->GetMethodID(TRANSACTION_INPUT, "<init>", "(Ljava/lang/String;JJLjava/lang/String;JJLjava/lang/String;JJ)V");
+    TRANSACTION_INPUT_CONST = env->GetMethodID(TRANSACTION_INPUT, "<init>", "(Ljava/lang/String;JLjava/lang/String;JJLjava/lang/String;J)V");
     TRANSACTION_INPUT_KEY_IMAGE = env->GetFieldID(TRANSACTION_INPUT, "keyImage", "Ljava/lang/String;");
     TRANSACTION_INPUT_AMOUNT = env->GetFieldID(TRANSACTION_INPUT, "amount", "J");
-    TRANSACTION_INPUT_BLOCK_HEIGHT = env->GetFieldID(TRANSACTION_INPUT, "blockHeight", "J");
     TRANSACTION_INPUT_TRANSACTION_PUBLIC_KEY = env->GetFieldID(TRANSACTION_INPUT, "transactionPublicKey", "Ljava/lang/String;");
     TRANSACTION_INPUT_TRANSACTION_INDEX = env->GetFieldID(TRANSACTION_INPUT, "transactionIndex", "J");
     TRANSACTION_INPUT_GLOBAL_OUTPUT_INDEX = env->GetFieldID(TRANSACTION_INPUT, "globalOutputIndex", "J");
     TRANSACTION_INPUT_KEY = env->GetFieldID(TRANSACTION_INPUT, "key", "Ljava/lang/String;");
-    TRANSACTION_INPUT_SPEND_HEIGHT = env->GetFieldID(TRANSACTION_INPUT, "spendHeight", "J");
     TRANSACTION_INPUT_UNLOCK_TIME = env->GetFieldID(TRANSACTION_INPUT, "unlockTime", "J");
 
     SPEND_KEY = (jclass) env->NewGlobalRef(env->FindClass("com/tonchan/SpendKey"));
@@ -134,14 +124,6 @@ WalletBlockInfo makeNativeWalletBlockInfo(JNIEnv *env, jobject jWalletBlockInfo)
         jWalletBlockInfo,
         WALLET_BLOCK_INFO_TRANSACTIONS
     ));
-
-    result.blockHeight = env->GetLongField(jWalletBlockInfo, WALLET_BLOCK_INFO_BLOCK_HEIGHT);
-
-    result.blockHash = makeNativeString(env,
-        (jstring)env->GetObjectField(jWalletBlockInfo, WALLET_BLOCK_INFO_BLOCK_HASH)
-    );
-
-    result.blockTimestamp = env->GetLongField(jWalletBlockInfo, WALLET_BLOCK_INFO_BLOCK_TIMESTAMP);
 
     return result;
 }
@@ -272,9 +254,9 @@ jobject makeJNIInput(JNIEnv *env, const TransactionInput &input)
 {
     return env->NewObject(
         TRANSACTION_INPUT, TRANSACTION_INPUT_CONST, makeJNI32ByteKey(env, input.keyImage),
-        input.amount, input.blockHeight, makeJNI32ByteKey(env, input.transactionPublicKey),
+        input.amount, makeJNI32ByteKey(env, input.transactionPublicKey),
         input.transactionIndex, input.globalOutputIndex, makeJNI32ByteKey(env, input.key),
-        input.spendHeight, input.unlockTime
+        input.unlockTime
     );
 }
 
@@ -339,8 +321,7 @@ std::vector<std::tuple<Crypto::PublicKey, TransactionInput>> processBlockOutputs
     if (processCoinbaseTransactions)
     {
         processTransactionOutputs(
-            block.coinbaseTransaction, block.blockHeight, privateViewKey,
-            spendKeys, isViewWallet, inputs
+            block.coinbaseTransaction, privateViewKey, spendKeys, isViewWallet, inputs
         );
     }
 
@@ -348,8 +329,7 @@ std::vector<std::tuple<Crypto::PublicKey, TransactionInput>> processBlockOutputs
     for (const auto &tx : block.transactions)
     {
         processTransactionOutputs(
-            tx, block.blockHeight, privateViewKey, spendKeys, isViewWallet,
-            inputs
+            tx, privateViewKey, spendKeys, isViewWallet, inputs
         );
     }
 
@@ -358,7 +338,6 @@ std::vector<std::tuple<Crypto::PublicKey, TransactionInput>> processBlockOutputs
 
 void processTransactionOutputs(
     const RawTransaction &tx,
-    const uint64_t blockHeight,
     const Crypto::SecretKey &privateViewKey,
     const std::unordered_map<Crypto::PublicKey, Crypto::SecretKey> &spendKeys,
     const bool isViewWallet,
@@ -393,12 +372,10 @@ void processTransactionOutputs(
             TransactionInput input;
 
             input.amount = output.amount;
-            input.blockHeight = blockHeight;
             input.transactionPublicKey = tx.transactionPublicKey;
             input.transactionIndex = outputIndex;
             input.globalOutputIndex = output.globalIndex;
             input.key = output.key;
-            input.spendHeight = 0;
             input.unlockTime = tx.unlockTime;
             input.parentTransactionHash = tx.hash;
 

@@ -39,7 +39,6 @@ std::vector<std::tuple<Crypto::PublicKey, TransactionInput>> processBlockOutputs
 
 void processTransactionOutputs(
     const RawTransaction &tx,
-    const uint64_t blockHeight,
     const Crypto::SecretKey &privateViewKey,
     const std::unordered_map<Crypto::PublicKey, Crypto::SecretKey> &spendKeys,
     const bool isViewWallet,

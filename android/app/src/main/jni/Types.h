@@ -45,15 +45,6 @@ struct WalletBlockInfo
 
     /* The transactions in the block */
     std::vector<RawTransaction> transactions;
-
-    /* The block height (duh!) */
-    uint64_t blockHeight;
-
-    /* The hash of the block */
-    std::string blockHash;
-
-    /* The timestamp of the block */
-    uint64_t blockTimestamp;
 };
 
 struct TransactionInput
@@ -63,11 +54,6 @@ struct TransactionInput
 
     /* The value of this key image */
     uint64_t amount;
-
-    /* The block height this key images transaction was included in
-       (Need this for removing key images that were received on a forked
-       chain) */
-    uint64_t blockHeight;
 
     /* The transaction public key that was included in the tx_extra of the
        transaction */
@@ -82,11 +68,6 @@ struct TransactionInput
     /* The transaction key we took from the key outputs */
     Crypto::PublicKey key;
     
-    /* If spent, what height did we spend it at. Used to remove spent
-       transaction inputs once they are sure to not be removed from a
-       forked chain. */
-    uint64_t spendHeight;
-
     /* When does this input unlock for spending. Default is instantly
        unlocked, or blockHeight + CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW
        for a coinbase/miner transaction. Users can specify a custom

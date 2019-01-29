@@ -5,6 +5,7 @@
 'use strict';
 
 import { NativeModules } from 'react-native';
+import { TransactionInput } from 'turtlecoin-wallet-backend';
 
 export async function processBlockOutputs(
     block,
@@ -22,20 +23,29 @@ export async function processBlockOutputs(
 
     let inputs = await NativeModules.TurtleCoin.processBlockOutputs(
         block, privateViewKey, javaSpendKeys, isViewWallet, 
-        processCoinbaseTransactions
+        processCoinbaseTransactions,
     );
 
-    console.log(JSON.stringify(inputs, null, 4));
+    let jsInputs = inputs.map((data) => {
+        const spendHeight = 0;
+        const globalIndex = data.input.globalOutputIndex === -1 
+                          ? undefined : data.input.globalOutputIndex;
 
-    let newInputs = inputs.map((input) => {
-        if (input.input.globalOutputIndex === -1) {
-            input.input.globalOutputIndex = undefined;
-        }
+        const input = new TransactionInput(
+            data.input.keyImage,
+            data.input.amount,
+            block.blockHeight,
+            data.input.transactionPublicKey,
+            data.input.transactionIndex,
+            globalIndex,
+            data.input.key,
+            spendHeight,
+            data.input.unlockTime,
+            data.input.parentTransactionHash,
+        );
 
-        return [input.publicSpendKey, input.input];
+        return [data.publicSpendKey, input];
     });
 
-    console.log(JSON.stringify(newInputs, null, 4));
-
-    return newInputs;
+    return jsInputs;
 }

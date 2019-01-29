@@ -50,6 +50,30 @@ You probably want to run `react-native log-android` so you can read the console 
 
 You probably also want to enable live reloading. Hit "Ctrl-M" in your emulator, or type `adb shell input keyevent 82` to open the developer menu, and enable `Live Reload`. You probably don't want to use Hot Reloading, it's pretty buggy.
 
+If you need to update the native code, you may find this article helpful: https://thebhwgroup.com/blog/react-native-jni
+
+To get the updated class signatures, rebuild the Java code (i.e., run `react-native run-android`, then run 
+
+```
+javap -classpath android/app/build/intermediates/classes/debug/ -s com.tonchan.ClassName
+```
+
+Where `ClassName` is the class you want to query. For example, to get the signatures for `WalletBlockInfo`:
+
+```
+javap -classpath android/app/build/intermediates/classes/debug/ -s com.tonchan.WalletBlockInfo
+```
+
+Then the constructor signature is this section:
+
+```
+public com.tonchan.WalletBlockInfo(com.tonchan.RawTransaction, com.tonchan.RawTransaction[]);
+    Signature: (Lcom/tonchan/RawTransaction;[Lcom/tonchan/RawTransaction;)V
+```
+
+Specifically, `(Lcom/tonchan/RawTransaction;[Lcom/tonchan/RawTransaction;)V`
+
+
 ## Running natively on your Android device
 
 Follow [this](https://facebook.github.io/react-native/docs/running-on-device.html) guide.
