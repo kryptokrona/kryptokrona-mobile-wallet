@@ -137,7 +137,7 @@ class SyncComponent extends React.Component {
     }
 
     tick() {
-        const [walletHeight, localHeight, networkHeight] = Globals.wallet.getSyncStatus();
+        let [walletHeight, localHeight, networkHeight] = Globals.wallet.getSyncStatus();
 
         /* Since we update the network height in intervals, and we update wallet
            height by syncing, occasionaly wallet height is > network height.
