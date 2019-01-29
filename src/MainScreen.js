@@ -139,14 +139,21 @@ class SyncComponent extends React.Component {
     tick() {
         const [walletHeight, localHeight, networkHeight] = Globals.wallet.getSyncStatus();
 
+        /* Since we update the network height in intervals, and we update wallet
+           height by syncing, occasionaly wallet height is > network height.
+           Fix that here. */
+        if (walletHeight > networkHeight && networkHeight !== 0 && networkHeight + 10 > walletHeight) {
+            networkHeight = walletHeight;
+        }
+
         /* Don't divide by zero */
         let progress = networkHeight === 0 ? 0 : walletHeight / networkHeight;
 
         let percent = 100 * progress;
 
         /* Prevent bar looking full when it's not */
-        if (progress > 0.99 && progress < 1) {
-            progress = 0.99;
+        if (progress > 0.97 && progress < 1) {
+            progress = 0.97;
         }
 
         /* Prevent 100% when just under */
