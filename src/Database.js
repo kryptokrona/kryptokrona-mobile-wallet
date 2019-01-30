@@ -138,7 +138,7 @@ function transfersToRealm(json, realm) {
 
 function transactionToRealm(json, realm) {
     return realm.create('Transaction', {
-        transfers: json.transfers.map(transfersToRealm),
+        transfers: json.transfers.map((x) => transfersToRealm(x, realm)),
         hash: json.hash,
         fee: json.fee,
         blockHeight: json.blockHeight,

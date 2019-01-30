@@ -67,7 +67,7 @@ extern "C" jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     WALLET_BLOCK_INFO_TRANSACTIONS = env->GetFieldID(WALLET_BLOCK_INFO, "transactions", "[Lcom/tonchan/RawTransaction;");
 
     TRANSACTION_INPUT = (jclass) env->NewGlobalRef(env->FindClass("com/tonchan/TransactionInput"));
-    TRANSACTION_INPUT_CONST = env->GetMethodID(TRANSACTION_INPUT, "<init>", "(Ljava/lang/String;JLjava/lang/String;JJLjava/lang/String;J)V");
+    TRANSACTION_INPUT_CONST = env->GetMethodID(TRANSACTION_INPUT, "<init>", "(Ljava/lang/String;JLjava/lang/String;JJLjava/lang/String;JLjava/lang/String;)V");
     TRANSACTION_INPUT_KEY_IMAGE = env->GetFieldID(TRANSACTION_INPUT, "keyImage", "Ljava/lang/String;");
     TRANSACTION_INPUT_AMOUNT = env->GetFieldID(TRANSACTION_INPUT, "amount", "J");
     TRANSACTION_INPUT_TRANSACTION_PUBLIC_KEY = env->GetFieldID(TRANSACTION_INPUT, "transactionPublicKey", "Ljava/lang/String;");
@@ -256,7 +256,7 @@ jobject makeJNIInput(JNIEnv *env, const TransactionInput &input)
         TRANSACTION_INPUT, TRANSACTION_INPUT_CONST, makeJNI32ByteKey(env, input.keyImage),
         input.amount, makeJNI32ByteKey(env, input.transactionPublicKey),
         input.transactionIndex, input.globalOutputIndex, makeJNI32ByteKey(env, input.key),
-        input.unlockTime
+        input.unlockTime, env->NewStringUTF(input.parentTransactionHash.c_str())
     );
 }
 

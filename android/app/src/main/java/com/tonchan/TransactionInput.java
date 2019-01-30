@@ -12,6 +12,7 @@ public class TransactionInput {
     long globalOutputIndex;
     String key;
     long unlockTime;
+    String parentTransactionHash;
 
     public TransactionInput() {}
 
@@ -22,7 +23,8 @@ public class TransactionInput {
         long transactionIndex,
         long globalOutputIndex,
         String key,
-        long unlockTime) {
+        long unlockTime,
+        String parentTransactionHash) {
         this.keyImage = keyImage;
         this.amount = amount;
         this.transactionPublicKey = transactionPublicKey;
@@ -30,6 +32,7 @@ public class TransactionInput {
         this.globalOutputIndex = globalOutputIndex;
         this.key = key;
         this.unlockTime = unlockTime;
+        this.parentTransactionHash = parentTransactionHash;
     }
 
     public WritableMap toWriteableMap() {
@@ -42,6 +45,7 @@ public class TransactionInput {
         map.putDouble("globalOutputIndex", (double)globalOutputIndex);
         map.putString("key", key);
         map.putDouble("unlockTime", (double)unlockTime);
+        map.putString("parentTransactionHash", parentTransactionHash);
 
         return map;
     }
