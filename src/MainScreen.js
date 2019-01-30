@@ -25,6 +25,10 @@ import { processBlockOutputs } from './NativeCode';
  * Sync screen, balance
  */
 export class MainScreen extends React.Component {
+    static navigationOptions = {
+        title: 'Home',
+    };
+
     constructor(props) {
         super(props);
 
@@ -67,6 +71,7 @@ class BalanceComponent extends React.Component {
         this.state = {
             unlockedBalance,
             lockedBalance,
+            expandedBalance: false,
         };
     }
 
@@ -88,30 +93,62 @@ class BalanceComponent extends React.Component {
     }
 
     render() {
+        const compactBalance = <Text style={{ color: this.state.lockedBalance === 0 ? Config.theme.primaryColour : 'orange', fontSize: 35}}
+                                     onPress={() => this.setState({
+                                         expandedBalance: !this.state.expandedBalance
+                                     })}>
+                                     {prettyPrintAmount(this.state.unlockedBalance + this.state.lockedBalance)}
+                               </Text>;
+
+        const lockedBalance = <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                                    <Text style={{ color: 'orange', fontSize: 25, paddingLeft: 5}}
+                                          onPress={() => this.setState({
+                                             expandedBalance: !this.state.expandedBalance
+                                          })}>
+                                        {prettyPrintAmount(this.state.lockedBalance)}
+                                    </Text>
+                                    <FontAwesome name={'lock'} size={22} color={'orange'} style={{marginLeft: 5}}/>
+                              </View>;
+
+        const unlockedBalance = <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                                    <FontAwesome name={'unlock'} size={22} color={Config.theme.primaryColour} style={{marginRight: 7}}/>
+                                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, paddingRight: 5}}
+                                          onPress={() => this.setState({
+                                             expandedBalance: !this.state.expandedBalance
+                                          })}>
+                                        {prettyPrintAmount(this.state.unlockedBalance)}
+                                    </Text>
+                                </View>;
+
+        const expandedBalance = <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+                                    {unlockedBalance}
+                                    <Text style={{ color: 'lightgray', fontSize: 30 }}
+                                          onPress={() => this.setState({
+                                            expandedBalance: !this.state.expandedBalance
+                                          })}>
+                                        |
+                                    </Text>
+                                    {lockedBalance}
+                                </View>;
+
         return(
-            <View style={{ height: '20%', backgroundColor: Config.theme.primaryColour, flexDirection: 'row', justifyContent: 'space-between'}}>
-                <View style={{flex: 1, padding: 20, justifyContent: 'center', alignItems: 'flex-start'}}>
-
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 10}}>
-                        <FontAwesome name={'lock'} size={22} color={'white'} style={{marginRight: 10}}/>
-                        <Text style={{ color: 'white', fontSize: 25}}>
-                            {prettyPrintAmount(this.state.lockedBalance)}
+            <View style={{ 
+                    height: '20%', 
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    margin: 10,
+                    borderRadius: 10
+                }}>
+                <View style={{flex: 1, padding: 20, justifyContent: 'center', alignItems: 'center'}}>
+                        <Text style={{ color: 'lightgray', fontSize: 15 }}>
+                            TOTAL BALANCE
                         </Text>
-                    </View>
 
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-                        <FontAwesome name={'unlock'} size={22} color={'white'} style={{marginRight: 10}}/>
-                        <Text style={{ color: 'white', fontSize: 25}}>
-                            {prettyPrintAmount(this.state.unlockedBalance)}
+                        {this.state.expandedBalance ? expandedBalance : compactBalance}
+
+                        <Text style={{ color: 'gray', fontSize: 20 }}>
+                            ${this.state.unlockedBalance + this.state.lockedBalance}
                         </Text>
-                    </View>
-                </View>
-
-                <View style={{ justifyContent: 'center'}}>
-                    <Image
-                        source={require('../assets/img/icon-white.png')}
-                        style={{resizeMode: 'contain', height: 100, width: 100}}
-                    />
                 </View>
             </View>
         );
