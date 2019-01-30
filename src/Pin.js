@@ -88,7 +88,7 @@ export class RequestPinScreen extends React.Component {
 
             /* Load from JSON if we got it from the DB */
             if (walletData !== undefined) {
-                let wallet = WalletBackend.loadWalletFromJSON(daemon, walletData);
+                let wallet = WalletBackend.loadWalletFromJSON(daemon, walletData, Config);
 
                 /* TODO: Dedupe this stuff */
                 if (wallet instanceof WalletBackend) {
