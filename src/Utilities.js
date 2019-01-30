@@ -22,7 +22,7 @@ export function toastPopUp(message) {
     ToastAndroid.show(message, ToastAndroid.SHORT);
 }
 
-export function TextFixedWidth ({ children }) {
+export function TextFixedWidth({ children }) {
     const fontFamily = Platform.OS === 'ios' ? 'Courier' : 'monospace'
 
     return (
@@ -43,4 +43,22 @@ export function navigateWithDisabledBack(route, routeParams) {
             }),
         ]
     });
+}
+
+export function prettyPrintUnixTimestamp(timestamp) {
+    return prettyPrintDate(new Date(timestamp * 1000));
+}
+
+export function prettyPrintDate(date) {
+    const today = new Date();
+
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    const dateAndMonth = date.getDate().toString() + ' ' + months[date.getMonth()];
+
+    if (today.getFullYear() === date.getFullYear()) {
+        return dateAndMonth;
+    }
+
+    return dateAndMonth + ' ' + date.getFullYear();
 }
