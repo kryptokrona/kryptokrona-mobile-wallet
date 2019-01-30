@@ -107,7 +107,7 @@ class BalanceComponent extends React.Component {
                                           })}>
                                         {prettyPrintAmount(this.state.lockedBalance)}
                                     </Text>
-                                    <FontAwesome name={'lock'} size={22} color={'orange'} style={{marginLeft: 5}}/>
+                                    <FontAwesome name={'lock'} size={22} color={'orange'} style={{marginLeft: 7}}/>
                               </View>;
 
         const unlockedBalance = <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
