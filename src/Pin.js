@@ -68,6 +68,11 @@ export class RequestPinScreen extends React.Component {
         super(props);
     }
 
+    async fail(msg) {
+        console.log(msg);
+        this.props.navigation.dispatch(navigateWithDisabledBack('WalletOption'));
+    }
+
     /**
      * Called once the pin has been correctly been entered
      */
@@ -78,7 +83,7 @@ export class RequestPinScreen extends React.Component {
             /* Wallet already loaded, probably from previous launch, then
                sending app to background. */
             if (Globals.wallet !== undefined) {
-                this.props.navigation.dispatch(navigateWithDisabledBack('Home'));
+                this.props.navigation.navigate('Home');
             }
 
             /* Decrypt wallet data from DB */
@@ -86,29 +91,22 @@ export class RequestPinScreen extends React.Component {
 
             const daemon = new BlockchainCacheApi('blockapi.turtlepay.io', true);
 
-            /* Load from JSON if we got it from the DB */
-            if (walletData !== undefined) {
-                let wallet = WalletBackend.loadWalletFromJSON(daemon, walletData, Config);
+            if (walletData === undefined) {
+                fail('Wallet not found in DB...');
+                return;
+            }
 
-                /* TODO: Dedupe this stuff */
-                if (wallet instanceof WalletBackend) {
-                    Globals.wallet = wallet;
-                    this.props.navigation.dispatch(navigateWithDisabledBack('Home'));
-                } else {
-                    console.log('Error loading wallet: ' + wallet);
-                    this.props.navigation.dispatch(navigateWithDisabledBack('Create'));
-                }
+            let wallet = WalletBackend.loadWalletFromJSON(daemon, walletData, Config);
+
+            if (wallet instanceof WalletBackend) {
+                Globals.wallet = wallet;
+                this.props.navigation.navigate('Home');
             } else {
-                console.log('Wallet not found in DB...');
-
-                /* TODO: Clear DB, or something, this will infinite loop rn */
-                this.props.navigation.dispatch(navigateWithDisabledBack('Create'));
+                fail('Error loading wallet: ' + wallet);
+                return;
             }
         })().catch(err => {
-            console.log('Error loading from DB: ' + err);
-
-            /* TODO: Clear DB, or something, this will infinite loop rn */
-            this.props.navigation.dispatch(navigateWithDisabledBack('Create'));
+            fail('Error loading from DB: ' + err);
         });
     }
 

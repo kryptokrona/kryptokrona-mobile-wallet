@@ -10,6 +10,7 @@ import React from 'react';
 
 import {
     createStackNavigator, createAppContainer, createBottomTabNavigator,
+    createSwitchNavigator,
 } from 'react-navigation';
 
 import Config from './Config';
@@ -23,9 +24,10 @@ import { TransferScreen } from './TransferScreen';
 import { SettingsScreen } from './SettingsScreen';
 import { ImportWalletScreen } from './ImportScreen';
 import { SetPinScreen, RequestPinScreen } from './Pin.js';
-import { CreateScreen, CreateWalletScreen } from './CreateScreen';
+import { WalletOptionScreen, CreateWalletScreen } from './CreateScreen';
 import { TransactionsScreen, TransactionDetailsScreen } from './TransactionsScreen';
 
+/* Transactions screen and more info on transactions */
 const TransactionNavigator = createStackNavigator(
     {
         Transactions: TransactionsScreen,
@@ -45,10 +47,8 @@ const TransactionNavigator = createStackNavigator(
     }
 );
 
-/**
- * Bottom tabs for our main screens
- */
-const TabNavigator = createBottomTabNavigator(
+/* Main screen for a logged in wallet */
+const HomeNavigator = createBottomTabNavigator(
     {
         Main: MainScreen,
         Transfer: TransferScreen,
@@ -87,22 +87,26 @@ const TabNavigator = createBottomTabNavigator(
     }
 );
 
-TabNavigator.navigationOptions = {
-    header: null,
-}
-
-/**
- * Forward/back navigation for before we reach the main menu with tabs
- */
-const MenuNavigator = createStackNavigator(
+/* Login or create/import a wallet */
+const LoginNavigator = createStackNavigator(
     {
-        Create: CreateScreen,
-        SetPin: SetPinScreen,
-        RequestPin: RequestPinScreen,
-        Splash: SplashScreen,
+        /* Create a wallet */
         CreateWallet: CreateWalletScreen,
+
+        /* Set a pin for the created wallet */
+        SetPin: SetPinScreen,
+
+        /* Request the pin for an existing wallet */
+        RequestPin: RequestPinScreen,
+
+        /* Launcing screen */
+        Splash: SplashScreen,
+
+        /* Create a wallet, import a wallet */
+        WalletOption: WalletOptionScreen,
+
+        /* Import a wallet */
         ImportWallet: ImportWalletScreen,
-        Home: TabNavigator,
     },
     {
         initialRouteName: 'Splash',
@@ -118,10 +122,22 @@ const MenuNavigator = createStackNavigator(
     }
 );
 
-const MenuContainer = createAppContainer(MenuNavigator);
+const AppContainer = createAppContainer(createSwitchNavigator(
+    {
+        Login: {
+            screen: LoginNavigator,
+        },
+        Home: {
+           screen: HomeNavigator,
+        },
+    },
+    {
+        initialRouteName: 'Login',
+    }
+));
 
 export default class App extends React.Component {
     render() {
-        return <MenuContainer/>;
+        return <AppContainer/>;
     }
 }

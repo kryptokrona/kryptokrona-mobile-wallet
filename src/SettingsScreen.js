@@ -82,8 +82,6 @@ export class SettingsScreen extends React.Component {
  *
  */
 function deleteWallet(navigation) {
-    console.log(navigation);
-
     Alert.alert(
         'Delete Wallet?',
         'Are you sure you want to delete your wallet? If your seed is not backed up, your funds will be lost!',
@@ -104,8 +102,8 @@ function deleteWallet(navigation) {
                 Globals.pinCode = undefined;
                 Globals.backgroundSaveTimer = undefined;
 
-                /* And head back to the create screen */
-                navigation.dispatch(navigateWithDisabledBack('Create'));
+                /* And head back to the wallet choose screen */
+                navigation.navigate('Login');
             }},
             {text: 'Cancel', style: 'cancel'},
         ],

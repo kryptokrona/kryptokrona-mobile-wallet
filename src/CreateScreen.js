@@ -25,7 +25,7 @@ import { Styles } from './Styles';
 /**
  * Create or import a wallet
  */
-export class CreateScreen extends React.Component {
+export class WalletOptionScreen extends React.Component {
     static navigationOptions = {
         header: null,
     };
@@ -124,7 +124,7 @@ export class CreateWalletScreen extends React.Component {
                     <Button
                         title='Continue'
                         /* Go to the menu screen */
-                        onPress={() => this.props.navigation.dispatch(navigateWithDisabledBack('Home'))}
+                        onPress={() => this.props.navigation.navigate('Home')}
                         color={Config.theme.primaryColour}
                     />
                 </View>

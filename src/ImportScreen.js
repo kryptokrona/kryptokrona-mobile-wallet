@@ -27,12 +27,6 @@ export class ImportWalletScreen extends React.Component {
     render() {
         return(
             <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center'}}>
-                <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                    <Image
-                        source={require('../assets/img/logo.png')}
-                        style={Styles.logo}
-                    />
-                </View>
                 <Text>Import a wallet!</Text>
             </View>
         );

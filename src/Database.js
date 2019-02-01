@@ -238,8 +238,6 @@ function realmToTransfersJSON(realmObj) {
 function realmToTransactionJSON(realmObj) {
     let json = {};
 
-    console.log(realmObj.isCoinbaseTransaction);
-
     json.transfers = realmObj.transfers.map(realmToTransfersJSON);
     json.hash = realmObj.hash;
     json.fee = realmObj.fee;

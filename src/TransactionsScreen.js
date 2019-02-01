@@ -112,18 +112,31 @@ export class TransactionsScreen extends React.Component {
     constructor(props) {
         super(props);
 
+        const [walletHeight, localHeight, networkHeight] = Globals.wallet.getSyncStatus();
+
         /* Don't display fusions */
         const transactions = Globals.wallet.getTransactions().filter((x) => x.totalAmount() !== 0);
 
         this.state = {
             numTransactions: transactions.length,
             transactions,
+            walletHeight,
+            networkHeight,
         };
     }
 
     tick() {
         /* Small optimization to prevent us fetching a ton of data constantly */
         const numTransactions = Globals.wallet.getNumTransactions();
+
+        if (numTransactions === 0) {
+            const [walletHeight, localHeight, networkHeight] = Globals.wallet.getSyncStatus();
+
+            this.setState({
+                walletHeight,
+                networkHeight,
+            });
+        }
 
         if (numTransactions !== this.state.numTransactions) {
             /* Don't display fusions */
@@ -164,11 +177,9 @@ export class TransactionsScreen extends React.Component {
 
     render() {
 
-        const [walletHeight, localHeight, networkHeight] = Globals.wallet.getSyncStatus();
-
-        const syncedMsg = walletHeight + 10 >= networkHeight ? 
+        const syncedMsg = this.state.walletHeight + 10 >= this.state.networkHeight ? 
             '' 
-          : "Your wallet isn't fully synced yet. If you're expecting some transactions, please wait.";
+          : "\nYour wallet isn't fully synced. If you're expecting some transactions, please wait.";
 
         const noTransactions = 
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
