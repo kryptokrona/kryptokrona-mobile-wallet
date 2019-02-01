@@ -5758,6 +5758,11 @@ react-native-tcp@^3.3.0:
     process "^0.11.9"
     util "^0.10.3"
 
+react-native-text-ticker@^0.13.0:
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/react-native-text-ticker/-/react-native-text-ticker-0.13.0.tgz#56f38187ac88689481672939367a7badcb9fe4e3"
+  integrity sha512-bR/nDhiHmXBHjzbeo0I14bF1Xd+YU+cJA21kBRMZvR9go44aZGRlj2cr2Mweu1GH0E0OVeofTRrhrlxPlue3ww==
+
 react-native-touch-id@^4.1.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/react-native-touch-id/-/react-native-touch-id-4.3.0.tgz#c25abd1d03d1ce5075f73ca87b18b47e7d60fa71"

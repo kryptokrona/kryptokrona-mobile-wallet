@@ -6,6 +6,8 @@ import React from 'react';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
+import TextTicker from 'react-native-text-ticker';
+
 import { List, ListItem } from 'react-native-elements';
 import { View, Text, FlatList } from 'react-native';
 import { prettyPrintAmount } from 'turtlecoin-wallet-backend';
@@ -32,9 +34,13 @@ class ItemDescription extends React.Component {
                     {this.props.title}
                 </Text>
 
-                <Text style={{ color: Config.theme.primaryColour, fontSize: this.state.fontSize, marginBottom: 10 }}>
+                <TextTicker
+                    style={{ color: Config.theme.primaryColour, fontSize: this.state.fontSize, marginBottom: 10 }}
+                    marqueeDelay={1000}
+                    duration={220 * this.props.item.length}
+                >
                     {this.props.item}
-                </Text>
+                </TextTicker>
             </View>
         )
     }
@@ -80,17 +86,15 @@ export class TransactionDetailsScreen extends React.Component {
 
                 {this.state.complete && <ItemDescription
                     title='Block Height'
-                    item={this.state.transaction.blockHeight}/>}
-
+                    item={this.state.transaction.blockHeight.toString()}/>}
+                
                 <ItemDescription
                     title='Hash'
-                    item={this.state.transaction.hash}
-                    fontSize={10}/>
+                    item={this.state.transaction.hash}/>
 
                 {this.state.transaction.paymentID !== '' && <ItemDescription
                     title='Payment ID'
-                    item={this.state.transaction.paymentID}
-                    fontSize={10}/>}
+                    item={this.state.transaction.paymentID}/>}
             </View>
         );
     }
