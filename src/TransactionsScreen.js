@@ -14,7 +14,87 @@ import Config from './Config';
 import Globals from './Globals';
 
 import { Styles } from './Styles';
-import { prettyPrintUnixTimestamp, prettyPrintDate } from './Utilities';
+import { prettyPrintUnixTimestamp, prettyPrintDate, coinsToFiat } from './Utilities';
+
+class ItemDescription extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            fontSize: this.props.fontSize || 20,
+        }
+    }
+
+    render() {
+        return(
+            <View>
+                <Text style={{ color: 'gray', fontSize: 15, marginTop: 10 }}>
+                    {this.props.title}
+                </Text>
+
+                <Text style={{ color: Config.theme.primaryColour, fontSize: this.state.fontSize, marginBottom: 10 }}>
+                    {this.props.item}
+                </Text>
+            </View>
+        )
+    }
+}
+
+export class TransactionDetailsScreen extends React.Component {
+    static navigationOptions = {
+        title: 'Transaction Details',
+    };
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            transaction: props.navigation.state.params.transaction,
+            amount: props.navigation.state.params.transaction.totalAmount(),
+            complete: props.navigation.state.params.transaction.timestamp !== 0,
+        }
+    }
+
+    render() {
+        return(
+            <View style={{ flex: 1, alignItems: 'flex-start', justifyContent: 'flex-start', marginLeft: 15, marginTop: 60 }}>
+                <ItemDescription
+                    title={this.state.amount > 0 ? 'Received' : 'Sent'}
+                    item={this.state.complete ? prettyPrintDate(new Date()) : prettyPrintUnixTimestamp(this.state.transaction.timestamp)}/>
+
+                <ItemDescription
+                    title='Amount'
+                    item={prettyPrintAmount(this.state.amount)}/>
+
+                {this.state.amount < 0 && <ItemDescription
+                    title='Fee'
+                    item={prettyPrintAmount(this.state.transaction.fee)}/>}
+
+                <ItemDescription
+                    title='Value'
+                    item={coinsToFiat(this.state.amount)}/>
+
+                <ItemDescription
+                    title='State'
+                    item={this.state.complete ? 'Complete' : 'Processing'}/>
+
+                {this.state.complete && <ItemDescription
+                    title='Block Height'
+                    item={this.state.transaction.blockHeight}/>}
+
+                <ItemDescription
+                    title='Hash'
+                    item={this.state.transaction.hash}
+                    fontSize={10}/>
+
+                {this.state.transaction.paymentID !== '' && <ItemDescription
+                    title='Payment ID'
+                    item={this.state.transaction.paymentID}
+                    fontSize={10}/>}
+            </View>
+        );
+    }
+}
 
 /**
  * List of transactions sent + received 
@@ -22,6 +102,7 @@ import { prettyPrintUnixTimestamp, prettyPrintDate } from './Utilities';
 export class TransactionsScreen extends React.Component {
     static navigationOptions = {
         title: 'Transactions',
+        header: null
     };
 
     constructor(props) {
@@ -79,7 +160,21 @@ export class TransactionsScreen extends React.Component {
 
     render() {
 
-        return(
+        const [walletHeight, localHeight, networkHeight] = Globals.wallet.getSyncStatus();
+
+        const syncedMsg = walletHeight + 10 >= networkHeight ? 
+            '' 
+          : "Your wallet isn't fully synced yet. If you're expecting some transactions, please wait.";
+
+        const noTransactions = 
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ fontSize: 20, color: Config.theme.primaryColour, justifyContent: 'center', textAlign: 'center' }}>
+                    Looks like you haven't sent{"\n"}or received any transactions yet!{"\n"}
+                    {syncedMsg}
+                </Text>
+            </View>;
+
+        const haveTransactions = 
             <List>
                 <FlatList
                     data={this.state.transactions}
@@ -93,11 +188,14 @@ export class TransactionsScreen extends React.Component {
                                     <Ionicons name={this.getIconName(item)} size={30} color={this.getIconColour(item)}/>
                                 </View>
                             }
-                            onPress={() => {}}
+                            onPress={() => this.props.navigation.navigate('TransactionDetails', { transaction: item })}
                         />
                     )}
                 />
-            </List>
+            </List>;
+
+        return(
+            this.state.numTransactions === 0 ? noTransactions : haveTransactions
         );
     }
 }

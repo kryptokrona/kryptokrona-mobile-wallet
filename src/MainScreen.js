@@ -11,12 +11,13 @@ import {
 } from 'react-native';
 
 import { 
-    LogLevel, prettyPrintAmount,
+    LogLevel, prettyPrintAmount
 } from 'turtlecoin-wallet-backend';
 
 import Config from './Config';
 import Globals from './Globals';
 
+import { coinsToFiat } from './Utilities';
 import { ProgressBar } from './ProgressBar';
 import { saveToDatabase } from './Database';
 import { processBlockOutputs } from './NativeCode';
@@ -147,7 +148,7 @@ class BalanceComponent extends React.Component {
                         {this.state.expandedBalance ? expandedBalance : compactBalance}
 
                         <Text style={{ color: 'gray', fontSize: 20 }}>
-                            ${this.state.unlockedBalance + this.state.lockedBalance}
+                            {coinsToFiat(this.state.unlockedBalance + this.state.lockedBalance)}
                         </Text>
                 </View>
             </View>

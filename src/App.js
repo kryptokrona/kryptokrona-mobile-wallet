@@ -22,9 +22,28 @@ import { SplashScreen } from './SplashScreen';
 import { TransferScreen } from './TransferScreen';
 import { SettingsScreen } from './SettingsScreen';
 import { ImportWalletScreen } from './ImportScreen';
-import { TransactionsScreen } from './TransactionsScreen';
 import { SetPinScreen, RequestPinScreen } from './Pin.js';
 import { CreateScreen, CreateWalletScreen } from './CreateScreen';
+import { TransactionsScreen, TransactionDetailsScreen } from './TransactionsScreen';
+
+const TransactionNavigator = createStackNavigator(
+    {
+        Transactions: TransactionsScreen,
+        TransactionDetails: TransactionDetailsScreen,
+    },
+    {
+        initialRouteName: 'Transactions',
+        headerLayoutPreset: 'center',
+        defaultNavigationOptions: {
+            headerTitleStyle: {
+                fontWeight: 'bold',
+                color: Config.theme.primaryColour,
+            },
+            headerTransparent: true,
+            headerTintColor: Config.theme.primaryColour,
+        },
+    }
+);
 
 /**
  * Bottom tabs for our main screens
@@ -33,7 +52,7 @@ const TabNavigator = createBottomTabNavigator(
     {
         Main: MainScreen,
         Transfer: TransferScreen,
-        Transactions: TransactionsScreen,
+        Transactions: TransactionNavigator,
         Settings: SettingsScreen
     },
     {
@@ -87,15 +106,14 @@ const MenuNavigator = createStackNavigator(
     },
     {
         initialRouteName: 'Splash',
+        headerLayoutPreset: 'center',
         defaultNavigationOptions: {
-            headerStyle: {
-                backgroundColor: Config.theme.primaryColour,
-            },
-            headerTintColor: 'white',
             headerTitleStyle: {
                 fontWeight: 'bold',
-                color: 'white'
-            }
+                color: Config.theme.primaryColour,
+            },
+            headerTransparent: true,
+            headerTintColor: Config.theme.primaryColour,
         },
     }
 );

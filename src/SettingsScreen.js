@@ -82,6 +82,8 @@ export class SettingsScreen extends React.Component {
  *
  */
 function deleteWallet(navigation) {
+    console.log(navigation);
+
     Alert.alert(
         'Delete Wallet?',
         'Are you sure you want to delete your wallet? If your seed is not backed up, your funds will be lost!',

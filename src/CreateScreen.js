@@ -78,6 +78,7 @@ export class CreateScreen extends React.Component {
 export class CreateWalletScreen extends React.Component {
     static navigationOptions = {
         title: 'Create',
+        header: null,
     };
 
     constructor(props) {
