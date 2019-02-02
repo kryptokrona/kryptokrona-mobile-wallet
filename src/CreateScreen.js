@@ -53,7 +53,7 @@ export class WalletOptionScreen extends React.Component {
                     <Button
                         title='Create New Wallet'
                         /* Request a pin for the new wallet */
-                        onPress={() => this.props.navigation.navigate('SetPin')}
+                        onPress={() => this.props.navigation.navigate('SetPin', { nextRoute: 'CreateWallet' })}
                         color={Config.theme.primaryColour}
                     />
                 </View>
@@ -62,7 +62,7 @@ export class WalletOptionScreen extends React.Component {
                     <Button
                         title='Recover Wallet'
                         /* Get the import data */
-                        onPress={() => this.props.navigation.navigate('ImportWallet')}
+                        onPress={() => this.props.navigation.navigate('SetPin', { nextRoute: 'ImportWallet' })}
                         color={Config.theme.primaryColour}
                     />
                 </View>
@@ -89,10 +89,6 @@ export class CreateWalletScreen extends React.Component {
 
         /* Encrypt wallet with pincode in DB */
         saveToDatabase(Globals.wallet, Globals.pinCode);
-
-        this.state = {
-            daemon,
-        };
     };
 
     render() {

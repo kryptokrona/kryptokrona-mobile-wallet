@@ -33,10 +33,10 @@ export class SetPinScreen extends React.Component {
         super(props);
     }
     
-    /* Pin entered, go create a wallet */
     continue(pinCode) {
         Globals.pinCode = pinCode;
-        this.props.navigation.dispatch(navigateWithDisabledBack('CreateWallet'));
+        /* Continue on to create or import a wallet */
+        this.props.navigation.dispatch(navigateWithDisabledBack(this.props.navigation.state.params.nextRoute));
     }
 
     render() {
@@ -68,7 +68,7 @@ export class RequestPinScreen extends React.Component {
         super(props);
     }
 
-    async fail(msg) {
+    fail(msg) {
         console.log(msg);
         this.props.navigation.dispatch(navigateWithDisabledBack('WalletOption'));
     }
@@ -92,7 +92,7 @@ export class RequestPinScreen extends React.Component {
             const daemon = new BlockchainCacheApi('blockapi.turtlepay.io', true);
 
             if (walletData === undefined) {
-                fail('Wallet not found in DB...');
+                this.fail('Wallet not found in DB...');
                 return;
             }
 
@@ -102,11 +102,11 @@ export class RequestPinScreen extends React.Component {
                 Globals.wallet = wallet;
                 this.props.navigation.navigate('Home');
             } else {
-                fail('Error loading wallet: ' + wallet);
+                this.fail('Error loading wallet: ' + wallet);
                 return;
             }
         })().catch(err => {
-            fail('Error loading from DB: ' + err);
+            this.fail('Error loading from DB: ' + err);
         });
     }
 
