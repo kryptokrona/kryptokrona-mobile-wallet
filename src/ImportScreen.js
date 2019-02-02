@@ -129,13 +129,13 @@ export class ImportSeedScreen extends React.Component {
         /* TODO: this.state.seed.join(' ') */
         const words = 'owner eagle biggest reunion jeers cause pairing serving pierce cycling always jellyfish tapestry makeup pledge wonders unquoted efficient number gourmet answers cylinder light listen cylinder';
 
-        const wallet = WalletBackend.importWalletFromSeed(
+        const [wallet, error] = WalletBackend.importWalletFromSeed(
             daemon, scanHeight, words, Config
         );
 
-        if (!wallet instanceof WalletBackend) {
+        if (error) {
             /* TODO: Report to user */
-            console.log('Failed to import wallet: ' + wallet);
+            console.log('Failed to import wallet: ' + error.toString());
             this.props.navigation.navigate('Login');
         }
 

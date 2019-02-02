@@ -4,11 +4,10 @@
 
 import React from 'react';
 
-import { hasUserSetPinCode } from '@haskkor/react-native-pincode';
-
-import { delay, navigateWithDisabledBack } from './Utilities';
-import { FadeView } from './FadeView';
 import { Spinner } from './Spinner';
+import { FadeView } from './FadeView';
+import { haveWallet } from './Database';
+import { delay, navigateWithDisabledBack } from './Utilities';
 
 /**
  * Launch screen. See if the user has a pin, if so, request pin to unlock.
@@ -23,13 +22,8 @@ export class SplashScreen extends React.Component {
         super(props);
 
         (async () => {
-            let hasPinCode: false;
-
-            /* See if the user has set a pin code. If they have, they should
-               have a corresponding saved wallet */
-            if (await hasUserSetPinCode()) {
-                hasPinCode = true;
-            }
+            /* See if user has previously made a wallet */
+            const hasWallet = await haveWallet();
 
             /* Above operation takes some time. Loading animation is pretty ugly
                if it only stays for 0.5 seconds, and too slow if we don't have
@@ -39,7 +33,7 @@ export class SplashScreen extends React.Component {
             await delay(2000);
 
             /* Get the pin, or create a wallet if no pin */
-            this.props.navigation.dispatch(navigateWithDisabledBack(hasPinCode ? 'RequestPin' : 'WalletOption'));
+            this.props.navigation.dispatch(navigateWithDisabledBack(hasWallet ? 'RequestPin' : 'WalletOption'));
 
         })().catch(err => {
             console.log('Error loading from DB: ' + err);

@@ -19,6 +19,7 @@ import { View, FlatList, Alert } from 'react-native';
 import Config from './Config';
 import Globals from './Globals';
 
+import { setHaveWallet } from './Database';
 import { navigateWithDisabledBack } from './Utilities';
 
 /**
@@ -95,6 +96,8 @@ function deleteWallet(navigation) {
 
                 /* Delete old wallet */
                 Realm.deleteFile({});
+
+                setHaveWallet(false);
 
                 Globals.wallet.stop();
 

@@ -3,8 +3,12 @@
 // Please see the included LICENSE file for more information.
 
 import Realm from 'realm';
+
+import { AsyncStorage } from 'react-native';
+
 import { sha512 } from 'js-sha512';
 
+import Config from './Config';
 import Constants from './Constants';
 
 const WalletSchema = {
@@ -316,6 +320,7 @@ export function saveToDatabase(wallet, pinCode) {
         /* Write the wallet to the DB, overwriting old wallet */
         realm.write(() => {
             walletToRealm(wallet, realm)
+            setHaveWallet(true);
         })
     }).catch(err => {
         console.log('Err saving wallet: ' + err);
@@ -344,5 +349,28 @@ export async function loadFromDatabase(pinCode) {
     } catch(err) {
         console.log('Error loading database: ' + err);
         return undefined;
+    }
+}
+
+export async function haveWallet() {
+    try {
+        const value = await AsyncStorage.getItem(Config.coinName + 'HaveWallet');
+        
+        if (value !== null) {
+            return value === 'true';
+        }
+
+        return false;
+    } catch (error) {
+        console.log('Error determining if we have data: ' + error);
+        return false;
+    }
+}
+
+export async function setHaveWallet(haveWallet) {
+    try {
+        await AsyncStorage.setItem(Config.coinName + 'HaveWallet', haveWallet.toString());
+    } catch (error) {
+        console.log('Failed to save have wallet status: ' + error);
     }
 }
