@@ -22,10 +22,14 @@ import { MainScreen } from './MainScreen';
 import { SplashScreen } from './SplashScreen';
 import { TransferScreen } from './TransferScreen';
 import { SettingsScreen } from './SettingsScreen';
-import { ImportWalletScreen } from './ImportScreen';
 import { SetPinScreen, RequestPinScreen } from './Pin.js';
 import { WalletOptionScreen, CreateWalletScreen } from './CreateScreen';
 import { TransactionsScreen, TransactionDetailsScreen } from './TransactionsScreen';
+
+import { 
+    ImportWalletScreen, ImportKeysOrSeedScreen, ImportSeedScreen, 
+    ImportKeysScreen
+} from './ImportScreen';
 
 /* Transactions screen and more info on transactions */
 const TransactionNavigator = createStackNavigator(
@@ -107,6 +111,13 @@ const LoginNavigator = createStackNavigator(
 
         /* Import a wallet */
         ImportWallet: ImportWalletScreen,
+
+        /* Pick between seed or keys */
+        ImportKeysOrSeed: ImportKeysOrSeedScreen,
+
+        ImportSeed: ImportSeedScreen,
+
+        ImportKeys: ImportKeysScreen,
     },
     {
         initialRouteName: 'Splash',
