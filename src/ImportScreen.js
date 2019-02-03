@@ -4,6 +4,8 @@
 
 import React from 'react';
 
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 import {
     View, Image, Text, Button, TextInput, Platform,
 } from 'react-native';
@@ -152,7 +154,12 @@ export class ImportSeedScreen extends React.Component {
 
     render() {
         return(
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'stretch', marginTop: 40}}>
+            <KeyboardAwareScrollView
+                style={{ marginTop: 40 }}
+                enableOnAndroid={true}
+                extraScrollHeight={200}
+                containerContentStyle={{ flex: 1, justifyContent: 'center', alignItems: 'stretch'}}
+            >
                 <Text style={{
                     fontSize: 20,
                     color: Config.theme.primaryColour,
@@ -175,7 +182,7 @@ export class ImportSeedScreen extends React.Component {
                         disabled={!this.state.seedIsGood}
                     />
                 </View>
-            </View>
+            </KeyboardAwareScrollView>
         );
     }
 }
@@ -193,8 +200,12 @@ class InputSeedComponent extends React.Component {
     checkSeedIsValid(words) {
         const invalidWords = [];
 
+        let emptyCount = 0;
+
         for (const word of words) {
-            if (!isValidMnemonicWord(word) && word !== '' && word !== undefined) {
+            if (word === '' || word === undefined) {
+                emptyCount++;
+            } else if (!isValidMnemonicWord(word)) {
                 invalidWords.push(word);
             }
         }
@@ -211,7 +222,7 @@ class InputSeedComponent extends React.Component {
             });
         }
 
-        if (words.length !== 25) {
+        if (words.length !== 25 || emptyCount !== 0) {
             return false;
         }
 
