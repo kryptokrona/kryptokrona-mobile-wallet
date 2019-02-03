@@ -25,7 +25,7 @@ import { SettingsScreen } from './SettingsScreen';
 import { DisclaimerScreen } from './DisclaimerScreen';
 import { SetPinScreen, RequestPinScreen } from './Pin.js';
 import { WalletOptionScreen, CreateWalletScreen } from './CreateScreen';
-import { PickMonthScreen, PickBlockHeightScreen } from './SyncHeightScreen';
+import { PickMonthScreen, PickBlockHeightScreen } from './ScanHeightScreen';
 import { TransactionsScreen, TransactionDetailsScreen } from './TransactionsScreen';
 
 import { 

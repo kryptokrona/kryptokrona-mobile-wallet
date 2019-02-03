@@ -59,7 +59,7 @@ export class ImportWalletScreen extends React.Component {
                 <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5}]}>
                     <Button
                         title="I don't Know"
-                        onPress={() => this.props.navigation.navigate('ImportKeysOrSeed')}
+                        onPress={() => this.props.navigation.navigate('ImportKeysOrSeed', { scanHeight: 0 })}
                         color={Config.theme.primaryColour}
                     />
                 </View>
@@ -76,6 +76,8 @@ export class ImportKeysOrSeedScreen extends React.Component {
 
     constructor(props) {
         super(props);
+
+        this.scanHeight = this.props.navigation.state.params.scanHeight || 0;
     }
 
     render() {
@@ -88,7 +90,7 @@ export class ImportKeysOrSeedScreen extends React.Component {
                 <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5}]}>
                     <Button
                         title="25 Word Mnemonic Seed"
-                        onPress={() => this.props.navigation.navigate('ImportSeed')}
+                        onPress={() => this.props.navigation.navigate('ImportSeed', { scanHeight: this.scanHeight })}
                         color={Config.theme.primaryColour}
                     />
                 </View>
@@ -96,7 +98,7 @@ export class ImportKeysOrSeedScreen extends React.Component {
                 <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5}]}>
                     <Button
                         title="Private Spend + Private View Key"
-                        onPress={() => this.props.navigation.navigate('ImportKeys')}
+                        onPress={() => this.props.navigation.navigate('ImportKeys', { scanHeight: this.scanHeight })}
                         color={Config.theme.primaryColour}
                     />
                 </View>
@@ -117,6 +119,8 @@ export class ImportSeedScreen extends React.Component {
         this.state = {
             seedIsGood: false,
         }
+
+        this.scanHeight = this.props.navigation.state.params.scanHeight || 0;
     }
 
     toggleButton(seed, seedIsGood) {
@@ -129,13 +133,8 @@ export class ImportSeedScreen extends React.Component {
     importWallet() {
         const daemon = new BlockchainCacheApi('blockapi.turtlepay.io', true);
 
-        const scanHeight = this.props.scanHeight || 0;
-
-        /* TODO: this.state.seed.join(' ') */
-        const words = 'owner eagle biggest reunion jeers cause pairing serving pierce cycling always jellyfish tapestry makeup pledge wonders unquoted efficient number gourmet answers cylinder light listen cylinder';
-
         const [wallet, error] = WalletBackend.importWalletFromSeed(
-            daemon, scanHeight, words, Config
+            daemon, this.scanHeight, this.state.seed.join(' '), Config
         );
 
         if (error) {
@@ -352,6 +351,8 @@ export class ImportKeysScreen extends React.Component {
 
     constructor(props) {
         super(props);
+
+        this.scanHeight = this.props.navigation.state.params.scanHeight || 0;
     }
 
     render() {

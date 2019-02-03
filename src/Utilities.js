@@ -8,6 +8,8 @@ import { Text, Platform, ToastAndroid } from 'react-native';
 
 import { StackActions, NavigationActions } from 'react-navigation';
 
+import Config from './Config';
+
 export function delay(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -74,7 +76,7 @@ export function coinsToFiat(amount) {
 export function getApproximateBlockHeight() {
     const now = new Date();
 
-    const difference = (now - chainLaunchTimestamp) / 1000;
+    const difference = (now - Config.chainLaunchTimestamp) / 1000;
 
     return difference / Config.blockTargetTime;
 }

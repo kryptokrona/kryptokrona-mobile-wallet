@@ -1,0 +1,109 @@
+// Copyright (C) 2018, Zpalmtree
+//
+// Please see the included LICENSE file for more information.
+
+import React from 'react';
+
+import { View, Text, Button } from 'react-native';
+
+import Config from './Config';
+
+import { Styles } from './Styles';
+import { getApproximateBlockHeight } from './Utilities';
+
+export class PickMonthScreen extends React.Component {
+    static navigationOptions = {
+        title: 'Pick Creation Month',
+    };
+
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return(
+            <View style={{ flex: 1, marginTop: 40, justifyContent: 'center', alignItems: 'stretch' }}>
+                <Text style={{
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    color: Config.theme.primaryColour,
+                    textAlign: 'center',
+                    fontSize: 25
+                }}>
+                    What month did you create your wallet?
+                </Text>
+            </View>
+        );
+    }
+}
+
+export class PickBlockHeightScreen extends React.Component {
+    static navigationOptions = {
+        title: 'Pick Creation Block Height',
+    };
+
+    constructor(props) {
+        super(props);
+
+        /* Guess the current height of the blockchain */
+        const height = getApproximateBlockHeight();
+
+        /* Divide that height into jumps */
+        const jumps = Math.floor(height / 6);
+
+        /* Get the nearest multiple to round up to for the jumps */
+        const nearestMultiple = 10 ** (jumps.toString().length - 1)
+
+        const remainder = jumps % nearestMultiple;
+
+        /* Round the jump to the nearest multiple */
+        const roundedJumps = jumps - remainder + nearestMultiple;
+
+        const actualJumps = [];
+
+        /* Put together the jump ranges */
+        for (let i = 0; i < height; i += roundedJumps) {
+            actualJumps.push([i, i + roundedJumps]);
+        }
+
+        this.state = {
+            jumps: actualJumps,
+        }
+    }
+
+    render() {
+        return(
+            <View style={{ flex: 1, marginTop: 40, justifyContent: 'center', alignItems: 'stretch' }}>
+                <Text style={[Styles.centeredText, {
+                    color: Config.theme.primaryColour,
+                    fontSize: 25,
+                    margin: 20
+                }]}>
+                    Between which block heights did you create your wallet?
+                </Text>
+
+                {this.state.jumps.map(([startHeight, endHeight]) => {
+                    return(
+                        <View
+                            key={startHeight}
+                            style={[
+                                Styles.buttonContainer, {
+                                    alignItems: 'stretch',
+                                    width: '100%',
+                                    marginTop: 5,
+                                    marginBottom: 5,
+                                }
+                            ]}
+                        >
+                            <Button
+                                title={startHeight + ' - ' + endHeight}
+                                onPress={() => this.props.navigation.navigate('ImportKeysOrSeed', { scanHeight: startHeight })}
+                                color={Config.theme.primaryColour}
+                            />
+                        </View>
+                    );
+                })}
+            </View>
+        );
+    }
+}
