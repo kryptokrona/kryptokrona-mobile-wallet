@@ -43,7 +43,7 @@ export class ImportWalletScreen extends React.Component {
                 <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5}]}>
                     <Button
                         title="Pick a month"
-                        onPress={() => console.log('foo')}
+                        onPress={() => this.props.navigation.navigate('PickMonth')}
                         color={Config.theme.primaryColour}
                     />
                 </View>
@@ -51,7 +51,7 @@ export class ImportWalletScreen extends React.Component {
                 <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5}]}>
                     <Button
                         title="Pick an approximate block height"
-                        onPress={() => console.log('foo')}
+                        onPress={() => this.props.navigation.navigate('PickBlockHeight')}
                         color={Config.theme.primaryColour}
                     />
                 </View>

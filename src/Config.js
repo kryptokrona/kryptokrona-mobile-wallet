@@ -12,10 +12,14 @@ const Config = {
         primaryColour: '#40C18E',
     },
 
-    /* If you can't figure this one out, I don't have high hopes */
+    /**
+     * If you can't figure this one out, I don't have high hopes
+     */
     coinName: 'TurtleCoin',
 
-    /* How often to save the wallet, in milliseconds */
+    /**
+     * How often to save the wallet, in milliseconds
+     */
     walletSaveFrequency: 60 * 1000,
 
     /**
@@ -92,13 +96,24 @@ const Config = {
      */
     standardAddressLength: 99,
 
-    /* The length of an integrated address for your coin - It's the same as
-       a normal address, but there is a paymentID included in there - since
-       payment ID's are 64 chars, and base58 encoding is done by encoding
-       chunks of 8 chars at once into blocks of 11 chars, we can calculate
-       this automatically */
+    /**
+     * The length of an integrated address for your coin - It's the same as
+     * a normal address, but there is a paymentID included in there - since
+     * payment ID's are 64 chars, and base58 encoding is done by encoding
+     * chunks of 8 chars at once into blocks of 11 chars, we can calculate
+     * this automatically
+     */
     integratedAddressLength: this.standardAddressLength + ((64 * 11) / 8),
 
+    /**
+     * Unix timestamp of the time your chain was launched.
+     *
+     * Note - you may want to manually adjust this. Take the current timestamp,
+     * take away the launch timestamp, divide by block time, and that value
+     * should be equal to your current block count. If it's significantly different,
+     * you can offset your timestamp to fix the discrepancy
+     */
+    chainLaunchTimestamp: new Date(1000 * 1513031505),
 };
 
 module.exports = Config;

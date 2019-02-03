@@ -67,3 +67,14 @@ export function prettyPrintDate(date) {
 export function coinsToFiat(amount) {
     return '$' + amount.toString();
 }
+
+/** 
+ * Gets the approximate height of the blockchain, based on the launch timestamp
+ */
+export function getApproximateBlockHeight() {
+    const now = new Date();
+
+    const difference = (now - chainLaunchTimestamp) / 1000;
+
+    return difference / Config.blockTargetTime;
+}

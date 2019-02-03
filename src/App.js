@@ -23,6 +23,7 @@ import { SplashScreen } from './SplashScreen';
 import { TransferScreen } from './TransferScreen';
 import { SettingsScreen } from './SettingsScreen';
 import { SetPinScreen, RequestPinScreen } from './Pin.js';
+import { PickMonthScreen, PickBlockHeightScreen } from './SyncHeight';
 import { WalletOptionScreen, CreateWalletScreen } from './CreateScreen';
 import { TransactionsScreen, TransactionDetailsScreen } from './TransactionsScreen';
 
@@ -115,9 +116,17 @@ const LoginNavigator = createStackNavigator(
         /* Pick between seed or keys */
         ImportKeysOrSeed: ImportKeysOrSeedScreen,
 
+        /* Import with a mnemonic seed */
         ImportSeed: ImportSeedScreen,
 
+        /* Import with a set of keys */
         ImportKeys: ImportKeysScreen,
+
+        /* Pick a month to start the wallet scanning from */
+        PickMonth: PickMonthScreen,
+
+        /* Pick a block range to start the wallet scanning from */
+        PickBlockHeight: PickBlockHeightScreen,
     },
     {
         initialRouteName: 'Splash',
