@@ -70,7 +70,7 @@ export class RequestPinScreen extends React.Component {
 
     fail(msg) {
         console.log(msg);
-        this.props.navigation.dispatch(navigateWithDisabledBack('WalletOption'));
+        this.props.navigation.dispatch(navigateWithDisabledBack('Disclaimer'));
     }
 
     /**
