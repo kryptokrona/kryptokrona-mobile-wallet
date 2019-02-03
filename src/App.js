@@ -22,9 +22,10 @@ import { MainScreen } from './MainScreen';
 import { SplashScreen } from './SplashScreen';
 import { TransferScreen } from './TransferScreen';
 import { SettingsScreen } from './SettingsScreen';
+import { DisclaimerScreen } from './DisclaimerScreen';
 import { SetPinScreen, RequestPinScreen } from './Pin.js';
-import { PickMonthScreen, PickBlockHeightScreen } from './SyncHeight';
 import { WalletOptionScreen, CreateWalletScreen } from './CreateScreen';
+import { PickMonthScreen, PickBlockHeightScreen } from './SyncHeightScreen';
 import { TransactionsScreen, TransactionDetailsScreen } from './TransactionsScreen';
 
 import { 
@@ -127,6 +128,9 @@ const LoginNavigator = createStackNavigator(
 
         /* Pick a block range to start the wallet scanning from */
         PickBlockHeight: PickBlockHeightScreen,
+
+        /* Explain fee, I'm not responsible for anything, etc */
+        Disclaimer: DisclaimerScreen,
     },
     {
         initialRouteName: 'Splash',

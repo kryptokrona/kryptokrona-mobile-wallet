@@ -20,5 +20,10 @@ export const Styles = StyleSheet.create({
         },
         shadowRadius: 10,
         shadowOpacity: 0.25
+    },
+    centeredText: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
     }
 });

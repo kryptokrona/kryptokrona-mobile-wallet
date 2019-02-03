@@ -114,6 +114,11 @@ const Config = {
      * you can offset your timestamp to fix the discrepancy
      */
     chainLaunchTimestamp: new Date(1000 * 1513031505),
+
+    /**
+     * Fee to take on all transactions
+     */
+    feePercentage: 0.5,
 };
 
 module.exports = Config;
