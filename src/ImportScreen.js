@@ -5,10 +5,13 @@
 import React from 'react';
 
 import {
-    View, Image, Text, Button, TextInput,
+    View, Image, Text, Button, TextInput, Platform,
 } from 'react-native';
 
-import { importWalletFromSeed, BlockchainCacheApi, WalletBackend, WalletError } from 'turtlecoin-wallet-backend';
+import {
+    importWalletFromSeed, BlockchainCacheApi, WalletBackend, WalletError,
+    isValidMnemonic, isValidMnemonicWord,
+} from 'turtlecoin-wallet-backend';
 
 import Config from './Config';
 import Globals from './Globals';
@@ -114,10 +117,10 @@ export class ImportSeedScreen extends React.Component {
         }
     }
 
-    enableButton(seed) {
+    toggleButton(seed, seedIsGood) {
         this.setState({
-            seedIsGood: true,
-            seed: seed,
+            seedIsGood,
+            seed,
         });
     }
 
@@ -162,9 +165,9 @@ export class ImportSeedScreen extends React.Component {
                     Enter your mnemonic seed:
                 </Text>
 
-                <InputSeedComponent enableButton={(seed) => this.enableButton(seed)}/>
+                <InputSeedComponent enableButton={(seed, enable) => this.toggleButton(seed, enable)}/>
 
-                <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 20}]}>
+                <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginBottom: 30}]}>
                     <Button
                         title="Continue"
                         onPress={() => this.importWallet()}
@@ -182,13 +185,49 @@ class InputSeedComponent extends React.Component {
         super(props);
 
         this.state = {
-            words: []
+            words: [],
+            invalidMessage: ''
         }
     }
 
-    /* TODO */
     checkSeedIsValid(words) {
-        return undefined;
+        const invalidWords = [];
+
+        for (const word of words) {
+            if (!isValidMnemonicWord(word) && word !== '' && word !== undefined) {
+                invalidWords.push(word);
+            }
+        }
+
+        if (invalidWords.length !== 0) {
+            this.setState({
+                invalidMessage: 'The following words are invalid: ' + invalidWords.join(', '),
+            });
+
+            return false;
+        } else {
+            this.setState({
+                invalidMessage: '',
+            });
+        }
+
+        if (words.length !== 25) {
+            return false;
+        }
+
+        const [valid, error] = isValidMnemonic(words.join(' '));
+
+        if (!valid) {
+            this.setState({
+                invalidMessage: error,
+            });
+        } else {
+            this.setState({
+                invalidMessage: '',
+            });
+        }
+
+        return valid;
     }
 
     storeWord(word, index) {
@@ -196,7 +235,7 @@ class InputSeedComponent extends React.Component {
 
         words[index] = word;
 
-        words = 'owner eagle biggest reunion jeers cause pairing serving pierce cycling always jellyfish tapestry makeup pledge wonders unquoted efficient number gourmet answers cylinder light listen cylinder'.split(' ');
+        //words = 'owner eagle biggest reunion jeers cause pairing serving pierce cycling always jellyfish tapestry makeup pledge wonders unquoted efficient number gourmet answers cylinder light listen cylinder'.split(' ');
 
         /* Auto complete often suggests upper case words */
         words.map(x => x.toLowerCase());
@@ -205,52 +244,39 @@ class InputSeedComponent extends React.Component {
             words,
         });
 
-        /* Not enough words filled in yet */
-        if (this.state.words.length !== 25) {
-            return;
-        }
+        const isValid = this.checkSeedIsValid(this.state.words);
 
-        /* Check all words exist and are not blank */
-        for (const word of this.state.words) {
-            if (word === undefined || word === '') {
-                return;
-            }
-        }
-
-        const error = this.checkSeedIsValid(this.state.words);
-
-        if (error) {
-            /* TODO: Alert user */
-            console.log('Invalid seed: ' + error);
-            return;
-        }
-
-        /* Enable the continue button */
-        this.props.enableButton(this.state.words);
+        /* Enable continue button if valid seed */
+        this.props.enableButton(this.state.words, isValid);
     }
 
     render() {
         return(
-            <View style={{ 
-                justifyContent: 'center', 
-                alignItems: 'center', 
-                marginRight: 15, 
-                marginLeft: 15, 
-                borderWidth: 1, 
-                borderColor: Config.theme.primaryColour, 
-                height: 350
-            }}>
-                {[1, 2, 3, 4, 5].map((row) => {
-                    return(
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }} key={row}>
-                            {[1, 2, 3, 4, 5].map((col) => {
-                                return(
-                                    <SeedWord row={row} column={col} key={col} storeWord={(word, index) => this.storeWord(word, index)}/>
-                                );
-                            })}
-                        </View>
-                    );
-                })}
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <View style={{ 
+                    justifyContent: 'center', 
+                    alignItems: 'center', 
+                    marginRight: 15, 
+                    marginLeft: 15, 
+                    borderWidth: 1, 
+                    borderColor: Config.theme.primaryColour, 
+                    height: 350
+                }}>
+                    {[1, 2, 3, 4, 5].map((row) => {
+                        return(
+                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }} key={row}>
+                                {[1, 2, 3, 4, 5].map((col) => {
+                                    return(
+                                        <SeedWord row={row} column={col} key={col} storeWord={(word, index) => this.storeWord(word, index)}/>
+                                    );
+                                })}
+                            </View>
+                        );
+                    })}
+                </View>
+                <Text style={{marginLeft: 10, marginRight: 10, color: 'red', marginTop: 10, alignItems: 'center', justifyContent: 'center'}}>
+                    {this.state.invalidMessage}
+                </Text>
             </View>
         );
     }
@@ -278,9 +304,7 @@ class SeedWord extends React.Component {
     checkWord() {
         this.props.storeWord(this.state.word, this.state.wordIndex);
 
-        if (false) {
-            /* Set text to red if input is invalid */
-            /* TODO: This is broken. Text disappeares for some reason. */
+        if (!isValidMnemonicWord(this.state.word) && this.state.word !== '') {
             this.setState({
                 badWord: true,
             });
@@ -291,8 +315,10 @@ class SeedWord extends React.Component {
         return(
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                 <TextInput
-                    style={{ height: 40, width: 70, textAlign: 'center', color: this.state.badWord ? 'red' : 'gray' }}
-                    underlineColorAndroid={'lightgray'}
+                    style={{ height: 40, width: 70, textAlign: 'center', color: 'gray' }}
+                    underlineColorAndroid={this.state.badWord ? 'red' : 'lightgray'}
+                    borderBottomWidth={Platform.OS === 'ios' ? 1 : 0}
+                    borderBottomColor={this.state.badWord ? 'red' : 'lightgray'}
                     maxLength={20}
                     autoCapitalize={'none'}
                     onChangeText={(text) => this.setState({ word: text }) }
@@ -320,7 +346,15 @@ export class ImportKeysScreen extends React.Component {
     render() {
         return(
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'stretch', marginTop: 40}}>
-                <Text style={{ fontSize: 20, color: Config.theme.primaryColour, justifyContent: 'flex-start', alignItems: 'center', textAlign: 'center', marginTop: 5, marginBottom: 20}}>
+                <Text style={{
+                    fontSize: 20,
+                    color: Config.theme.primaryColour,
+                    justifyContent: 'flex-start',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    marginTop: 5,
+                    marginBottom: 20
+                }}>
                     Enter your private spend key:
                 </Text>
             </View>

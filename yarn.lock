@@ -7073,7 +7073,7 @@ turtlecoin-rpc@^0.12.0:
 
 "turtlecoin-wallet-backend@https://github.com/turtlecoin/turtlecoin-wallet-backend-js":
   version "1.0.0"
-  resolved "https://github.com/turtlecoin/turtlecoin-wallet-backend-js#1047d8cb949893e823b28f42a6df9614c8ccf999"
+  resolved "https://github.com/turtlecoin/turtlecoin-wallet-backend-js#6dbae93159f522c744520222b33fd5daf8da1021"
   dependencies:
     "@types/deep-equal" "^1.0.1"
     "@types/lodash" "^4.14.119"
