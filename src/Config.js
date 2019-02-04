@@ -10,6 +10,18 @@ const Config = {
          * The primary colour used by the wallet, for TurtleCoin this is green
          */
         primaryColour: '#40C18E',
+
+        /**
+         * A lighter version of the primary colour. You can use
+         * https://www.w3schools.com/colors/colors_picker.asp to easily get
+         * a lighter version.
+         */
+        primaryColourLight: '#D8F3E8',
+
+        /**
+         * We chose to use a darker green here. It is very rarely used.
+         */
+        secondaryColour: '#00853D',
     },
 
     /**
