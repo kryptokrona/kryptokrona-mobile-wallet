@@ -36,9 +36,30 @@ export class ImportWalletScreen extends React.Component {
     render() {
         return(
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'stretch', marginTop: 40}}>
-                <Text style={{ fontSize: 20, color: Config.theme.primaryColour, justifyContent: 'flex-start', alignItems: 'center', textAlign: 'center', marginTop: 5, marginBottom: 20}}>
+                <Text style={{
+                    fontSize: 20,
+                    color: Config.theme.primaryColour,
+                    justifyContent: 'flex-start',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    marginTop: 5,
+                    marginBottom: 5}}
+                >
                     When did you create your wallet?
                 </Text>
+
+                <Text style={{
+                    fontSize: 14,
+                    color: Config.theme.primaryColour,
+                    justifyContent: 'flex-start',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    marginTop: 5,
+                    marginBottom: 20}}
+                >
+                    (This helps us scan your wallet faster)
+                </Text>
+
 
                 <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5}]}>
                     <Button

@@ -73,10 +73,28 @@ export function coinsToFiat(amount) {
 /** 
  * Gets the approximate height of the blockchain, based on the launch timestamp
  */
-export function getApproximateBlockHeight() {
+export function getApproximateBlockHeight(date) {
+    const difference = (date - Config.chainLaunchTimestamp) / 1000;
+
+    let blockHeight = Math.floor(difference / Config.blockTargetTime);
+
+    if (blockHeight < 0) {
+        blockHeight = 0;
+    }
+
+    return blockHeight;
+}
+
+/**
+ * Converts a date to a scan height. Note, takes a moment date.
+ */
+export function dateToScanHeight(date) {
+    let jsDate = date.toDate();
     const now = new Date();
 
-    const difference = (now - Config.chainLaunchTimestamp) / 1000;
+    if (jsDate > now) {
+        jsDate = now;
+    }
 
-    return difference / Config.blockTargetTime;
+    return getApproximateBlockHeight(jsDate);
 }

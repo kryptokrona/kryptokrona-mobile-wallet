@@ -4,12 +4,16 @@
 
 import React from 'react';
 
+import MonthSelectorCalendar from 'react-native-month-selector';
+
+import moment from 'moment';
+
 import { View, Text, Button } from 'react-native';
 
 import Config from './Config';
 
 import { Styles } from './Styles';
-import { getApproximateBlockHeight } from './Utilities';
+import { getApproximateBlockHeight, dateToScanHeight } from './Utilities';
 
 export class PickMonthScreen extends React.Component {
     static navigationOptions = {
@@ -18,6 +22,10 @@ export class PickMonthScreen extends React.Component {
 
     constructor(props) {
         super(props);
+
+        this.state = {
+            month: moment().startOf('month'),
+        }
     }
 
     render() {
@@ -28,10 +36,57 @@ export class PickMonthScreen extends React.Component {
                     justifyContent: 'center',
                     color: Config.theme.primaryColour,
                     textAlign: 'center',
-                    fontSize: 25
+                    fontSize: 25,
+                    marginBottom: 20
                 }}>
                     What month did you create your wallet?
                 </Text>
+                <MonthSelectorCalendar
+                    minDate={moment(Config.chainLaunchTimestamp)}
+                    selectedBackgroundColor={Config.theme.primaryColour}
+                    monthTextStyle={{
+                        color: Config.theme.secondaryColour,
+                    }}
+                    monthDisabledStyle={{
+                        color: 'lightgray',
+                    }}
+                    currentMonthTextStyle={{
+                        color: Config.theme.secondaryColour,
+                    }}
+                    seperatorColor={Config.theme.primaryColour}
+                    nextIcon={
+                        <Text style={{
+                            color: Config.theme.primaryColour,
+                            fontSize: 16,
+                            marginRight: 10,
+                        }}>
+                            Next
+                        </Text>
+                    }
+                    prevIcon={
+                        <Text style={{
+                            color: Config.theme.primaryColour,
+                            fontSize: 16,
+                            marginLeft: 10,
+                        }}>
+                            Prev
+                        </Text>
+                    }
+                    yearTextStyle={{
+                        color: Config.theme.secondaryColour,
+                        fontSize: 18
+                    }}
+                    selectedDate={this.state.month}
+                    onMonthTapped={(date) => this.setState({ month: date})}
+                />
+
+                <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 30}]}>
+                    <Button
+                        title="Continue"
+                        onPress={() => this.props.navigation.navigate('ImportKeysOrSeed', { scanHeight: dateToScanHeight(this.state.month)})}
+                        color={Config.theme.primaryColour}
+                    />
+                </View>
             </View>
         );
     }
@@ -46,7 +101,7 @@ export class PickBlockHeightScreen extends React.Component {
         super(props);
 
         /* Guess the current height of the blockchain */
-        const height = getApproximateBlockHeight();
+        const height = getApproximateBlockHeight(new Date());
 
         /* Divide that height into jumps */
         const jumps = Math.floor(height / 6);
