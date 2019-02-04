@@ -80,7 +80,7 @@ export class PickMonthScreen extends React.Component {
                     onMonthTapped={(date) => this.setState({ month: date})}
                 />
 
-                <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 30}]}>
+                <View style={[Styles.buttonContainer, Styles.alignBottom, {bottom: 40}]}>
                     <Button
                         title="Continue"
                         onPress={() => this.props.navigation.navigate('ImportKeysOrSeed', { scanHeight: dateToScanHeight(this.state.month)})}

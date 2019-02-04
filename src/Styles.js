@@ -25,5 +25,11 @@ export const Styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         textAlign: 'center',
+    },
+    alignBottom: {
+        position: 'absolute',
+        alignItems: 'stretch',
+        justifyContent: 'center',
+        width: '100%',
     }
 });

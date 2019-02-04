@@ -98,7 +98,7 @@ export class DisclaimerScreen extends React.Component {
 
                 </View>
 
-                <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 30}]}>
+                <View style={[Styles.buttonContainer, Styles.alignBottom, {bottom: 40}]}>
                     <Button
                         title="Continue"
                         onPress={() => this.props.navigation.navigate('SetPin', { nextRoute: this.props.navigation.state.params.nextRoute })}
