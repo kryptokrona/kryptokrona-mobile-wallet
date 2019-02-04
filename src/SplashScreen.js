@@ -33,12 +33,8 @@ export class SplashScreen extends React.Component {
             await delay(2000);
 
             /* Get the pin, or show disclaimer then create a wallet if no pin */
-            this.props.navigation.dispatch(navigateWithDisabledBack(hasWallet ? 'RequestPin' : 'Disclaimer'));
-
-        })().catch(err => {
-            console.log('Error loading from DB: ' + err);
-            this.props.navigation.dispatch(navigateWithDisabledBack('WalletOption'));
-        });
+            this.props.navigation.dispatch(navigateWithDisabledBack(hasWallet ? 'RequestPin' : 'WalletOption'));
+        })();
     }
 
     render() {

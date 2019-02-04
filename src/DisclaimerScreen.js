@@ -101,7 +101,7 @@ export class DisclaimerScreen extends React.Component {
                 <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 30}]}>
                     <Button
                         title="Continue"
-                        onPress={() => this.props.navigation.dispatch(navigateWithDisabledBack('WalletOption'))}
+                        onPress={() => this.props.navigation.navigate('SetPin', { nextRoute: this.props.navigation.state.params.nextRoute })}
                         color={Config.theme.primaryColour}
                         disabled={!this.state.feeAccepted || !this.state.keyOwnershipAccepted || !this.state.warrantyAccepted}
                     />

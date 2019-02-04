@@ -83,9 +83,13 @@ export class RequestPinScreen extends React.Component {
         super(props);
     }
 
-    fail(msg) {
+    async fail(msg) {
         console.log(msg);
-        this.props.navigation.dispatch(navigateWithDisabledBack('Disclaimer'));
+
+        /* So we don't infinite loop */
+        await setHaveWallet(false);
+
+        this.props.navigation.dispatch(navigateWithDisabledBack('Splash'));
     }
 
     /**
@@ -107,14 +111,13 @@ export class RequestPinScreen extends React.Component {
             const daemon = new BlockchainCacheApi('blockapi.turtlepay.io', true);
 
             if (walletData === undefined) {
-                this.fail('Wallet not found in DB...');
-                return;
+                await this.fail('Wallet not found in DB...');
             }
 
             const [wallet, error] = WalletBackend.loadWalletFromJSON(daemon, walletData, Config);
 
             if (error) {
-                this.fail('Error loading wallet: ' + error);
+                await this.fail('Error loading wallet: ' + error);
             } else {
                 Globals.wallet = wallet;
                 this.props.navigation.navigate('Home');
