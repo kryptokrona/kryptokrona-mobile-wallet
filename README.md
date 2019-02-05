@@ -94,21 +94,13 @@ Follow [this](https://facebook.github.io/react-native/docs/running-on-device.htm
 
 Follow [this](https://facebook.github.io/react-native/docs/signed-apk-android.html) guide.
 
-Once you have finished:
+Once you have finished, compile the APK:
 
-`cd android`
-
-Compile the APK:
-
-`./gradlew assembleRelease`
-
-You may need to uninstall a previous version of the app:
-
-`adb -d uninstall "com.tonchan"`
+`yarn build-android`
 
 Install the APK on your device:
 
-`./gradlew installRelease`
+`yarn deploy-android`
 
 If it all works, you can then upload to the play store.
 
