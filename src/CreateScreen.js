@@ -7,7 +7,7 @@ import * as _ from 'lodash';
 import React from 'react';
 
 import {
-    View, Text, Button, StyleSheet, Image, Clipboard
+    View, Text, Button, StyleSheet, Image,
 } from 'react-native';
 
 import {
@@ -17,10 +17,11 @@ import {
 import Globals from './Globals';
 import Config from './Config';
 
-import { FadeView } from './FadeView';
-import { saveToDatabase } from './Database';
-import { TextFixedWidth, toastPopUp, navigateWithDisabledBack } from './Utilities';
 import { Styles } from './Styles';
+import { FadeView } from './FadeView';
+import { CopyButton } from './CopyButton';
+import { saveToDatabase } from './Database';
+import { TextFixedWidth, navigateWithDisabledBack } from './Utilities';
 
 /**
  * Create or import a wallet
@@ -150,30 +151,9 @@ class SeedComponent extends React.Component {
                     <TextFixedWidth>{lines[3].join(' ')}</TextFixedWidth>
                     <TextFixedWidth>{lines[4].join(' ')}</TextFixedWidth>
                 </View>
-                <CopyButton></CopyButton>
-            </View>
-        );
-    }
-}
-
-/**
- * Copy the seed to clipboard
- */
-class CopyButton extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-        return(
-            <View style={[Styles.buttonContainer, {alignItems: 'flex-end', padding: 0, marginTop: 5}]}>
-                <Button
-                    title='Copy'
-                    onPress={() => {
-                        Clipboard.setString(this.props.seed);
-                        toastPopUp('Seed copied');
-                    }}
-                    color={Config.theme.primaryColour}
+                <CopyButton
+                    data={this.props.seed}
+                    name='Seed'
                 />
             </View>
         );

@@ -6,6 +6,8 @@ import React from 'react';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 
+import QRCode from 'react-native-qrcode-svg';
+
 import {
     Text, View, Image, Platform
 } from 'react-native';
@@ -17,7 +19,9 @@ import {
 import Config from './Config';
 import Globals from './Globals';
 
+import { Styles } from './Styles';
 import { coinsToFiat } from './Utilities';
+import { CopyButton } from './CopyButton';
 import { ProgressBar } from './ProgressBar';
 import { saveToDatabase } from './Database';
 import { processBlockOutputs } from './NativeCode';
@@ -54,7 +58,56 @@ export class MainScreen extends React.Component {
         return(
             <View style={{ flex: 1, justifyContent: 'space-between' }}>
                 <BalanceComponent/>
+                <AddressComponent/>
                 <SyncComponent/>
+            </View>
+        );
+    }
+}
+
+/* Display address, and QR code */
+class AddressComponent extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            address: Globals.wallet.getPrimaryAddress(),
+        };
+    }
+
+    render() {
+        return(
+            <View style={{ alignItems: 'center' }}>
+                <Text style={[Styles.centeredText, {
+                    color: Config.theme.primaryColour,
+                    fontSize: 20,
+                    marginBottom: 15,
+                }]}>
+                    Your Wallet Address:
+                </Text>
+
+                <QRCode
+                    value={this.state.address}
+                    size={200}
+                    color='gray'
+                />
+
+                <Text style={[Styles.centeredText, {
+                    color: Config.theme.primaryColour,
+                    fontSize: 15,
+                    marginTop: 10,
+                    marginRight: 20,
+                    marginLeft: 20,
+                }]}>
+                    {this.state.address}
+                </Text>
+
+                <View style={{ alignItems: 'flex-end' }}>
+                    <CopyButton
+                        data={this.state.address}
+                        name='Address'
+                    />
+                </View>
             </View>
         );
     }
@@ -218,7 +271,7 @@ class SyncComponent extends React.Component {
 
     render() {
         return(
-            <View style={{ justifyContent: 'flex-end', alignItems: 'center', marginBottom: 20 }}>
+            <View style={{ justifyContent: 'flex-end', alignItems: 'center', marginBottom: 20, marginTop: 30 }}>
                 <Text>
                     {this.state.walletHeight} / {this.state.networkHeight} - {this.state.percent}%
                 </Text>
