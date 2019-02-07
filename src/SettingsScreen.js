@@ -46,7 +46,7 @@ export class SwapCurrencyScreen extends React.Component {
                             subtitle={item.symbol + ' / ' + item.ticker.toUpperCase()}
                             leftIcon={
                                 <View style={{width: 30, alignItems: 'center', justifyContent: 'center', marginRight: 10}}>
-                                    <Text>
+                                    <Text style={{ fontSize: 25 }}>
                                         {item.symbol}
                                     </Text>
                                 </View>

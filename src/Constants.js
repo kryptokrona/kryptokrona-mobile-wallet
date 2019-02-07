@@ -15,8 +15,8 @@ export default Constants = {
         {
             ticker: 'eth',
             coinName: 'Ethereum',
-            symbol: 'ETH',
-            symbolLocation: 'postfix',
+            symbol: 'Ξ',
+            symbolLocation: 'prefix',
         },
         {
             ticker: 'ltc',
