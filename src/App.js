@@ -21,9 +21,9 @@ import { FadeView } from './FadeView';
 import { MainScreen } from './MainScreen';
 import { SplashScreen } from './SplashScreen';
 import { TransferScreen } from './TransferScreen';
-import { SettingsScreen } from './SettingsScreen';
 import { DisclaimerScreen } from './DisclaimerScreen';
 import { SetPinScreen, RequestPinScreen } from './Pin.js';
+import { SettingsScreen, SwapCurrencyScreen } from './SettingsScreen';
 import { WalletOptionScreen, CreateWalletScreen } from './CreateScreen';
 import { PickMonthScreen, PickBlockHeightScreen } from './ScanHeightScreen';
 import { TransactionsScreen, TransactionDetailsScreen } from './TransactionsScreen';
@@ -53,13 +53,32 @@ const TransactionNavigator = createStackNavigator(
     }
 );
 
+const SettingsNavigator = createStackNavigator(
+    {
+        Settings: SettingsScreen,
+        SwapCurrency: SwapCurrencyScreen,
+    },
+    {
+        initialRouteName: 'Settings',
+        headerLayoutPreset: 'center',
+        defaultNavigationOptions: {
+            headerTitleStyle: {
+                fontWeight: 'bold',
+                color: Config.theme.primaryColour,
+            },
+            headerTransparent: true,
+            headerTintColor: Config.theme.primaryColour,
+        },
+    }
+);
+
 /* Main screen for a logged in wallet */
 const HomeNavigator = createBottomTabNavigator(
     {
         Main: MainScreen,
         Transfer: TransferScreen,
         Transactions: TransactionNavigator,
-        Settings: SettingsScreen
+        Settings: SettingsNavigator, 
     },
     {
         initialRouteName: 'Main',

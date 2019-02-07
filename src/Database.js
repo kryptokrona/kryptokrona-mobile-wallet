@@ -11,6 +11,22 @@ import { sha512 } from 'js-sha512';
 import Config from './Config';
 import Constants from './Constants';
 
+function getPriceDataSchema() {
+    var obj = {
+        name: 'PriceData',
+        primaryKey: 'primaryKey',
+        properties: {
+            primaryKey: 'int',
+        }
+    }
+
+    for (const currency of Constants.currencies) {
+        obj.properties[currency.ticker] = 'double';
+    }
+
+    return obj;
+}
+
 const WalletSchema = {
     name: 'Wallet',
     /* Designate the 'primaryKey' property as the primary key. We can use
@@ -125,6 +141,15 @@ const SynchronizationStatusSchema = {
         blockHashCheckpoints: 'string[]',
         lastKnownBlockHashes: 'string[]',
         lastKnownBlockHeight: 'int',
+    }
+}
+
+const PreferencesSchema = {
+    name: 'Preferences',
+    primaryKey: 'primaryKey',
+    properties: {
+        primaryKey: 'int',
+        currency: 'string',
     }
 }
 
@@ -303,6 +328,78 @@ function realmToWalletJSON(realmObj) {
     return JSON.stringify(json);
 }
 
+export function savePreferencesToDatabase(preferences) {
+    preferences['primaryKey'] = 1;
+
+    Realm.open({
+        schema: [PreferencesSchema],
+        path: 'Preferences.realm',
+        deleteRealmIfMigrationNeeded: true,
+    }).then(realm => {
+        realm.write(() => {
+            return realm.create('Preferences', preferences, true);
+        });
+    }).catch(err => {
+        console.log('Failed to save preferences to DB: ' + err);
+    });
+}
+
+export async function loadPreferencesFromDatabase() {
+    try {
+        let realm = await Realm.open({
+            schema: [PreferencesSchema],
+            path: 'Preferences.realm',
+            deleteRealmIfMigrationNeeded: true,
+        });
+
+        if (realm.objects('Preferences').length > 0) {
+            return JSON.parse(JSON.stringify(realm.objects('Preferences')[0]));
+        }
+
+        return undefined;
+
+    } catch (err) {
+        console.log('Error loading preferences from database: ' + err);
+        return undefined;
+    }
+}
+
+export function savePriceDataToDatabase(priceData) {
+    priceData['primaryKey'] = 1;
+
+    Realm.open({
+        schema: [getPriceDataSchema()],
+        path: 'PriceData.realm',
+        deleteRealmIfMigrationNeeded: true,
+    }).then(realm => {
+        realm.write(() => {
+            return realm.create('PriceData', priceData, true);
+        });
+    }).catch(err => {
+        console.log('Failed to save price data to DB: ' + err);
+    });
+}
+
+export async function loadPriceDataFromDatabase() {
+    try {
+        let realm = await Realm.open({
+            schema: [getPriceDataSchema()],
+            path: 'PriceData.realm',
+            deleteRealmIfMigrationNeeded: true,
+        });
+
+        if (realm.objects('PriceData').length > 0) {
+            return JSON.parse(JSON.stringify(realm.objects('PriceData')[0]));
+        }
+
+        return undefined;
+
+    } catch (err) {
+        console.log('Error loading database: ' + err);
+        return undefined;
+    }
+}
+
 export function saveToDatabase(wallet, pinCode) {
     /* Get encryption key from pin code */
     var key = sha512.arrayBuffer(pinCode.toString());
@@ -341,7 +438,7 @@ export async function loadFromDatabase(pinCode) {
             encryptionKey: key,
         });
 
-        if (realm.objects('Wallet').length >= 0) {
+        if (realm.objects('Wallet').length > 0) {
             return realmToWalletJSON(realm.objects('Wallet')[0]);
         }
 

@@ -6,21 +6,66 @@ import React from 'react';
 
 import Realm from 'realm';
 
-import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import FontAwesome from 'react-native-vector-icons/FontAwesome5';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { deleteUserPinCode } from '@haskkor/react-native-pincode';
 
 import { List, ListItem } from 'react-native-elements';
 
-import { View, FlatList, Alert } from 'react-native';
+import { View, FlatList, Alert, Text } from 'react-native';
 
 import Config from './Config';
-import Globals from './Globals';
+import Constants from './Constants';
 
-import { setHaveWallet } from './Database';
+import { Globals } from './Globals';
 import { navigateWithDisabledBack } from './Utilities';
+import { setHaveWallet, savePreferencesToDatabase } from './Database';
+
+export class SwapCurrencyScreen extends React.Component {
+    static navigationOptions = {
+        title: 'Swap Currency',
+        header: null,
+    };
+
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return(
+            <List>
+                <FlatList
+                    data={Constants.currencies}
+                    keyExtractor={item => item.ticker}
+                    renderItem={({item}) => (
+                        <ListItem
+                            title={item.coinName}
+                            subtitle={item.symbol + ' / ' + item.ticker.toUpperCase()}
+                            leftIcon={
+                                <View style={{width: 30, alignItems: 'center', justifyContent: 'center', marginRight: 10}}>
+                                    <Text>
+                                        {item.symbol}
+                                    </Text>
+                                </View>
+                            }
+                            onPress={() => {
+                                Globals.preferences.currency = item.ticker;
+
+                                savePreferencesToDatabase(Globals.preferences);
+
+                                /* And go back to the settings screen. */
+                                this.props.navigation.navigate('Settings');
+                            }}
+                        />
+                    )}
+                />
+            </List>
+        );
+    }
+}
 
 /**
  * Fuck w/ stuff
@@ -28,6 +73,7 @@ import { navigateWithDisabledBack } from './Utilities';
 export class SettingsScreen extends React.Component {
     static navigationOptions = {
         title: 'Settings',
+        header: null,
     };
 
     constructor(props) {
@@ -39,6 +85,15 @@ export class SettingsScreen extends React.Component {
             <List>
                 <FlatList
                     data={[
+                        {
+                            title: 'Swap Currency',
+                            description: 'Swap your wallet display currency',
+                            icon: {
+                                iconName: 'currency-usd',
+                                IconType: MaterialCommunityIcons,
+                            },
+                            onClick: () => { this.props.navigation.navigate('SwapCurrency') },
+                        },
                         {
                             title: 'Reset Wallet',
                             description: 'Discard sync data and resync from scratch',

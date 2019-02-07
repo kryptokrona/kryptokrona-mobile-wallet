@@ -59,12 +59,17 @@ const Config = {
     /**
      * How often to process blocks, in millseconds
      */
-    mainLoopInterval: 10,
+    syncThreadInterval: 4,
 
     /**
-     * How often to fetch blocks from the daemon, in milliseconds
+     * How often to update the daemon info, in milliseconds
      */
-    blockFetchInterval: 1 * 1000,
+    daemonUpdateInterval: 10 * 1000,
+
+    /**
+     * How often to check on locked transactions
+     */
+    lockedTransactionsCheckInterval: 10 * 3000,
 
     /**
      * The amount of blocks to process per 'tick' of the mainloop. Note: too
@@ -131,6 +136,11 @@ const Config = {
      * Fee to take on all transactions
      */
     feePercentage: 0.5,
+
+    /**
+     * Base url for price API
+     */
+    priceApiLink: 'https://api.coingecko.com/api/v3/simple/price',
 };
 
 module.exports = Config;

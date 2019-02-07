@@ -13,10 +13,11 @@ import { View, Text, FlatList } from 'react-native';
 import { prettyPrintAmount } from 'turtlecoin-wallet-backend';
 
 import Config from './Config';
-import Globals from './Globals';
 
 import { Styles } from './Styles';
-import { prettyPrintUnixTimestamp, prettyPrintDate, coinsToFiat } from './Utilities';
+import { Globals } from './Globals';
+import { coinsToFiat } from './Currency';
+import { prettyPrintUnixTimestamp, prettyPrintDate } from './Utilities';
 
 class ItemDescription extends React.Component {
     constructor(props) {
@@ -58,7 +59,19 @@ export class TransactionDetailsScreen extends React.Component {
             transaction: props.navigation.state.params.transaction,
             amount: props.navigation.state.params.transaction.totalAmount(),
             complete: props.navigation.state.params.transaction.timestamp !== 0,
-        }
+            coinValue: '0',
+        };
+
+        (async () => {
+            const coinValue = await coinsToFiat(
+                props.navigation.state.params.transaction.totalAmount(),
+                Globals.preferences.currency,
+            );
+
+            this.setState({
+                coinValue,
+            });
+        })();
     }
 
     render() {
@@ -78,7 +91,7 @@ export class TransactionDetailsScreen extends React.Component {
 
                 <ItemDescription
                     title='Value'
-                    item={coinsToFiat(this.state.amount)}/>
+                    item={this.state.coinValue}/>
 
                 <ItemDescription
                     title='State'

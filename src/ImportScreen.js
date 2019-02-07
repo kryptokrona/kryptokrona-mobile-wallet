@@ -16,9 +16,9 @@ import {
 } from 'turtlecoin-wallet-backend';
 
 import Config from './Config';
-import Globals from './Globals';
 
 import { Styles } from './Styles';
+import { Globals } from './Globals';
 import { saveToDatabase } from './Database';
 
 /**

@@ -8,9 +8,8 @@ import {
     View, Image, Text, Clipboard, Button
 } from 'react-native';
 
-import Globals from './Globals';
-
 import { Styles } from './Styles';
+import { Globals } from './Globals';
 import { toastPopUp } from './Utilities';
 
 /**
@@ -38,7 +37,6 @@ export class TransferScreen extends React.Component {
                 <Button
                     title='Log wallet to console + Copy'
                     onPress={() => {
-                        console.log(Globals.wallet.getPrimaryAddress());
                         Clipboard.setString(Globals.wallet.getPrimaryAddress());
                         toastPopUp('Address copied');
                     }}>

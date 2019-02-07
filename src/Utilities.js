@@ -65,11 +65,6 @@ export function prettyPrintDate(date) {
     return dateAndMonth + ' ' + date.getFullYear();
 }
 
-/* TODO */
-export function coinsToFiat(amount) {
-    return '$' + amount.toString();
-}
-
 /** 
  * Gets the approximate height of the blockchain, based on the launch timestamp
  */

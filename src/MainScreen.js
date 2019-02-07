@@ -17,10 +17,10 @@ import {
 } from 'turtlecoin-wallet-backend';
 
 import Config from './Config';
-import Globals from './Globals';
 
 import { Styles } from './Styles';
-import { coinsToFiat } from './Utilities';
+import { Globals } from './Globals';
+import { coinsToFiat } from './Currency';
 import { CopyButton } from './CopyButton';
 import { ProgressBar } from './ProgressBar';
 import { saveToDatabase } from './Database';
@@ -120,22 +120,43 @@ class BalanceComponent extends React.Component {
     constructor(props) {
         super(props);
 
-        const [unlockedBalance, lockedBalance] = Globals.wallet.getBalance();
-
         this.state = {
-            unlockedBalance,
-            lockedBalance,
+            unlockedBalance: 0,
+            lockedBalance: 0,
+            coinValue: 0,
             expandedBalance: false,
         };
+
+        (async () => {
+            const [unlockedBalance, lockedBalance] = Globals.wallet.getBalance();
+
+            const coinValue = await coinsToFiat(
+                unlockedBalance + lockedBalance, Globals.preferences.currency
+            );
+
+            this.setState({
+                unlockedBalance,
+                lockedBalance,
+                coinValue,
+            });
+
+        })();
     }
 
     tick() {
-        const [unlockedBalance, lockedBalance] = Globals.wallet.getBalance();
+        (async () => {
+            const [unlockedBalance, lockedBalance] = Globals.wallet.getBalance();
 
-        this.setState({
-            unlockedBalance,
-            lockedBalance
-        });
+            const coinValue = await coinsToFiat(
+                unlockedBalance + lockedBalance, Globals.preferences.currency
+            );
+
+            this.setState({
+                unlockedBalance,
+                lockedBalance,
+                coinValue,
+            });
+        })();
     }
 
     componentDidMount() {
@@ -201,7 +222,7 @@ class BalanceComponent extends React.Component {
                         {this.state.expandedBalance ? expandedBalance : compactBalance}
 
                         <Text style={{ color: 'gray', fontSize: 20 }}>
-                            {coinsToFiat(this.state.unlockedBalance + this.state.lockedBalance)}
+                            {this.state.coinValue}
                         </Text>
                 </View>
             </View>
