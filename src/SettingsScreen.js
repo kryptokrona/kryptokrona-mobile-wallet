@@ -57,7 +57,7 @@ export class SwapCurrencyScreen extends React.Component {
                                 savePreferencesToDatabase(Globals.preferences);
 
                                 /* And go back to the settings screen. */
-                                this.props.navigation.navigate('Settings');
+                                this.props.navigation.navigate('Main');
                             }}
                         />
                     )}
