@@ -2,12 +2,10 @@
 //
 // Please see the included LICENSE file for more information.
 
-import * as _ from 'lodash';
-
 import React from 'react';
 
 import {
-    View, Text, Button, StyleSheet, Image,
+    View, Text, Button, Image,
 } from 'react-native';
 
 import {
@@ -18,11 +16,12 @@ import Config from './Config';
 
 import { Styles } from './Styles';
 import { FadeView } from './FadeView';
-import { CopyButton } from './CopyButton';
 import { saveToDatabase } from './Database';
 import { updateCoinPrice } from './Currency';
+import { CopyButton } from './SharedComponents';
 import { Globals, initGlobals } from './Globals';
-import { TextFixedWidth, navigateWithDisabledBack } from './Utilities';
+import { SeedComponent } from './SharedComponents';
+import { navigateWithDisabledBack } from './Utilities';
 
 /**
  * Create or import a wallet
@@ -119,8 +118,10 @@ export class CreateWalletScreen extends React.Component {
                             you cannot restore your wallet, and your funds will be lost forever!
                         </Text>
                     </Text>
-                    <SeedComponent seed={Globals.wallet.getMnemonicSeed()}>
-                    </SeedComponent>
+                    <SeedComponent
+                        seed={Globals.wallet.getMnemonicSeed()}
+                        borderColour={'red'}
+                    />
                 </View>
 
                 <View style={[Styles.buttonContainer, {bottom: 30, position: 'absolute', alignItems: 'stretch', justifyContent: 'center', width: '100%'}]}>
@@ -131,36 +132,6 @@ export class CreateWalletScreen extends React.Component {
                         color={Config.theme.primaryColour}
                     />
                 </View>
-            </View>
-        );
-    }
-}
-
-/**
- * Display the seed in a nice way
- */
-class SeedComponent extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-        const split = this.props.seed.split(' ');
-        const lines = _.chunk(split, 5);
-
-        return(
-            <View>
-                <View style={{alignItems: 'center', marginTop: 10, borderWidth: 1, borderColor: 'red', padding: 10}}>
-                    <TextFixedWidth>{lines[0].join(' ')}</TextFixedWidth>
-                    <TextFixedWidth>{lines[1].join(' ')}</TextFixedWidth>
-                    <TextFixedWidth>{lines[2].join(' ')}</TextFixedWidth>
-                    <TextFixedWidth>{lines[3].join(' ')}</TextFixedWidth>
-                    <TextFixedWidth>{lines[4].join(' ')}</TextFixedWidth>
-                </View>
-                <CopyButton
-                    data={this.props.seed}
-                    name='Seed'
-                />
             </View>
         );
     }

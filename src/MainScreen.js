@@ -21,9 +21,9 @@ import Config from './Config';
 import { Styles } from './Styles';
 import { Globals } from './Globals';
 import { coinsToFiat } from './Currency';
-import { CopyButton } from './CopyButton';
 import { ProgressBar } from './ProgressBar';
 import { saveToDatabase } from './Database';
+import { CopyButton } from './SharedComponents';
 import { processBlockOutputs } from './NativeCode';
 
 /**

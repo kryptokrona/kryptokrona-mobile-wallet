@@ -6,6 +6,8 @@ import React from 'react';
 
 import Realm from 'realm';
 
+import TextTicker from 'react-native-text-ticker';
+
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
@@ -20,9 +22,101 @@ import { View, FlatList, Alert, Text } from 'react-native';
 import Config from './Config';
 import Constants from './Constants';
 
+import { Styles } from './Styles';
 import { Globals } from './Globals';
 import { navigateWithDisabledBack } from './Utilities';
+import { SeedComponent, CopyButton } from './SharedComponents';
 import { setHaveWallet, savePreferencesToDatabase } from './Database';
+
+export class ExportKeysScreen extends React.Component {
+    static navigationOptions = {
+        title: 'Backup Keys',
+    };
+
+    constructor(props) {
+        super(props);
+
+        let [mnemonicSeed, error] = Globals.wallet.getMnemonicSeed();
+
+        const [privateSpendKey, privateViewKey] = Globals.wallet.getPrimaryAddressPrivateKeys();
+
+        this.state = {
+            privateSpendKey,
+            privateViewKey,
+            mnemonicSeed,
+        }
+    }
+
+    render() {
+        const noSeedComponent =
+            <Text style={[Styles.centeredText, {
+                color: Config.theme.primaryColour,
+                marginLeft: 10,
+                marginRight: 10,
+                marginTop: 10,
+                marginBottom: 20,
+                fontSize: 16,
+            }]}>
+                Your wallet isn't a mnemonic seed capable wallet. Not to worry though, your
+                private keys will work just as well for restoring your wallet.
+            </Text>;
+
+        const seedComponent =
+            <SeedComponent
+                seed={this.state.mnemonicSeed}
+                borderColour={Config.theme.primaryColour}
+            />;
+
+        return(
+            <View style={{ flex: 1, justifyContent: 'center', marginTop: 40 }}>
+                <Text style={[Styles.centeredText, { color: Config.theme.primaryColour, fontSize: 20 }]}>
+                    Mnemonic Seed:
+                </Text>
+
+                <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                    {this.state.mnemonicSeed === undefined ? noSeedComponent : seedComponent}
+                </View>
+
+                <Text style={[Styles.centeredText, { color: Config.theme.primaryColour, fontSize: 20, marginTop: 10, marginBottom: 5 }]}>
+                    Private Spend Key:
+                </Text>
+
+                <TextTicker
+                    style={{ color: Config.theme.primaryColour, fontSize: 20 }}
+                    marqueeDelay={1000}
+                    duration={220 * 64}
+                >
+                    {this.state.privateSpendKey}
+                </TextTicker>
+
+                <CopyButton
+                    data={this.state.privateSpendKey}
+                    name='Private Spend Key'
+                    alignItems='center'
+                />
+
+                <Text style={[Styles.centeredText, { color: Config.theme.primaryColour, fontSize: 20, marginTop: 30, marginBottom: 5 }]}>
+                    Private View Key:
+                </Text>
+
+                <TextTicker
+                    style={{ color: Config.theme.primaryColour, fontSize: 20 }}
+                    marqueeDelay={1000}
+                    duration={220 * 64}
+                >
+                    {this.state.privateViewKey}
+                </TextTicker>
+
+                <CopyButton
+                    data={this.state.privateViewKey}
+                    name='Private View Key'
+                    alignItems='center'
+                />
+
+            </View>
+        );
+    }
+}
 
 export class SwapCurrencyScreen extends React.Component {
     static navigationOptions = {
@@ -89,6 +183,15 @@ export class SettingsScreen extends React.Component {
                 <FlatList
                     data={[
                         {
+                            title: 'Backup Keys',
+                            description: 'Display your private keys and mnemonic seed',
+                            icon: {
+                                iconName: 'key-change',
+                                IconType: MaterialCommunityIcons,
+                            },
+                            onClick: () => { this.props.navigation.navigate('ExportKeys') },
+                        },
+                        {
                             title: 'Swap Currency',
                             description: 'Swap your wallet display currency',
                             icon: {
@@ -96,16 +199,6 @@ export class SettingsScreen extends React.Component {
                                 IconType: MaterialCommunityIcons,
                             },
                             onClick: () => { this.props.navigation.navigate('SwapCurrency') },
-                        },
-                        {
-                            title: 'Reset Wallet',
-                            description: 'Discard sync data and resync from scratch',
-                            icon: {
-                                iconName: 'ios-search',
-                                IconType: Ionicons,
-                            },
-                            /* TODO */
-                            onClick: () => {},
                         },
                         {
                             title: 'Delete Wallet',

@@ -23,10 +23,10 @@ import { SplashScreen } from './SplashScreen';
 import { TransferScreen } from './TransferScreen';
 import { DisclaimerScreen } from './DisclaimerScreen';
 import { SetPinScreen, RequestPinScreen } from './Pin.js';
-import { SettingsScreen, SwapCurrencyScreen } from './SettingsScreen';
 import { WalletOptionScreen, CreateWalletScreen } from './CreateScreen';
 import { PickMonthScreen, PickBlockHeightScreen } from './ScanHeightScreen';
 import { TransactionsScreen, TransactionDetailsScreen } from './TransactionsScreen';
+import { SettingsScreen, SwapCurrencyScreen, ExportKeysScreen } from './SettingsScreen';
 
 import { 
     ImportWalletScreen, ImportKeysOrSeedScreen, ImportSeedScreen, 
@@ -57,6 +57,7 @@ const SettingsNavigator = createStackNavigator(
     {
         Settings: SettingsScreen,
         SwapCurrency: SwapCurrencyScreen,
+        ExportKeys: ExportKeysScreen,
     },
     {
         initialRouteName: 'Settings',
