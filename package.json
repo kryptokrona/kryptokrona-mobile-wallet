@@ -25,7 +25,7 @@
     "react": "16.6.3",
     "react-native": "0.57.8",
     "react-native-crypto": "^2.1.2",
-    "react-native-elements": "^0.19.1",
+    "react-native-elements": "^1.0.0",
     "react-native-gesture-handler": "^1.0.12",
     "react-native-keyboard-aware-scroll-view": "^0.8.0",
     "react-native-level-fs": "^3.0.1",
