@@ -78,6 +78,9 @@ export async function coinsToFiat(amount, currencyTicker) {
             /* Only show two decimal places if we've got more than '1' unit */
             if (converted > 1) {
                 convertedString = converted.toFixed(2);
+            /* Any lower than 1e-6, and it will display in scientific notation */
+            } else if (converted < 1e-6) {
+                convertedString = converted.toFixed(8);
             }
 
             if (currency.symbolLocation === 'prefix') {
