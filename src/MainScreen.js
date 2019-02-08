@@ -9,7 +9,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import QRCode from 'react-native-qrcode-svg';
 
 import {
-    Text, View, Image, Platform
+    Text, View, Image, Platform, TouchableOpacity,
 } from 'react-native';
 
 import { 
@@ -37,6 +37,10 @@ export class MainScreen extends React.Component {
     constructor(props) {
         super(props);
 
+        this.state = {
+            addressOnly: false,
+        }
+
         /* Use our native C++ func to process blocks, provided we're on android */
         /* TODO: iOS support */
         if (Platform.OS === 'android') {
@@ -55,11 +59,23 @@ export class MainScreen extends React.Component {
     }
 
     render() {
+        /* If you touch the address component, it will hide the other stuff.
+           This is nice if you want someone to scan the QR code, but don't
+           want to display your balance. */
         return(
             <View style={{ flex: 1, justifyContent: 'space-between' }}>
-                <BalanceComponent/>
-                <AddressComponent/>
-                <SyncComponent/>
+
+                <View style={{ flex: 1, opacity: this.state.addressOnly ? 0 : 100, marginTop: 30 }}>
+                    <BalanceComponent/>
+                </View>
+
+                <TouchableOpacity onPress={() => this.setState({ addressOnly: !this.state.addressOnly })}>
+                    <AddressComponent/>
+                </TouchableOpacity>
+
+                <View style={{ flex: 1, opacity: this.state.addressOnly ? 0 : 100 }}>
+                    <SyncComponent/>
+                </View>
             </View>
         );
     }
