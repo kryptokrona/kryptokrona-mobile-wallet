@@ -65,7 +65,14 @@ export class MainScreen extends React.Component {
         return(
             <View style={{ flex: 1, justifyContent: 'space-between' }}>
 
-                <View style={{ flex: 1, opacity: this.state.addressOnly ? 0 : 100, marginTop: 30 }}>
+                <View style={{ 
+                    height: '20%', 
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    margin: 10,
+                    borderRadius: 10,
+                    opacity: this.state.addressOnly ? 0 : 100,
+                }}>
                     <BalanceComponent/>
                 </View>
 
@@ -223,24 +230,16 @@ class BalanceComponent extends React.Component {
                                 </View>;
 
         return(
-            <View style={{ 
-                    height: '20%', 
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    margin: 10,
-                    borderRadius: 10
-                }}>
-                <View style={{flex: 1, padding: 20, justifyContent: 'center', alignItems: 'center'}}>
-                        <Text style={{ color: 'lightgray', fontSize: 15 }}>
-                            TOTAL BALANCE
-                        </Text>
+            <View style={{flex: 1, padding: 20, justifyContent: 'center', alignItems: 'center'}}>
+                    <Text style={{ color: 'lightgray', fontSize: 15 }}>
+                        TOTAL BALANCE
+                    </Text>
 
-                        {this.state.expandedBalance ? expandedBalance : compactBalance}
+                    {this.state.expandedBalance ? expandedBalance : compactBalance}
 
-                        <Text style={{ color: 'gray', fontSize: 20 }}>
-                            {this.state.coinValue}
-                        </Text>
-                </View>
+                    <Text style={{ color: 'gray', fontSize: 20 }}>
+                        {this.state.coinValue}
+                    </Text>
             </View>
         );
     }
