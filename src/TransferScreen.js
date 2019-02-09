@@ -18,6 +18,7 @@ import List from './ListContainer';
 
 import { Styles } from './Styles';
 import { Globals } from './Globals';
+import { Hr } from './SharedComponents';
 import { removeFee, toAtomic, fromAtomic, addFee } from './Fee';
 
 /**
@@ -26,6 +27,7 @@ import { removeFee, toAtomic, fromAtomic, addFee } from './Fee';
 export class TransferScreen extends React.Component {
     static navigationOptions = {
         title: 'Transfer',
+        header: null,
     };
 
     constructor(props) {
@@ -146,7 +148,7 @@ export class TransferScreen extends React.Component {
                 <Input
                     containerStyle={{
                         width: 330,
-                        marginBottom: 20,
+                        marginBottom: 40,
                     }}
                     inputContainerStyle={{
                         borderColor: 'lightgrey',
@@ -267,9 +269,10 @@ export class ExistingPayees extends React.Component {
                 flex: 1,
                 width: '90%',
             }}>
-                <Text style={{ color: Config.theme.primaryColour, marginTop: 50 }}>
+                <Text style={{ color: Config.theme.primaryColour, marginTop: 40 }}>
                     Address Book
                 </Text>
+
                 <List>
                     <FlatList
                         data={[
@@ -354,6 +357,8 @@ export class ChoosePayeeScreen extends React.Component {
                         Add a new recipient
                     </Text>
                 </View>
+
+                <Hr/>
 
                 <ExistingPayees/>
             </View>

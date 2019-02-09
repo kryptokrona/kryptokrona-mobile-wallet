@@ -74,3 +74,15 @@ export class CopyButton extends React.Component {
         );
     }
 }
+
+export class Hr extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return(
+            <View style={{ borderWidth: 0.5, borderColor: 'lightgrey', marginTop: 15, width: '90%' }}/>
+        );
+    }
+}
