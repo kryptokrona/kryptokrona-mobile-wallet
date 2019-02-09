@@ -105,7 +105,6 @@ export class AmountScreen extends React.Component {
     }
 
     convertSentToReceived(amount) {
-        console.log(amount);
         if (amount !== undefined && amount !== null) {
             amount = amount.replace(/,/g, '');
         }
@@ -116,8 +115,6 @@ export class AmountScreen extends React.Component {
 
         if (!isNaN(numAmount) && numAmount > 0) {
             let feeInfo = removeFee(numAmount);
-
-            console.log(feeInfo);
 
             result = feeInfo.remaining;
         }
