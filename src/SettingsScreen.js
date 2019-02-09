@@ -15,11 +15,11 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import { deleteUserPinCode } from '@haskkor/react-native-pincode';
 
-import { List, ListItem } from 'react-native-elements';
-
 import { View, FlatList, Alert, Text } from 'react-native';
 
 import Config from './Config';
+import ListItem from './ListItem';
+import List from './ListContainer';
 import Constants from './Constants';
 
 import { Styles } from './Styles';

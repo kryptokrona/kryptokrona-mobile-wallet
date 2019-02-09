@@ -8,11 +8,12 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import TextTicker from 'react-native-text-ticker';
 
-import { List, ListItem } from 'react-native-elements';
 import { View, Text, FlatList } from 'react-native';
 import { prettyPrintAmount } from 'turtlecoin-wallet-backend';
 
 import Config from './Config';
+import ListItem from './ListItem';
+import List from './ListContainer';
 
 import { Styles } from './Styles';
 import { Globals } from './Globals';
