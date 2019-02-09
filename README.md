@@ -1,6 +1,6 @@
 # ton-chan - A mobile, native TurtleCoin wallet
 
-![Screenshot](https://i.imgur.com/M3fZZmH.png)
+![Screenshot](https://i.imgur.com/MbZxkdu.png)
 
 ## Setup
 
