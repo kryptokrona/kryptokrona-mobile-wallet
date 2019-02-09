@@ -5,15 +5,16 @@
 import React from 'react';
 
 import {
-    View, Text, Button, TextInput,
+    View, Text, TextInput, TouchableWithoutFeedback,
 } from 'react-native';
 
-import { Input } from 'react-native-elements';
+import { Input, Button } from 'react-native-elements';
 
 import Config from './Config';
 
 import { Styles } from './Styles';
 import { Globals } from './Globals';
+import { removeFee, toAtomic, fromAtomic, addFee } from './Fee';
 
 /**
  * Send a transaction
@@ -47,9 +48,111 @@ export class AmountScreen extends React.Component {
         this.state = {
             unlockedBalance,
             lockedBalance,
-            sendAmountErrMsg : 'You do not have enough funds. Available: 100 TRTL',
-            receiveAmountErrMsg: '',
+            errMsg: '',
+            continueEnabled: false,
+            unlockedBalanceHuman: fromAtomic(unlockedBalance),
+            youSendAmount: '',
+            recipientGetsAmount: '',
         }
+    }
+
+    tick() {
+        const [unlockedBalance, lockedBalance] = Globals.wallet.getBalance();
+
+        this.setState({
+            unlockedBalance,
+            lockedBalance,
+            unlockedBalanceHuman: fromAtomic(unlockedBalance),
+        });
+    }
+
+    checkErrors(amount) {
+        const [valid, error] = this.validAmount(amount);
+
+        this.setState({
+            continueEnabled: valid,
+            errMsg: error,
+        });
+    }
+
+    validAmount(amount) {
+        if (amount === '' || amount === undefined || amount === null) {
+            return [false, ''];
+        }
+
+        /* Remove commas in input */
+        amount = amount.replace(/,/g, '');
+
+        let numAmount = Number(amount);
+
+        if (isNaN(numAmount)) {
+            return [false, 'Amount is not a number!'];
+        }
+
+        /* Remove fractional component and convert to atomic */
+        numAmount = Math.floor(toAtomic(numAmount));
+
+        /* Must be above min send */
+        if (numAmount < 1) {
+            return [false, 'Amount is below minimum send!'];
+        }
+
+        if (numAmount > this.state.unlockedBalance) {
+            return [false, 'Not enough funds available!'];
+        }
+
+        return [true, ''];
+    }
+
+    convertSentToReceived(amount) {
+        console.log(amount);
+        if (amount !== undefined && amount !== null) {
+            amount = amount.replace(/,/g, '');
+        }
+
+        let numAmount = Number(amount);
+
+        let result = '';
+
+        if (!isNaN(numAmount) && numAmount > 0) {
+            let feeInfo = removeFee(numAmount);
+
+            console.log(feeInfo);
+
+            result = feeInfo.remaining;
+        }
+
+        this.setState({
+            recipientGetsAmount: result,
+        });
+    }
+
+    convertReceivedToSent(amount) {
+        if (amount !== undefined && amount !== null) {
+            amount = amount.replace(/,/g, '');
+        }
+
+        let numAmount = Number(amount);
+
+        let result = '';
+
+        if (!isNaN(numAmount) && numAmount > 0) {
+            let feeInfo = addFee(numAmount);
+
+            result = feeInfo.original;
+        }
+
+        this.setState({
+            youSendAmount: result,
+        });
+    }
+
+    componentDidMount() {
+        this.interval = setInterval(() => this.tick(), 1000);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.interval);
     }
 
     render() {
@@ -58,7 +161,7 @@ export class AmountScreen extends React.Component {
                 <Input
                     containerStyle={{
                         width: 330,
-                        marginBottom: 50,
+                        marginBottom: 20,
                     }}
                     inputContainerStyle={{
                         borderColor: 'lightgrey',
@@ -77,16 +180,26 @@ export class AmountScreen extends React.Component {
                     }
                     keyboardType={'number-pad'}
                     inputStyle={{
-                        color: 'gray',
+                        color: Config.theme.primaryColour,
                         fontSize: 30,
+                        marginLeft: 5
                     }}
-                    errorMessage={this.state.sendAmountErrMsg}
-                />
+                    errorMessage={this.state.errMsg}
+                    value={this.state.youSendAmount}
+                    onChangeText={(text) => {
+                        this.setState({
+                            youSendAmount: text,
+                        });
 
+                        this.convertSentToReceived(text);
+
+                        this.checkErrors(text);
+                    }}
+                />
+                
                 <Input
                     containerStyle={{
                         width: 330,
-                        marginBottom: 30,
                     }}
                     inputContainerStyle={{
                         borderColor: 'lightgrey',
@@ -105,17 +218,51 @@ export class AmountScreen extends React.Component {
                     }
                     keyboardType={'number-pad'}
                     inputStyle={{
-                        color: 'gray',
+                        color: Config.theme.primaryColour,
                         fontSize: 30,
+                        marginLeft: 5
                     }}
-                    errorMessage={this.state.receiveAmountErrMsg}
+                    value={this.state.recipientGetsAmount}
+                    onChangeText={(text) => {
+                        this.setState({
+                            recipientGetsAmount: text,
+                        });
+
+                        this.convertReceivedToSent(text);
+
+                        this.checkErrors(text);
+                    }}
                 />
 
+                <View style={[Styles.buttonContainer, {marginLeft: 235, marginBottom: 30}]}>
+                    <Button
+                        title="Send Max"
+                        onPress={() => {
+                            this.setState({
+                                youSendAmount: this.state.unlockedBalanceHuman,
+                            });
+
+                            this.convertSentToReceived(this.state.unlockedBalanceHuman);
+
+                            this.checkErrors(this.state.unlockedBalanceHuman);
+                        }}
+                        titleStyle={{
+                            color: Config.theme.primaryColour,
+                            textDecorationLine: 'underline',
+                        }}
+                        type="clear"
+                    />
+                </View>
+
+                
                 <View style={[Styles.buttonContainer, Styles.alignBottom, {bottom: 40}]}>
                     <Button
                         title="Continue"
                         onPress={() => console.log('foo')}
-                        color={Config.theme.primaryColour}
+                        buttonStyle={{
+                            backgroundColor: Config.theme.primaryColour,
+                        }}
+                        disabled={!this.state.continueEnabled}
                     />
                 </View>
 
