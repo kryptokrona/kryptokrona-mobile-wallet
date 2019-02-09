@@ -20,9 +20,9 @@ import { Spinner } from './Spinner';
 import { FadeView } from './FadeView';
 import { MainScreen } from './MainScreen';
 import { SplashScreen } from './SplashScreen';
-import { TransferScreen } from './TransferScreen';
 import { DisclaimerScreen } from './DisclaimerScreen';
 import { SetPinScreen, RequestPinScreen } from './Pin.js';
+import { TransferScreen, ChoosePayeeScreen } from './TransferScreen';
 import { WalletOptionScreen, CreateWalletScreen } from './CreateScreen';
 import { PickMonthScreen, PickBlockHeightScreen } from './ScanHeightScreen';
 import { TransactionsScreen, TransactionDetailsScreen } from './TransactionsScreen';
@@ -41,6 +41,25 @@ const TransactionNavigator = createStackNavigator(
     },
     {
         initialRouteName: 'Transactions',
+        headerLayoutPreset: 'center',
+        defaultNavigationOptions: {
+            headerTitleStyle: {
+                fontWeight: 'bold',
+                color: Config.theme.primaryColour,
+            },
+            headerTransparent: true,
+            headerTintColor: Config.theme.primaryColour,
+        },
+    }
+);
+
+const TransferNavigator = createStackNavigator(
+    {
+        Transfer: TransferScreen,
+        ChoosePayee: ChoosePayeeScreen,
+    },
+    {
+        initialRouteName: 'Transfer',
         headerLayoutPreset: 'center',
         defaultNavigationOptions: {
             headerTitleStyle: {
@@ -77,7 +96,7 @@ const SettingsNavigator = createStackNavigator(
 const HomeNavigator = createBottomTabNavigator(
     {
         Main: MainScreen,
-        Transfer: TransferScreen,
+        Transfer: TransferNavigator,
         Transactions: TransactionNavigator,
         Settings: SettingsNavigator, 
     },

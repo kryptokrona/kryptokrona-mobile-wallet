@@ -4,13 +4,17 @@
 
 import React from 'react';
 
+import AntDesign from 'react-native-vector-icons/AntDesign';
+
 import {
-    View, Text, TextInput, TouchableWithoutFeedback,
+    View, Text, TextInput, TouchableWithoutFeedback, FlatList, Platform,
 } from 'react-native';
 
 import { Input, Button } from 'react-native-elements';
 
 import Config from './Config';
+import ListItem from './ListItem';
+import List from './ListContainer';
 
 import { Styles } from './Styles';
 import { Globals } from './Globals';
@@ -20,22 +24,6 @@ import { removeFee, toAtomic, fromAtomic, addFee } from './Fee';
  * Send a transaction
  */
 export class TransferScreen extends React.Component {
-    static navigationOptions = {
-        title: 'Transfer',
-    };
-
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-        return(
-            <AmountScreen/>
-        );
-    }
-}
-
-export class AmountScreen extends React.Component {
     static navigationOptions = {
         title: 'Transfer',
     };
@@ -255,7 +243,7 @@ export class AmountScreen extends React.Component {
                 <View style={[Styles.buttonContainer, Styles.alignBottom, {bottom: 40}]}>
                     <Button
                         title="Continue"
-                        onPress={() => console.log('foo')}
+                        onPress={() => this.props.navigation.navigate('ChoosePayee')} 
                         buttonStyle={{
                             backgroundColor: Config.theme.primaryColour,
                         }}
@@ -263,6 +251,111 @@ export class AmountScreen extends React.Component {
                     />
                 </View>
 
+            </View>
+        );
+    }
+}
+
+export class ExistingPayees extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return(
+            <View style={{
+                flex: 1,
+                width: '90%',
+            }}>
+                <Text style={{ color: Config.theme.primaryColour, marginTop: 50 }}>
+                    Address Book
+                </Text>
+                <List>
+                    <FlatList
+                        data={[
+                            {
+                                title: 'Exchange',
+                                address: 'TRTLv2Fyavy8CXG8BPEbNeCHFZ1fuDCYCZ3vW5H5LXN4K2M2MHUpTENip9bbavpHvvPwb4NDkBWrNgURAd5DB38FHXWZyoBh4wW',
+                            },
+                            {
+                                title: 'Tipjar',
+                                address: 'TRTLuxtaj1Q9aGxQ4Tovu59ukhuCam5gE9EP492YrcMEA4vSDHLymoyCQhqNT9YwSRAQvxTAvdazc9QgjMJWf8XAAZsfrbCv4i22eeNaty9F3VXnU8GXwoVRvTvHaVVafpGKTfBJXYGySdQ5C7uwFkx7uSJpp4fwwkv3nUQ54MbFStQmjaC8yFnB5gi',
+                            }
+                        ]}
+                        keyExtractor={item => item.address}
+                        renderItem={({item}) => (
+                            <ListItem
+                                title={item.title}
+                                subtitle={item.address.substr(0, 25) + '...'}
+                                subtitleStyle={{
+                                    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace'
+                                }}
+                                leftIcon={
+                                    <View style={{
+                                        width: 50,
+                                        height: 50,
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        backgroundColor: 'ghostwhite',
+                                        borderRadius: 45
+                                    }}>
+                                        <Text style={[Styles.centeredText, { fontSize: 30, color: Config.theme.primaryColour }]}>
+                                            {item.title[0].toUpperCase()}
+                                        </Text>
+                                    </View>
+                                }
+                            />
+                        )}
+                    />
+                </List>
+            </View>
+        );
+    }
+}
+
+export class ChoosePayeeScreen extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return(
+            <View style={{ 
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                flex: 1,
+                marginLeft: 30,
+                marginTop: 60
+            }}>
+                <Text style={[Styles.centeredText, { color: Config.theme.primaryColour, fontSize: 25, marginBottom: 40 }]}>
+                    Who are you sending to?
+                </Text>
+                
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+
+                    <View style={{
+                        height: 37,
+                        width: 37,
+                        borderWidth: 1,
+                        borderColor: 'lightgrey',
+                        borderRadius: 45,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}>
+                        <AntDesign
+                            name={'adduser'}
+                            size={28}
+                            color={'grey'}
+                            padding={5}
+                        />
+                    </View>
+
+                    <Text style={{ marginLeft: 15, color: Config.theme.primaryColour, fontSize: 16 }}>
+                        Add a new recipient
+                    </Text>
+                </View>
+
+                <ExistingPayees/>
             </View>
         );
     }
