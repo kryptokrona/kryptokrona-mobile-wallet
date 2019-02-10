@@ -6,6 +6,8 @@ import React from 'react';
 
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
+import { HeaderBackButton } from 'react-navigation';
+
 import {
     View, Text, TextInput, TouchableWithoutFeedback, FlatList, Platform,
 } from 'react-native';
@@ -21,13 +23,63 @@ import { Globals } from './Globals';
 import { Hr } from './SharedComponents';
 import { removeFee, toAtomic, fromAtomic, addFee } from './Fee';
 
+export class AmountInput extends React.Component {
+
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return(
+            <Input
+                containerStyle={{
+                    width: '90%',
+                    marginLeft: 20,
+                    marginBottom: this.props.marginBottom || 0,
+                }}
+                inputContainerStyle={{
+                    borderColor: 'lightgrey',
+                    borderWidth: 1,
+                    borderRadius: 2,
+                }}
+                label={this.props.label}
+                labelStyle={{
+                    marginBottom: 5,
+                    marginRight: 2,
+                }}
+                rightIcon={
+                    <Text style={{ fontSize: 30, marginRight: 10, color: Config.theme.primaryColour }}>
+                        {Config.ticker}
+                    </Text>
+                }
+                keyboardType={'number-pad'}
+                inputStyle={{
+                    color: Config.theme.primaryColour,
+                    fontSize: 30,
+                    marginLeft: 5
+                }}
+                errorMessage={this.props.errorMessage}
+                value={this.props.value}
+                onChangeText={(text) => this.props.onChangeText(text)}
+            />
+        );
+    }
+}
+
 /**
  * Send a transaction
  */
 export class TransferScreen extends React.Component {
-    static navigationOptions = {
-        title: 'Transfer',
-        header: null,
+    static navigationOptions = ({ navigation }) => {
+        return {
+            title: '',
+            headerLeft: (
+                <HeaderBackButton
+                    tintColor={Config.theme.primaryColour}
+                    onPress={() => { navigation.navigate('Main') }}
+                />
+            ),
+        }
     };
 
     constructor(props) {
@@ -43,6 +95,14 @@ export class TransferScreen extends React.Component {
             unlockedBalanceHuman: fromAtomic(unlockedBalance),
             youSendAmount: '',
             recipientGetsAmount: '',
+        }
+
+        const minutes = Config.blockTargetTime >= 60;
+
+        if (minutes) {
+            this.timePeriod = Math.ceiling(Config.blockTargetTime / 60) + ' minutes';
+        } else {
+            this.timePeriod = Config.blockTargetTime + ' seconds';
         }
     }
 
@@ -144,34 +204,24 @@ export class TransferScreen extends React.Component {
 
     render() {
         return(
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                <Input
-                    containerStyle={{
-                        width: 330,
-                        marginBottom: 40,
-                    }}
-                    inputContainerStyle={{
-                        borderColor: 'lightgrey',
-                        borderWidth: 1,
-                        borderRadius: 2,
-                    }}
-                    label='You send'
-                    labelStyle={{
-                        marginBottom: 5,
-                        marginRight: 2,
-                    }}
-                    rightIcon={
-                        <Text style={{ fontSize: 30, marginRight: 10, color: Config.theme.primaryColour }}>
-                            {Config.ticker}
-                        </Text>
-                    }
-                    keyboardType={'number-pad'}
-                    inputStyle={{
-                        color: Config.theme.primaryColour,
-                        fontSize: 30,
-                        marginLeft: 5
-                    }}
-                    errorMessage={this.state.errMsg}
+            <View style={{
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                flex: 1,
+                marginTop: 60,
+            }}>
+
+                <Text style={{
+                    color: Config.theme.primaryColour,
+                    fontSize: 25,
+                    marginBottom: 40,
+                    marginLeft: 30
+                }}>
+                    How much {Config.coinName} do you want to send?
+                </Text>
+
+                <AmountInput
+                    label={'You send'}
                     value={this.state.youSendAmount}
                     onChangeText={(text) => {
                         this.setState({
@@ -179,36 +229,14 @@ export class TransferScreen extends React.Component {
                         });
 
                         this.convertSentToReceived(text);
-
                         this.checkErrors(text);
                     }}
+                    errorMessage={this.state.errMsg}
+                    marginBottom={40}
                 />
-                
-                <Input
-                    containerStyle={{
-                        width: 330,
-                    }}
-                    inputContainerStyle={{
-                        borderColor: 'lightgrey',
-                        borderWidth: 1,
-                        borderRadius: 2,
-                    }}
-                    label='Recipient gets'
-                    labelStyle={{
-                        marginBottom: 5,
-                        marginRight: 2,
-                    }}
-                    rightIcon={
-                        <Text style={{ fontSize: 30, marginRight: 10, color: Config.theme.primaryColour }}>
-                            {Config.ticker}
-                        </Text>
-                    }
-                    keyboardType={'number-pad'}
-                    inputStyle={{
-                        color: Config.theme.primaryColour,
-                        fontSize: 30,
-                        marginLeft: 5
-                    }}
+
+                <AmountInput
+                    label={'Recipient gets'}
                     value={this.state.recipientGetsAmount}
                     onChangeText={(text) => {
                         this.setState({
@@ -216,12 +244,11 @@ export class TransferScreen extends React.Component {
                         });
 
                         this.convertReceivedToSent(text);
-
                         this.checkErrors(text);
                     }}
                 />
 
-                <View style={[Styles.buttonContainer, {marginLeft: 235, marginBottom: 30}]}>
+                <View style={[Styles.buttonContainer, { marginLeft: '70%' }]}>
                     <Button
                         title="Send Max"
                         onPress={() => {
@@ -241,13 +268,23 @@ export class TransferScreen extends React.Component {
                     />
                 </View>
 
+                <Text style={{
+                    color: Config.theme.primaryColour,
+                    fontSize: 18,
+                    marginLeft: 30,
+                    marginTop: 20,
+                }}>
+                    Should arrive in {this.timePeriod}!
+                </Text>
+
                 
-                <View style={[Styles.buttonContainer, Styles.alignBottom, {bottom: 40}]}>
+                <View style={[Styles.alignBottom, {bottom: 0}]}>
                     <Button
                         title="Continue"
                         onPress={() => this.props.navigation.navigate('ChoosePayee')} 
                         buttonStyle={{
                             backgroundColor: Config.theme.primaryColour,
+                            height: 50
                         }}
                         disabled={!this.state.continueEnabled}
                     />
@@ -361,6 +398,7 @@ export class ChoosePayeeScreen extends React.Component {
                 <Hr/>
 
                 <ExistingPayees/>
+
             </View>
         );
     }

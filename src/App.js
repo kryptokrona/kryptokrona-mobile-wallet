@@ -72,6 +72,10 @@ const TransferNavigator = createStackNavigator(
     }
 );
 
+TransferNavigator.navigationOptions = {
+    tabBarVisible: false,
+}
+
 const SettingsNavigator = createStackNavigator(
     {
         Settings: SettingsScreen,
