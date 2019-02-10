@@ -4,7 +4,6 @@
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import React from 'react';
 
@@ -15,18 +14,18 @@ import {
 
 import Config from './Config';
 
-import { Styles } from './Styles';
-import { Spinner } from './Spinner';
-import { FadeView } from './FadeView';
 import { MainScreen } from './MainScreen';
 import { SplashScreen } from './SplashScreen';
 import { DisclaimerScreen } from './DisclaimerScreen';
 import { SetPinScreen, RequestPinScreen } from './Pin.js';
-import { TransferScreen, ChoosePayeeScreen } from './TransferScreen';
 import { WalletOptionScreen, CreateWalletScreen } from './CreateScreen';
 import { PickMonthScreen, PickBlockHeightScreen } from './ScanHeightScreen';
 import { TransactionsScreen, TransactionDetailsScreen } from './TransactionsScreen';
 import { SettingsScreen, SwapCurrencyScreen, ExportKeysScreen } from './SettingsScreen';
+
+import {
+    TransferScreen, ChoosePayeeScreen, NewPayeeScreen, ConfirmScreen
+} from './TransferScreen';
 
 import { 
     ImportWalletScreen, ImportKeysOrSeedScreen, ImportSeedScreen, 
@@ -57,6 +56,8 @@ const TransferNavigator = createStackNavigator(
     {
         Transfer: TransferScreen,
         ChoosePayee: ChoosePayeeScreen,
+        NewPayee: NewPayeeScreen,
+        Confirm: ConfirmScreen,
     },
     {
         initialRouteName: 'Transfer',

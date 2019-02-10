@@ -9,6 +9,10 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import { HeaderBackButton } from 'react-navigation';
 
 import {
+    validateAddresses, WalletErrorCode, validatePaymentID
+} from 'turtlecoin-wallet-backend';
+
+import {
     View, Text, TextInput, TouchableWithoutFeedback, FlatList, Platform,
 } from 'react-native';
 
@@ -248,7 +252,7 @@ export class TransferScreen extends React.Component {
                     }}
                 />
 
-                <View style={[Styles.buttonContainer, { marginLeft: '70%' }]}>
+                <View style={{ marginLeft: '73%' }}>
                     <Button
                         title="Send Max"
                         onPress={() => {
@@ -277,7 +281,6 @@ export class TransferScreen extends React.Component {
                     Should arrive in {this.timePeriod}!
                 </Text>
 
-                
                 <View style={[Styles.alignBottom, {bottom: 0}]}>
                     <Button
                         title="Continue"
@@ -353,6 +356,271 @@ export class ExistingPayees extends React.Component {
     }
 }
 
+export class NewPayeeScreen extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            nickname: '',
+            address: '',
+            paymentID: '',
+            paymentIDEnabled: true,
+            addressError: '',
+            paymentIDError: '',
+            nicknameError: '',
+        };
+    }
+
+    async validAddress(address) {
+        let errorMessage = '';
+
+        if (address === '' || address === undefined || address === null) {
+            return [false, errorMessage];
+        }
+
+        /* Disable payment ID and wipe input if integrated address */
+        if (address.length === Config.integratedAddressLength) {
+            await this.setState({
+                paymentID: '',
+                paymentIDEnabled: false,
+            });
+        } else {
+            this.setState({
+                paymentIDEnabled: true,
+            });
+        }
+
+        const addressError = validateAddresses([address], true);
+
+        if (addressError.errorCode !== WalletErrorCode.SUCCESS) {
+            errorMessage = addressError.toString();
+
+            return [false, errorMessage];
+        }
+
+        return [true, errorMessage];
+    }
+
+    validPaymentID(paymentID) {
+        let errorMessage = '';
+
+        if (paymentID === '') {
+            return [true, errorMessage];
+        }
+
+        if (paymentID === undefined || paymentID === null) {
+            return [false, errorMessage];
+        }
+
+        const paymentIDError = validatePaymentID(paymentID);
+
+        if (paymentIDError.errorCode !== WalletErrorCode.SUCCESS) {
+            errorMessage = paymentIDError.toString();
+
+            return [false, errorMessage];
+        }
+
+        return [true, errorMessage];
+    }
+
+    validNickname(nickname) {
+        let errorMessage = '';
+
+        if (nickname === '' || nickname === undefined || nickname === null) {
+            return [false, errorMessage];
+        }
+
+        /* TODO: Check if nickname already exists */
+
+        return [true, errorMessage];
+    }
+
+    checkErrors() {
+        (async() => {
+
+            const [addressValid, addressError] = await this.validAddress(this.state.address);
+            const [paymentIDValid, paymentIDError] = this.validPaymentID(this.state.paymentID);
+            const [nicknameValid, nicknameError] = this.validNickname(this.state.nickname);
+
+            this.setState({
+                continueEnabled: addressValid && paymentIDValid && nicknameValid,
+                addressError,
+                paymentIDError,
+                nicknameError,
+            });
+
+        })();
+    }
+
+    render() {
+        return(
+            <View style={{
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                flex: 1,
+                marginTop: 60,
+            }}>
+                <Text style={[Styles.centeredText, { color: Config.theme.primaryColour, fontSize: 25, marginBottom: 40, marginLeft: 30 }]}>
+                    New Payee
+                </Text>
+
+                <Input
+                    containerStyle={{
+                        width: '90%',
+                        marginLeft: 20,
+                        marginBottom: 30,
+                    }}
+                    inputContainerStyle={{
+                        borderColor: 'lightgrey',
+                        borderWidth: 1,
+                        borderRadius: 2,
+                    }}
+                    label={'Name of recipient'}
+                    labelStyle={{
+                        marginBottom: 5,
+                        marginRight: 2,
+                    }}
+                    inputStyle={{
+                        color: Config.theme.primaryColour,
+                        fontSize: 30,
+                        marginLeft: 5
+                    }}
+                    value={this.state.nickname}
+                    onChangeText={(text) => {
+                        this.setState({
+                            nickname: text,
+                        }, () => this.checkErrors());
+                    }}
+                    errorMessage={this.state.nicknameValid}
+                />
+
+                <Input
+                    containerStyle={{
+                        width: '90%',
+                        marginLeft: 20,
+                    }}
+                    inputContainerStyle={{
+                        borderColor: 'lightgrey',
+                        borderWidth: 1,
+                        borderRadius: 2,
+                    }}
+                    maxLength={Config.integratedAddressLength}
+                    label={'Recipient\'s address'}
+                    labelStyle={{
+                        marginBottom: 5,
+                        marginRight: 2,
+                    }}
+                    inputStyle={{
+                        color: Config.theme.primaryColour,
+                        fontSize: 15,
+                        marginLeft: 5
+                    }}
+                    value={this.state.address}
+                    onChangeText={(text) => {
+                        this.setState({
+                            address: text,
+                        }, () => this.checkErrors());
+                    }}
+                    errorMessage={this.state.addressError}
+                />
+
+                <View style={{ marginLeft: '66%' }}>
+                    <Button
+                        title="Scan QR Code"
+                        onPress={() => {
+                        }}
+                        titleStyle={{
+                            color: Config.theme.primaryColour,
+                            textDecorationLine: 'underline',
+                        }}
+                        type="clear"
+                    />
+                </View>
+
+                <Input
+                    containerStyle={{
+                        width: '90%',
+                        marginLeft: 20,
+                    }}
+                    inputContainerStyle={{
+                        borderColor: 'lightgrey',
+                        borderWidth: 1,
+                        borderRadius: 2,
+                    }}
+                    maxLength={64}
+                    label={'Recipient\'s Payment ID (optional)'}
+                    labelStyle={{
+                        marginBottom: 5,
+                        marginRight: 2,
+                    }}
+                    inputStyle={{
+                        color: Config.theme.primaryColour,
+                        fontSize: 15,
+                        marginLeft: 5
+                    }}
+                    value={this.state.paymentID}
+                    onChangeText={(text) => {
+                        this.setState({
+                            paymentID: text
+                        }, () => this.checkErrors());
+                    }}
+                    editable={this.state.paymentIDEnabled}
+                    errorMessage={this.state.paymentIDError}
+                />
+
+                <View style={[Styles.alignBottom, {bottom: 0}]}>
+                    <Button
+                        title="Continue"
+                        onPress={() => {
+                            /* TODO: Store payee */
+                            this.props.navigation.navigate('Confirm', { payee: this.state.nickname });
+                        }}
+                        buttonStyle={{
+                            backgroundColor: Config.theme.primaryColour,
+                            height: 50
+                        }}
+                        disabled={!this.state.continueEnabled}
+                    />
+                </View>
+
+            </View>
+        );
+    }
+}
+
+export class ConfirmScreen extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return(
+            <View style={{
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                flex: 1,
+                marginTop: 60,
+            }}>
+                <Text style={[Styles.centeredText, { color: Config.theme.primaryColour, fontSize: 25, marginBottom: 40, marginLeft: 30 }]}>
+                    Review your transfer
+                </Text>
+
+                <View style={[Styles.alignBottom, {bottom: 0}]}>
+                    <Button
+                        title="Send Transaction"
+                        onPress={() => console.log('')} 
+                        buttonStyle={{
+                            backgroundColor: Config.theme.primaryColour,
+                            height: 50
+                        }}
+                    />
+                </View>
+
+            </View>
+        );
+    }
+}
+
 export class ChoosePayeeScreen extends React.Component {
     constructor(props) {
         super(props);
@@ -371,29 +639,36 @@ export class ChoosePayeeScreen extends React.Component {
                     Who are you sending to?
                 </Text>
                 
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-
+                <TouchableWithoutFeedback
+                    onPress={() => this.props.navigation.navigate('NewPayee')}
+                >
                     <View style={{
-                        height: 37,
-                        width: 37,
-                        borderWidth: 1,
-                        borderColor: 'lightgrey',
-                        borderRadius: 45,
+                        flexDirection: 'row',
                         alignItems: 'center',
                         justifyContent: 'center',
                     }}>
-                        <AntDesign
-                            name={'adduser'}
-                            size={28}
-                            color={'grey'}
-                            padding={5}
-                        />
-                    </View>
+                        <View style={{
+                            height: 37,
+                            width: 37,
+                            borderWidth: 1,
+                            borderColor: 'lightgrey',
+                            borderRadius: 45,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}>
+                            <AntDesign
+                                name={'adduser'}
+                                size={28}
+                                color={'grey'}
+                                padding={5}
+                            />
+                        </View>
 
-                    <Text style={{ marginLeft: 15, color: Config.theme.primaryColour, fontSize: 16 }}>
-                        Add a new recipient
-                    </Text>
-                </View>
+                        <Text style={{ marginLeft: 15, color: Config.theme.primaryColour, fontSize: 16 }}>
+                            Add a new recipient
+                        </Text>
+                    </View>
+                </TouchableWithoutFeedback>
 
                 <Hr/>
 

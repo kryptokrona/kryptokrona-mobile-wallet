@@ -120,7 +120,7 @@ const Config = {
      * chunks of 8 chars at once into blocks of 11 chars, we can calculate
      * this automatically
      */
-    integratedAddressLength: this.standardAddressLength + ((64 * 11) / 8),
+    integratedAddressLength: 99 + ((64 * 11) / 8),
 
     /**
      * Unix timestamp of the time your chain was launched.
