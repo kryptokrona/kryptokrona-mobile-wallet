@@ -19,9 +19,8 @@ import { FadeView } from './FadeView';
 import { saveToDatabase } from './Database';
 import { updateCoinPrice } from './Currency';
 import { Globals, initGlobals } from './Globals';
-import { SeedComponent } from './SharedComponents';
 import { navigateWithDisabledBack } from './Utilities';
-import { CopyButton, BottomButton } from './SharedComponents';
+import { BottomButton, SeedComponent } from './SharedComponents';
 
 /**
  * Create or import a wallet

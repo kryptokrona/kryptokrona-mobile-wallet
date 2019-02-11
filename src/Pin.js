@@ -36,7 +36,7 @@ export class SetPinScreen extends React.Component {
     continue(pinCode) {
         Globals.pinCode = pinCode;
         /* Continue on to create or import a wallet */
-        this.props.navigation.dispatch(navigateWithDisabledBack(this.props.navigation.state.params.nextRoute));
+        this.props.navigation.navigate(this.props.navigation.state.params.nextRoute);
     }
 
     render() {

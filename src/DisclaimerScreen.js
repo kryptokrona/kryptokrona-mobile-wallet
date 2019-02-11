@@ -10,11 +10,9 @@ import Config from './Config';
 
 import { Styles } from './Styles';
 import { BottomButton } from './SharedComponents';
-import { navigateWithDisabledBack } from './Utilities';
 
 export class DisclaimerScreen extends React.Component {
     static navigationOptions = {
-        title: 'Disclaimer',
         header: null
     };
 
@@ -29,7 +27,7 @@ export class DisclaimerScreen extends React.Component {
     }
 
     confirm() {
-        this.props.navigation.dispatch(navigateWithDisabledBack('WalletOption'));
+        this.props.navigation.navigate('WalletOption');
     }
 
     render() {

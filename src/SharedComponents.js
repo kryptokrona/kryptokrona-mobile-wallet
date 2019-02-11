@@ -6,9 +6,9 @@ import * as _ from 'lodash';
 
 import React from 'react';
 
-import { View, Button, Clipboard, Text } from 'react-native';
+import { View, Clipboard, Text } from 'react-native';
 
-import { Button as RneButton } from 'react-native-elements';
+import { Button } from 'react-native-elements';
 
 import Config from './Config';
 
@@ -61,16 +61,20 @@ export class CopyButton extends React.Component {
 
     render() {
         return(
-            <View style={[Styles.buttonContainer, {
-                    alignItems: this.props.alignItems || 'flex-end',
-                }]}>
+            <View style={[{...this.props.style}, {
+                alignItems: 'flex-start',
+            }]}>
                 <Button
                     title='Copy'
                     onPress={() => {
                         Clipboard.setString(this.props.data);
                         toastPopUp(this.props.name + ' copied');
                     }}
-                    color={Config.theme.primaryColour}
+                    titleStyle={{
+                        color: Config.theme.primaryColour,
+                        textDecorationLine: 'underline',
+                    }}
+                    type="clear"
                 />
             </View>
         );
@@ -91,7 +95,7 @@ export class Hr extends React.Component {
 
 export const BottomButton = props => (
     <View style={Styles.alignBottom}>
-        <RneButton
+        <Button
             buttonStyle={{
                 backgroundColor: Config.theme.primaryColour,
                 height: 50

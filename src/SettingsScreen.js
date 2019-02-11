@@ -30,7 +30,7 @@ import { setHaveWallet, savePreferencesToDatabase } from './Database';
 
 export class ExportKeysScreen extends React.Component {
     static navigationOptions = {
-        title: 'Backup Keys',
+        title: '',
     };
 
     constructor(props) {
@@ -68,50 +68,65 @@ export class ExportKeysScreen extends React.Component {
             />;
 
         return(
-            <View style={{ flex: 1, justifyContent: 'center', marginTop: 40 }}>
-                <Text style={[Styles.centeredText, { color: Config.theme.primaryColour, fontSize: 20 }]}>
-                    Mnemonic Seed:
-                </Text>
+            <View style={{ justifyContent: 'flex-start', flex: 1 }}>
 
-                <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                <View style={{
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
+                    marginTop: 60,
+                    marginLeft: 30,
+                }}>
+                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 10 }}>
+                        Mnemonic Seed:
+                    </Text>
+                </View>
+
+                <View style={{alignItems: 'center', marginBottom: 30}}>
                     {this.state.mnemonicSeed === undefined ? noSeedComponent : seedComponent}
                 </View>
 
-                <Text style={[Styles.centeredText, { color: Config.theme.primaryColour, fontSize: 20, marginTop: 10, marginBottom: 5 }]}>
-                    Private Spend Key:
-                </Text>
+                <View style={{
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
+                    flex: 1,
+                }}>
+                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 10, marginLeft: 30 }}>
+                        Private Spend Key:
+                    </Text>
 
-                <TextTicker
-                    style={{ color: Config.theme.primaryColour, fontSize: 20 }}
-                    marqueeDelay={1000}
-                    duration={220 * 64}
-                >
-                    {this.state.privateSpendKey}
-                </TextTicker>
+                    <TextTicker
+                        style={{ color: Config.theme.primaryColour, fontSize: 20, marginLeft: 30 }}
+                        marqueeDelay={1000}
+                        duration={220 * 64}
+                    >
+                        {this.state.privateSpendKey}
+                    </TextTicker>
 
-                <CopyButton
-                    data={this.state.privateSpendKey}
-                    name='Private Spend Key'
-                    alignItems='center'
-                />
+                    <CopyButton
+                        data={this.state.privateSpendKey}
+                        name='Private Spend Key'
+                        style={{ marginLeft: 23 }}
+                    />
 
-                <Text style={[Styles.centeredText, { color: Config.theme.primaryColour, fontSize: 20, marginTop: 30, marginBottom: 5 }]}>
-                    Private View Key:
-                </Text>
+                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 10, marginTop: 30, marginLeft: 30 }}>
+                        Private View Key:
+                    </Text>
 
-                <TextTicker
-                    style={{ color: Config.theme.primaryColour, fontSize: 20 }}
-                    marqueeDelay={1000}
-                    duration={220 * 64}
-                >
-                    {this.state.privateViewKey}
-                </TextTicker>
+                    <TextTicker
+                        style={{ color: Config.theme.primaryColour, fontSize: 20, marginLeft: 30 }}
+                        marqueeDelay={1000}
+                        duration={220 * 64}
+                    >
+                        {this.state.privateViewKey}
+                    </TextTicker>
 
-                <CopyButton
-                    data={this.state.privateViewKey}
-                    name='Private View Key'
-                    alignItems='center'
-                />
+                    <CopyButton
+                        data={this.state.privateViewKey}
+                        name='Private View Key'
+                        style={{ marginLeft: 23 }}
+                    />
+
+                </View>
 
             </View>
         );
@@ -120,8 +135,7 @@ export class ExportKeysScreen extends React.Component {
 
 export class SwapCurrencyScreen extends React.Component {
     static navigationOptions = {
-        title: 'Swap Currency',
-        header: null,
+        title: '',
     };
 
     constructor(props) {
@@ -130,36 +144,40 @@ export class SwapCurrencyScreen extends React.Component {
 
     render() {
         return(
-            <List>
-                <FlatList
-                    data={Constants.currencies}
-                    keyExtractor={item => item.ticker}
-                    renderItem={({item}) => (
-                        <ListItem
-                            title={item.coinName}
-                            subtitle={item.symbol + ' / ' + item.ticker.toUpperCase()}
-                            leftIcon={
-                                <View style={{width: 30, alignItems: 'center', justifyContent: 'center', marginRight: 10}}>
-                                    <Text style={{ fontSize: 25 }}>
-                                        {item.symbol}
-                                    </Text>
-                                </View>
-                            }
-                            onPress={() => {
-                                Globals.preferences.currency = item.ticker;
+            <View style={{
+                marginTop: 30,
+            }}>
+                <List>
+                    <FlatList
+                        data={Constants.currencies}
+                        keyExtractor={item => item.ticker}
+                        renderItem={({item}) => (
+                            <ListItem
+                                title={item.coinName}
+                                subtitle={item.symbol + ' / ' + item.ticker.toUpperCase()}
+                                leftIcon={
+                                    <View style={{width: 30, alignItems: 'center', justifyContent: 'center', marginRight: 10}}>
+                                        <Text style={{ fontSize: 25 }}>
+                                            {item.symbol}
+                                        </Text>
+                                    </View>
+                                }
+                                onPress={() => {
+                                    Globals.preferences.currency = item.ticker;
 
-                                savePreferencesToDatabase(Globals.preferences);
+                                    savePreferencesToDatabase(Globals.preferences);
 
-                                /* Reset this stack to be on the settings screen */
-                                this.props.navigation.dispatch(navigateWithDisabledBack('Settings'));
+                                    /* Reset this stack to be on the settings screen */
+                                    this.props.navigation.dispatch(navigateWithDisabledBack('Settings'));
 
-                                /* And go back to the main screen. */
-                                this.props.navigation.navigate('Main');
-                            }}
-                        />
-                    )}
-                />
-            </List>
+                                    /* And go back to the main screen. */
+                                    this.props.navigation.navigate('Main');
+                                }}
+                            />
+                        )}
+                    />
+                </List>
+            </View>
         );
     }
 }

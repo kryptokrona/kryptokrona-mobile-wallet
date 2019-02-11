@@ -28,7 +28,7 @@ export function TextFixedWidth({ children }) {
     const fontFamily = Platform.OS === 'ios' ? 'Courier' : 'monospace'
 
     return (
-        <Text style={{fontFamily}}>{ children }</Text>
+        <Text style={{fontFamily, fontSize: 12}}>{ children }</Text>
     )
 }
 

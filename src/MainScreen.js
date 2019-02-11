@@ -125,12 +125,10 @@ class AddressComponent extends React.Component {
                     {this.state.address}
                 </Text>
 
-                <View style={{ alignItems: 'flex-end' }}>
-                    <CopyButton
-                        data={this.state.address}
-                        name='Address'
-                    />
-                </View>
+                <CopyButton
+                    data={this.state.address}
+                    name='Address'
+                />
             </View>
         );
     }

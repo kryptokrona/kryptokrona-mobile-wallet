@@ -547,7 +547,7 @@ export class NewPayeeScreen extends React.Component {
 
                 <View style={{ marginLeft: '63%' }}>
                     <Button
-                        title="Scan QR Code"
+                        title='Scan QR Code'
                         onPress={() => {
                             this.props.navigation.navigate('QrScanner', { setAddress: this.setAddressFromQrCode.bind(this) } );
                         }}
