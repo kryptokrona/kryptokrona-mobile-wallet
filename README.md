@@ -104,6 +104,8 @@ Install the APK on your device:
 
 If it all works, you can then upload to the play store.
 
+Note that you need to close the emulator to get the `yarn deploy-android` to install on your mobile.
+
 ## Forking
 
 #### Modifying icon

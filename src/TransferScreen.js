@@ -6,6 +6,8 @@ import React from 'react';
 
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
+import QRCodeScanner from 'react-native-qrcode-scanner';
+
 import { HeaderBackButton } from 'react-navigation';
 
 import {
@@ -27,8 +29,27 @@ import { Globals } from './Globals';
 import { Hr } from './SharedComponents';
 import { removeFee, toAtomic, fromAtomic, addFee } from './Fee';
 
-export class AmountInput extends React.Component {
+export class QrScannerScreen extends React.Component {
+    constructor(props) {
+        super(props);
+    }
 
+    render() {
+        return(
+            <View style={{ flex: 1 }}>
+                <QRCodeScanner
+                    onRead={(code) => {
+                        this.props.navigation.state.params.setAddress(code.data);
+                        this.props.navigation.goBack();
+                    }}
+                    cameraProps={{captureAudio: false}}
+                />
+            </View>
+        );
+    }
+}
+
+class AmountInput extends React.Component {
     constructor(props) {
         super(props);
     }
@@ -371,6 +392,12 @@ export class NewPayeeScreen extends React.Component {
         };
     }
 
+    setAddressFromQrCode(address) {
+        this.setState({
+            address,
+        }, () => this.checkErrors());
+    }
+
     async validAddress(address) {
         let errorMessage = '';
 
@@ -528,6 +555,7 @@ export class NewPayeeScreen extends React.Component {
                     <Button
                         title="Scan QR Code"
                         onPress={() => {
+                            this.props.navigation.navigate('QrScanner', { setAddress: this.setAddressFromQrCode.bind(this) } );
                         }}
                         titleStyle={{
                             color: Config.theme.primaryColour,

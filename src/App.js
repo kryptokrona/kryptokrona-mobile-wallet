@@ -24,7 +24,8 @@ import { TransactionsScreen, TransactionDetailsScreen } from './TransactionsScre
 import { SettingsScreen, SwapCurrencyScreen, ExportKeysScreen } from './SettingsScreen';
 
 import {
-    TransferScreen, ChoosePayeeScreen, NewPayeeScreen, ConfirmScreen
+    TransferScreen, ChoosePayeeScreen, NewPayeeScreen, ConfirmScreen,
+    QrScannerScreen,
 } from './TransferScreen';
 
 import { 
@@ -58,6 +59,7 @@ const TransferNavigator = createStackNavigator(
         ChoosePayee: ChoosePayeeScreen,
         NewPayee: NewPayeeScreen,
         Confirm: ConfirmScreen,
+        QrScanner: QrScannerScreen,
     },
     {
         initialRouteName: 'Transfer',

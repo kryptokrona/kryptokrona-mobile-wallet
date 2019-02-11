@@ -85,16 +85,14 @@ export class CreateWalletScreen extends React.Component {
     constructor(props) {
         super(props);
         
-        (async () => {
-            const daemon = new BlockchainCacheApi('blockapi.turtlepay.io', true);
+        const daemon = new BlockchainCacheApi('blockapi.turtlepay.io', true);
 
-            Globals.wallet = WalletBackend.createWallet(daemon, Config);
+        Globals.wallet = WalletBackend.createWallet(daemon, Config);
 
-            /* Encrypt wallet with pincode in DB */
-            saveToDatabase(Globals.wallet, Globals.pinCode);
+        /* Encrypt wallet with pincode in DB */
+        saveToDatabase(Globals.wallet, Globals.pinCode);
 
-            await initGlobals();
-        })();
+        initGlobals();
     };
 
     render() {
@@ -119,7 +117,7 @@ export class CreateWalletScreen extends React.Component {
                         </Text>
                     </Text>
                     <SeedComponent
-                        seed={Globals.wallet.getMnemonicSeed()}
+                        seed={Globals.wallet.getMnemonicSeed()[0]}
                         borderColour={'red'}
                     />
                 </View>

@@ -266,8 +266,6 @@ class InputSeedComponent extends React.Component {
 
         words[index] = word;
 
-        //words = 'owner eagle biggest reunion jeers cause pairing serving pierce cycling always jellyfish tapestry makeup pledge wonders unquoted efficient number gourmet answers cylinder light listen cylinder'.split(' ');
-
         /* Auto complete often suggests upper case words */
         words.map(x => x.toLowerCase());
 

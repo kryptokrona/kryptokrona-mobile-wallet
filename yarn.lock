@@ -5815,6 +5815,13 @@ react-move@^2.7.0:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
+react-native-camera@^1.10.1:
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.10.1.tgz#6a2e86e8b1e7d5872832d6bd154a2628c9599567"
+  integrity sha512-sIHeG2dfBlOEkE093QSfXzFvjWdPCEz+ffkonvvLm7kRKPtiS+4gZM2zuH2SP4g3MJyKt8ifB/VIAxfnvtZ6sQ==
+  dependencies:
+    prop-types "^15.6.2"
+
 react-native-crypto@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/react-native-crypto/-/react-native-crypto-2.1.2.tgz#cfe68cad51cd1f73a4202b7ac164f96c1144cb2a"
@@ -5893,6 +5900,19 @@ react-native-month-selector@^1.4.0:
     moment "^2.20.1"
     prop-types "^15.6.0"
     react-native-swipe-gestures "^1.0.3"
+
+react-native-permissions@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-1.1.1.tgz#4876004681ff8556454613d85249b01baff9b35b"
+  integrity sha512-t0Ujm177bagjUOSzhpmkSz+LqFW04HnY9TeZFavDCmV521fQvFz82aD+POXqWsAdsJVOK3umJYBNNqCjC3g0hQ==
+
+react-native-qrcode-scanner@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/react-native-qrcode-scanner/-/react-native-qrcode-scanner-1.1.2.tgz#5b6dfb4efd267a810bedb1f09b7c9ccb6d321e20"
+  integrity sha512-ID/s6za6N1m+V5dgzGZYr+rf9txuTYEnqqkowR8hujm9ddPRJEkXXGkoR6Y18WnpDGS7eDEt2BNPLXFkLLYhvQ==
+  dependencies:
+    prop-types "^15.5.10"
+    react-native-permissions "^1.1.1"
 
 react-native-qrcode-svg@^5.1.2:
   version "5.1.2"
