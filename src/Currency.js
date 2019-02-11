@@ -16,7 +16,7 @@ export async function getCoinPrice() {
     }
 
     /* Fetch from DB */
-    Globals.coinPrice = await loadPriceFromDatabase();
+    Globals.coinPrice = await loadPriceDataFromDatabase();
 
     if (Globals.coinPrice !== undefined) {
         return Globals.coinPrice;

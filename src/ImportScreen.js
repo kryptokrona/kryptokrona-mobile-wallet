@@ -6,8 +6,10 @@ import React from 'react';
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
+import { Input } from 'react-native-elements';
+
 import {
-    View, Image, Text, Button, TextInput, Platform,
+    View, Image, Text, Button, Platform, TextInput
 } from 'react-native';
 
 import {
@@ -18,15 +20,16 @@ import {
 import Config from './Config';
 
 import { Styles } from './Styles';
-import { Globals } from './Globals';
+import { Globals, initGlobals } from './Globals';
 import { saveToDatabase } from './Database';
+import { BottomButton } from './SharedComponents';
 
 /**
  * Import a wallet from keys/seed
  */
 export class ImportWalletScreen extends React.Component {
     static navigationOptions = {
-        title: 'Import',
+        title: '',
     };
     
     constructor(props) {
@@ -35,54 +38,51 @@ export class ImportWalletScreen extends React.Component {
 
     render() {
         return(
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'stretch', marginTop: 40}}>
-                <Text style={{
-                    fontSize: 20,
-                    color: Config.theme.primaryColour,
+            <View style={{ flex: 1 }}>
+                <View style={{
                     justifyContent: 'flex-start',
-                    alignItems: 'center',
-                    textAlign: 'center',
-                    marginTop: 5,
-                    marginBottom: 5}}
-                >
-                    When did you create your wallet?
-                </Text>
+                    alignItems: 'flex-start',
+                    marginTop: 60,
+                    marginLeft: 30,
+                    marginRight: 10,
+                }}>
+                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 5 }}>
+                        When did you create your wallet?
+                    </Text>
 
-                <Text style={{
-                    fontSize: 14,
-                    color: Config.theme.primaryColour,
-                    justifyContent: 'flex-start',
-                    alignItems: 'center',
-                    textAlign: 'center',
-                    marginTop: 5,
-                    marginBottom: 20}}
-                >
-                    (This helps us scan your wallet faster)
-                </Text>
-
-
-                <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5}]}>
-                    <Button
-                        title="Pick a month"
-                        onPress={() => this.props.navigation.navigate('PickMonth')}
-                        color={Config.theme.primaryColour}
-                    />
+                    <Text style={{ color: Config.theme.primaryColour, fontSize: 16, marginBottom: 60 }}>
+                        This helps us scan your wallet faster.
+                    </Text>
                 </View>
 
-                <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5}]}>
-                    <Button
-                        title="Pick an approximate block height"
-                        onPress={() => this.props.navigation.navigate('PickBlockHeight')}
-                        color={Config.theme.primaryColour}
-                    />
-                </View>
+                <View style={{
+                    flex: 1,
+                    justifyContent: 'flex-start',
+                    alignItems: 'center',
+                }}>
+                    <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5}]}>
+                        <Button
+                            title="Pick a month"
+                            onPress={() => this.props.navigation.navigate('PickMonth')}
+                            color={Config.theme.primaryColour}
+                        />
+                    </View>
 
-                <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5}]}>
-                    <Button
-                        title="I don't Know"
-                        onPress={() => this.props.navigation.navigate('ImportKeysOrSeed', { scanHeight: 0 })}
-                        color={Config.theme.primaryColour}
-                    />
+                    <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5}]}>
+                        <Button
+                            title="Pick an approximate block height"
+                            onPress={() => this.props.navigation.navigate('PickBlockHeight')}
+                            color={Config.theme.primaryColour}
+                        />
+                    </View>
+
+                    <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5}]}>
+                        <Button
+                            title="I don't Know"
+                            onPress={() => this.props.navigation.navigate('ImportKeysOrSeed', { scanHeight: 0 })}
+                            color={Config.theme.primaryColour}
+                        />
+                    </View>
                 </View>
             </View>
         );
@@ -92,7 +92,7 @@ export class ImportWalletScreen extends React.Component {
 /* Pick between keys and mnemonic seed */
 export class ImportKeysOrSeedScreen extends React.Component {
     static navigationOptions = {
-        title: 'Import',
+        title: '',
     };
 
     constructor(props) {
@@ -103,25 +103,35 @@ export class ImportKeysOrSeedScreen extends React.Component {
 
     render() {
         return(
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'stretch', marginTop: 40}}>
-                <Text style={{ fontSize: 20, color: Config.theme.primaryColour, justifyContent: 'flex-start', alignItems: 'center', textAlign: 'center', marginTop: 5, marginBottom: 20}}>
-                    What method do you want to import with?
-                </Text>
-
-                <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5}]}>
-                    <Button
-                        title="25 Word Mnemonic Seed"
-                        onPress={() => this.props.navigation.navigate('ImportSeed', { scanHeight: this.scanHeight })}
-                        color={Config.theme.primaryColour}
-                    />
+            <View style={{ flex: 1 }}>
+                <View style={{
+                    justifyContent: 'flex-start',
+                    alignItems: 'flex-start',
+                    marginTop: 60,
+                    marginLeft: 30,
+                    marginRight: 10,
+                }}>
+                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 60 }}>
+                        How would you like to import your wallet?
+                    </Text>
                 </View>
 
-                <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5}]}>
-                    <Button
-                        title="Private Spend + Private View Key"
-                        onPress={() => this.props.navigation.navigate('ImportKeys', { scanHeight: this.scanHeight })}
-                        color={Config.theme.primaryColour}
-                    />
+                <View style={{ justifyContent: 'center', alignItems: 'flex-start' }}>
+                    <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5}]}>
+                        <Button
+                            title="25 Word Mnemonic Seed"
+                            onPress={() => this.props.navigation.navigate('ImportSeed', { scanHeight: this.scanHeight })}
+                            color={Config.theme.primaryColour}
+                        />
+                    </View>
+
+                    <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5}]}>
+                        <Button
+                            title="Private Spend + Private View Key"
+                            onPress={() => this.props.navigation.navigate('ImportKeys', { scanHeight: this.scanHeight })}
+                            color={Config.theme.primaryColour}
+                        />
+                    </View>
                 </View>
             </View>
         );
@@ -131,7 +141,7 @@ export class ImportKeysOrSeedScreen extends React.Component {
 /* Pick between keys and mnemonic seed */
 export class ImportSeedScreen extends React.Component {
     static navigationOptions = {
-        title: 'Import Seed',
+        title: '',
     };
 
     constructor(props) {
@@ -169,40 +179,44 @@ export class ImportSeedScreen extends React.Component {
         /* Encrypt wallet with pincode in DB */
         saveToDatabase(Globals.wallet, Globals.pinCode);
 
+        initGlobals();
+
         this.props.navigation.navigate('Home');
     }
 
     render() {
         return(
-            <KeyboardAwareScrollView
-                style={{ marginTop: 80 }}
-                enableOnAndroid={true}
-                extraScrollHeight={200}
-                containerContentStyle={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}
-            >
-                <Text style={{
-                    fontSize: 20,
-                    color: Config.theme.primaryColour,
+            <View style={{ flex: 1 }}>
+                <View style={{
                     justifyContent: 'flex-start',
-                    alignItems: 'center',
-                    textAlign: 'center',
-                    marginTop: 5,
-                    marginBottom: 30
+                    alignItems: 'flex-start',
+                    marginTop: 60,
+                    marginLeft: 30,
+                    marginRight: 10,
                 }}>
-                    Enter your mnemonic seed:
-                </Text>
+                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 5 }}>
+                        Enter your mnemonic seed...
+                    </Text>
 
-                <InputSeedComponent enableButton={(seed, enable) => this.toggleButton(seed, enable)}/>
-
-                <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 40}]}>
-                    <Button
-                        title="Continue"
-                        onPress={() => this.importWallet()}
-                        color={Config.theme.primaryColour}
-                        disabled={!this.state.seedIsGood}
-                    />
+                    <Text style={{ color: Config.theme.primaryColour, fontSize: 16, marginBottom: 60 }}>
+                        This should be 25 english words.
+                    </Text>
                 </View>
-            </KeyboardAwareScrollView>
+
+                <KeyboardAwareScrollView
+                    enableOnAndroid={true}
+                    extraScrollHeight={200}
+                    containerContentStyle={{ flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}
+                >
+                    <InputSeedComponent enableButton={(seed, enable) => this.toggleButton(seed, enable)}/>
+                </KeyboardAwareScrollView>
+
+                <BottomButton
+                    title='Continue'
+                    onPress={() => this.importWallet()}
+                    disabled={!this.state.seedIsGood}
+                />
+            </View>
         );
     }
 }
@@ -374,54 +388,47 @@ export class ImportKeysScreen extends React.Component {
         this.scanHeight = this.props.navigation.state.params.scanHeight || 0;
 
         this.state = {
-            badSpendKey: false,
-            badViewKey: false,
             privateSpendKey: '',
             privateViewKey: '',
-            bothKeysGood: false,
-            privateSpendKeyMsg: '',
-            privateViewKeyMsg: '',
+            continueEnabled: false,
+            spendKeyError: '',
+            viewKeyError: '',
         }
     }
 
-    checkPrivateSpendKey(key) {
-        const regex = new RegExp('^[0-9a-fA-F]{64}$');
-
-        const isGood = regex.test(key);
-
-        let privateSpendKeyMsg = '';
-
-        if (!isGood && key.length !== 0 && key.length !== 64) {
-            privateSpendKeyMsg = 'Private spend key is too short - should be 64 chars, but is ' + key.length + ' chars.';
-        } else if (!isGood && key.length === 64) {
-            privateSpendKeyMsg = 'Private spend key is not hex (a-f, 0-9).';
-        }
+    checkErrors() {
+        const [spendKeyValid, spendKeyError] = this.checkKey(this.state.privateSpendKey);
+        const [viewKeyValid, viewKeyError] = this.checkKey(this.state.privateViewKey);
 
         this.setState({
-            badSpendKey: !isGood,
-            bothKeysGood: !this.state.badViewKey && isGood,
-            privateSpendKeyMsg,
+            continueEnabled: spendKeyValid && viewKeyValid,
+            spendKeyError,
+            viewKeyError
         });
     }
 
-    checkPrivateViewKey(key) {
+    checkKey(key) {
+        let errorMessage = '';
+
+        if (key === '' || key === undefined || key === null) {
+            return [false, errorMessage];
+        }
+
         const regex = new RegExp('^[0-9a-fA-F]{64}$');
+
+        if (key.length !== 64) {
+            errorMessage = 'Key is too short/long';
+            return [false, errorMessage];
+        }
 
         const isGood = regex.test(key);
 
-        let privateViewKeyMsg = '';
-
-        if (!isGood && key.length !== 0 && key.length !== 64) {
-            privateViewKeyMsg = 'Private view key is too short - should be 64 chars, but is ' + key.length + ' chars.';
-        } else if (!isGood && key.length === 64) {
-            privateViewKeyMsg = 'Private view key is not hex (a-f, 0-9).';
+        if (!isGood) {
+            errorMessage = 'Key is not hex (a-f, 0-9)';
+            return [false, errorMessage];
         }
 
-        this.setState({
-            badViewKey: !isGood,
-            bothKeysGood: !this.state.badSpendKey && isGood,
-            privateViewKeyMsg,
-        });
+        return [true, ''];
     }
 
     importWallet() {
@@ -443,83 +450,103 @@ export class ImportKeysScreen extends React.Component {
         /* Encrypt wallet with pincode in DB */
         saveToDatabase(Globals.wallet, Globals.pinCode);
 
+        initGlobals();
+
         this.props.navigation.navigate('Home');
     }
 
     render() {
         return(
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 40}}>
-                <Text style={{
-                    fontSize: 20,
-                    color: Config.theme.primaryColour,
+            <View style={{ flex: 1 }}>
+                <View style={{
                     justifyContent: 'flex-start',
-                    alignItems: 'center',
-                    textAlign: 'center',
-                    marginTop: 30,
-                    marginBottom: 30
+                    alignItems: 'flex-start',
+                    marginTop: 60,
+                    marginLeft: 30,
+                    marginRight: 10,
                 }}>
-                    Enter your private spend and view key:
-                </Text>
+                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 5 }}>
+                        Enter your private spend and view key...
+                    </Text>
 
-                <TextInput
-                    style={{
-                        height: 40,
-                        width: 400,
-                        textAlign: 'center',
-                        color: 'gray',
-                        borderColor: this.state.badSpendKey ? 'red' : Config.theme.primaryColour,
-                        borderWidth: 1,
-                        marginBottom: 5,
-                    }}
-                    maxLength={64}
-                    autoCapitalize={'none'}
-                    onChangeText={(text) => this.setState({ privateSpendKey: text }) }
-                    onBlur={() => this.checkPrivateSpendKey(this.state.privateSpendKey)}
-                    onFocus={() => this.setState({ badSpendKey: false }) }
-                />
-                <Text style={{ color: Config.theme.primaryColour, marginBottom: 20 }}>
-                    Private spend key
-                </Text>
-
-                <TextInput
-                    style={{
-                        height: 40,
-                        width: 400,
-                        textAlign: 'center',
-                        color: 'gray',
-                        borderColor: this.state.badViewKey ? 'red' : Config.theme.primaryColour,
-                        borderWidth: 1,
-                        marginBottom: 5,
-                    }}
-                    maxLength={64}
-                    autoCapitalize={'none'}
-                    onChangeText={(text) => this.setState({ privateViewKey: text }) }
-                    onBlur={() => this.checkPrivateViewKey(this.state.privateViewKey)}
-                    onFocus={() => this.setState({ badViewKey: false }) }
-                />
-                <Text style={{ color: Config.theme.primaryColour, marginBottom: 20 }}>
-                    Private view key
-                </Text>
-
-                <Text style={[Styles.centeredText, { color: 'red', marginRight: 10, marginLeft: 10 }]}>
-                    {this.state.privateSpendKeyMsg}
-                </Text>
-
-                <Text style={[Styles.centeredText, { color: 'red', marginRight: 10, marginLeft: 10 }]}>
-                    {this.state.privateViewKeyMsg}
-                </Text>
-
-                <View style={[Styles.buttonContainer, Styles.alignBottom, {bottom: 40}]}>
-                    <Button
-                        title="Continue"
-                        onPress={() => this.importWallet()}
-                        color={Config.theme.primaryColour}
-                        disabled={!this.state.bothKeysGood}
-                    />
+                    <Text style={{ color: Config.theme.primaryColour, fontSize: 16, marginBottom: 60 }}>
+                        These are both 64 character, hexadecimal strings.
+                    </Text>
                 </View>
 
-            </View>
+                <View style={{
+                    justifyContent: 'flex-start',
+                    alignItems: 'flex-start',
+                    marginLeft: 20,
+                    flex: 1,
+                }}>
+                    <Input
+                        containerStyle={{
+                            width: '90%',
+                            marginBottom: 30,
+                        }}
+                        inputContainerStyle={{
+                            borderColor: 'lightgrey',
+                            borderWidth: 1,
+                            borderRadius: 2,
+                        }}
+                        maxLength={64}
+                        label={'Private spend key'}
+                        labelStyle={{
+                            marginBottom: 5,
+                            marginRight: 2,
+                        }}
+                        inputStyle={{
+                            color: Config.theme.primaryColour,
+                            fontSize: 15,
+                            marginLeft: 5
+                        }}
+                        value={this.state.paymentID}
+                        onChangeText={(text) => {
+                            this.setState({
+                                privateSpendKey: text,
+                            }, () => this.checkErrors());
+                        }}
+                        errorMessage={this.state.spendKeyError}
+                    />
 
+                    <Input
+                        containerStyle={{
+                            width: '90%',
+                        }}
+                        inputContainerStyle={{
+                            borderColor: 'lightgrey',
+                            borderWidth: 1,
+                            borderRadius: 2,
+                        }}
+                        maxLength={64}
+                        label={'Private view key'}
+                        labelStyle={{
+                            marginBottom: 5,
+                            marginRight: 2,
+                        }}
+                        inputStyle={{
+                            color: Config.theme.primaryColour,
+                            fontSize: 15,
+                            marginLeft: 5
+                        }}
+                        value={this.state.paymentID}
+                        onChangeText={(text) => {
+                            this.setState({
+                                privateViewKey: text,
+                            }, () => this.checkErrors());
+                        }}
+                        errorMessage={this.state.viewKeyError}
+                    />
+
+                </View>
+
+                <BottomButton
+                    title="Continue"
+                    onPress={() => this.importWallet()}
+                    disabled={!this.state.continueEnabled}
+                />
+            </View>
         );
     }
 }

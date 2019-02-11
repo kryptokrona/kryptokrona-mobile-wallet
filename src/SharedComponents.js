@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 
 import React from 'react';
 
-import { View, Button, Clipboard } from 'react-native';
+import { View, Button, Clipboard, Text } from 'react-native';
 
 import { Button as RneButton } from 'react-native-elements';
 
@@ -101,3 +101,42 @@ export const BottomButton = props => (
         />
     </View>
 );
+
+export class OR extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return(
+            <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: '100%',
+                paddingHorizontal: 10,
+            }}>
+                <View style={{
+                    width: '45%',
+                    borderWidth: 1,
+                    borderColor: 'lightgrey',
+                    height: 1
+                }}/>
+
+                <Text style={{
+                    fontSize: 14,
+                    color: 'grey',
+                }}>
+                    OR
+                </Text>
+
+                <View style={{
+                    width: '45%',
+                    borderWidth: 1,
+                    borderColor: 'lightgrey',
+                    height: 1
+                }}/>
+            </View>
+        );
+    }
+}

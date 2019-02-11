@@ -103,7 +103,8 @@ export class CreateWalletScreen extends React.Component {
                     alignItems: 'flex-start',
                     justifyContent: 'flex-start',
                     marginTop: 60,
-                    marginLeft: 30
+                    marginLeft: 30,
+                    marginRight: 10,
                 }}>
                     <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 40 }}>
                         Your wallet has been created!

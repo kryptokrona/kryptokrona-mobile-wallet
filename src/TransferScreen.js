@@ -481,7 +481,7 @@ export class NewPayeeScreen extends React.Component {
                 flex: 1,
                 marginTop: 60,
             }}>
-                <Text style={[Styles.centeredText, { color: Config.theme.primaryColour, fontSize: 25, marginBottom: 40, marginLeft: 30 }]}>
+                <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 40, marginLeft: 30 }}>
                     New Payee
                 </Text>
 
@@ -617,7 +617,7 @@ export class ConfirmScreen extends React.Component {
                 flex: 1,
                 marginTop: 60,
             }}>
-                <Text style={[Styles.centeredText, { color: Config.theme.primaryColour, fontSize: 25, marginBottom: 40, marginLeft: 30 }]}>
+                <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 40, marginLeft: 30 }}>
                     Review your transfer
                 </Text>
 
@@ -645,9 +645,10 @@ export class ChoosePayeeScreen extends React.Component {
                 justifyContent: 'flex-start',
                 flex: 1,
                 marginLeft: 30,
-                marginTop: 60
+                marginTop: 60,
+                marginRight: 10,
             }}>
-                <Text style={[Styles.centeredText, { color: Config.theme.primaryColour, fontSize: 25, marginBottom: 40 }]}>
+                <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 40 }}>
                     Who are you sending to?
                 </Text>
                 
