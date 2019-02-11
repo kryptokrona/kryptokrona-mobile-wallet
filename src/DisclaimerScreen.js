@@ -4,7 +4,9 @@
 
 import React from 'react';
 
-import { View, Text, Switch, Button } from 'react-native';
+import { View, Text, Switch } from 'react-native';
+
+import { Button } from 'react-native-elements';
 
 import Config from './Config';
 
@@ -33,16 +35,23 @@ export class DisclaimerScreen extends React.Component {
 
     render() {
         return(
-            <View style={{ flex: 1, marginTop: 40, justifyContent: 'center', alignItems: 'stretch' }}>
-                <Text style={[Styles.centeredText, {
+            <View style={{
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                flex: 1,
+                marginTop: 60,
+            }}>
+                <Text style={{
                     color: Config.theme.primaryColour,
                     fontSize: 25,
-                    marginBottom: 20,
-                }]}>
+                    marginBottom: 40,
+                    marginLeft: 30,
+                    marginRight: 20
+                }}>
                     Before we continue, please take a minute to read and agree to the below statements.
                 </Text>
 
-                {Config.feePercentage > 0 && <View style={{ flexDirection: 'row', margin: 10, marginRight: 20, marginLeft: 15 }}>
+                {Config.feePercentage > 0 && <View style={{ flexDirection: 'row', marginRight: 20, marginLeft: 25, marginBottom: 20 }}>
                     <Switch
                         value={this.state.feeAccepted}
                         onValueChange={(value) => {
@@ -60,7 +69,7 @@ export class DisclaimerScreen extends React.Component {
                     </View>
                 </View>}
 
-                <View style={{ flexDirection: 'row', margin: 10, marginRight: 20, marginLeft: 15 }}>
+                <View style={{ flexDirection: 'row', marginRight: 20, marginLeft: 25, marginBottom: 20 }}>
                     <Switch
                         value={this.state.keyOwnershipAccepted}
                         onValueChange={(value) => {
@@ -79,7 +88,7 @@ export class DisclaimerScreen extends React.Component {
 
                 </View>
 
-                <View style={{ flexDirection: 'row', margin: 10, marginRight: 20, marginLeft: 15 }}>
+                <View style={{ flexDirection: 'row', marginRight: 20, marginLeft: 25, marginBottom: 20 }}>
                     <Switch
                         value={this.state.warrantyAccepted}
                         onValueChange={(value) => {
@@ -98,14 +107,20 @@ export class DisclaimerScreen extends React.Component {
 
                 </View>
 
-                <View style={[Styles.buttonContainer, Styles.alignBottom, {bottom: 40}]}>
+                <View style={[Styles.alignBottom, {bottom: 0}]}>
                     <Button
                         title="Continue"
-                        onPress={() => this.props.navigation.navigate('SetPin', { nextRoute: this.props.navigation.state.params.nextRoute })}
-                        color={Config.theme.primaryColour}
+                        onPress={() => {
+                            this.props.navigation.navigate('SetPin', { nextRoute: this.props.navigation.state.params.nextRoute })
+                        }}
+                        buttonStyle={{
+                            backgroundColor: Config.theme.primaryColour,
+                            height: 50
+                        }}
                         disabled={!this.state.feeAccepted || !this.state.keyOwnershipAccepted || !this.state.warrantyAccepted}
                     />
                 </View>
+
             </View>
         );
     }

@@ -273,7 +273,7 @@ export class TransferScreen extends React.Component {
                     }}
                 />
 
-                <View style={{ marginLeft: '73%' }}>
+                <View style={{ marginLeft: '70%' }}>
                     <Button
                         title="Send Max"
                         onPress={() => {
@@ -350,7 +350,7 @@ export class ExistingPayees extends React.Component {
                         renderItem={({item}) => (
                             <ListItem
                                 title={item.title}
-                                subtitle={item.address.substr(0, 25) + '...'}
+                                subtitle={item.address.substr(0, 15) + '...'}
                                 subtitleStyle={{
                                     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace'
                                 }}
@@ -551,7 +551,7 @@ export class NewPayeeScreen extends React.Component {
                     errorMessage={this.state.addressError}
                 />
 
-                <View style={{ marginLeft: '66%' }}>
+                <View style={{ marginLeft: '63%' }}>
                     <Button
                         title="Scan QR Code"
                         onPress={() => {
