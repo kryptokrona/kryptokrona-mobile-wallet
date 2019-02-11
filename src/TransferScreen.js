@@ -26,7 +26,7 @@ import List from './ListContainer';
 
 import { Styles } from './Styles';
 import { Globals } from './Globals';
-import { Hr } from './SharedComponents';
+import { Hr, BottomButton } from './SharedComponents';
 import { removeFee, toAtomic, fromAtomic, addFee } from './Fee';
 
 export class QrScannerScreen extends React.Component {
@@ -302,17 +302,11 @@ export class TransferScreen extends React.Component {
                     Should arrive in {this.timePeriod}!
                 </Text>
 
-                <View style={[Styles.alignBottom, {bottom: 0}]}>
-                    <Button
-                        title="Continue"
-                        onPress={() => this.props.navigation.navigate('ChoosePayee')} 
-                        buttonStyle={{
-                            backgroundColor: Config.theme.primaryColour,
-                            height: 50
-                        }}
-                        disabled={!this.state.continueEnabled}
-                    />
-                </View>
+                <BottomButton
+                    title="Continue"
+                    onPress={() => this.props.navigation.navigate('ChoosePayee')} 
+                    disabled={!this.state.continueEnabled}
+                />
 
             </View>
         );
@@ -596,20 +590,14 @@ export class NewPayeeScreen extends React.Component {
                     errorMessage={this.state.paymentIDError}
                 />
 
-                <View style={[Styles.alignBottom, {bottom: 0}]}>
-                    <Button
-                        title="Continue"
-                        onPress={() => {
-                            /* TODO: Store payee */
-                            this.props.navigation.navigate('Confirm', { payee: this.state.nickname });
-                        }}
-                        buttonStyle={{
-                            backgroundColor: Config.theme.primaryColour,
-                            height: 50
-                        }}
-                        disabled={!this.state.continueEnabled}
-                    />
-                </View>
+                <BottomButton
+                    title="Continue"
+                    onPress={() => {
+                        /* TODO: Store payee */
+                        this.props.navigation.navigate('Confirm', { payee: this.state.nickname });
+                    }}
+                    disabled={!this.state.continueEnabled}
+                />
 
             </View>
         );
@@ -633,16 +621,12 @@ export class ConfirmScreen extends React.Component {
                     Review your transfer
                 </Text>
 
-                <View style={[Styles.alignBottom, {bottom: 0}]}>
-                    <Button
-                        title="Send Transaction"
-                        onPress={() => console.log('')} 
-                        buttonStyle={{
-                            backgroundColor: Config.theme.primaryColour,
-                            height: 50
-                        }}
-                    />
-                </View>
+                <BottomButton
+                    title="Send Transaction"
+                    onPress={() => {
+                        console.log('')
+                    }}
+                />
 
             </View>
         );

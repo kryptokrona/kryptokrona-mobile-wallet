@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
 });
 
 /* https://github.com/react-native-training/react-native-elements/issues/1565 */
-const ListItem: React.SFC<ListItemProps> = props => (
+const ListItem = props => (
     <RneListItem
         containerStyle={[styles.listItemContainer, props.containerStyle]}
         {...props}

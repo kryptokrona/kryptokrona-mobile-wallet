@@ -18,10 +18,10 @@ import { Styles } from './Styles';
 import { FadeView } from './FadeView';
 import { saveToDatabase } from './Database';
 import { updateCoinPrice } from './Currency';
-import { CopyButton } from './SharedComponents';
 import { Globals, initGlobals } from './Globals';
 import { SeedComponent } from './SharedComponents';
 import { navigateWithDisabledBack } from './Utilities';
+import { CopyButton, BottomButton } from './SharedComponents';
 
 /**
  * Create or import a wallet
@@ -97,39 +97,40 @@ export class CreateWalletScreen extends React.Component {
 
     render() {
         return(
-            <View style={{flex: 1, alignItems: 'stretch', justifyContent: 'flex-start'}}>
-                <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                    <Image
-                        source={require('../assets/img/logo.png')}
-                        style={Styles.logo}
-                    />
+            <View style={{ flex: 1, justifyContent: 'flex-start' }}>
+
+                <View style={{
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
+                    marginTop: 60,
+                    marginLeft: 30
+                }}>
+                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 40 }}>
+                        Your wallet has been created!
+                    </Text>
+
+                    <Text style={{ fontSize: 15, marginBottom: 20 }}>
+                        Please save the following backup words somewhere safe.
+                    </Text>
+
+                    <Text style={{ fontWeight: 'bold', color: 'red', marginBottom: 20 }}>
+                        Without this seed, if your phone gets lost, or your wallet gets corrupted,
+                        you cannot restore your wallet, and your funds will be lost forever!
+                    </Text>
                 </View>
 
-                <View style={{alignItems: 'center'}}>
-                    <Text style={{margin: 10, textAlignVertical: 'center', textAlign: 'center'}}>
-                        <Text style={{fontWeight: 'bold'}}>
-                            Your wallet has been created!{"\n\n"}
-                        </Text>
-                        Please save the following backup words somewhere safe.{"\n\n"}
-                        <Text style={{fontWeight: 'bold', color: 'red'}}>
-                            Without this seed, if your phone gets lost, or your wallet gets corrupted,
-                            you cannot restore your wallet, and your funds will be lost forever!
-                        </Text>
-                    </Text>
+                <View style={{ alignItems: 'center', flex: 1, justifyContent: 'flex-start' }}>
                     <SeedComponent
                         seed={Globals.wallet.getMnemonicSeed()[0]}
                         borderColour={'red'}
                     />
-                </View>
 
-                <View style={[Styles.buttonContainer, {bottom: 30, position: 'absolute', alignItems: 'stretch', justifyContent: 'center', width: '100%'}]}>
-                    <Button
-                        title='Continue'
-                        /* Go to the menu screen */
-                        onPress={() => this.props.navigation.navigate('Home')}
-                        color={Config.theme.primaryColour}
+                    <BottomButton
+                        title="Continue"
+                        onPress={() => this.props.navigation.navigate('Home')} 
                     />
                 </View>
+
             </View>
         );
     }

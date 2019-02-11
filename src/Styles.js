@@ -31,6 +31,7 @@ export const Styles = StyleSheet.create({
         alignItems: 'stretch',
         justifyContent: 'center',
         width: '100%',
+        bottom: 0,
     }
 });
 

@@ -6,11 +6,10 @@ import React from 'react';
 
 import { View, Text, Switch } from 'react-native';
 
-import { Button } from 'react-native-elements';
-
 import Config from './Config';
 
 import { Styles } from './Styles';
+import { BottomButton } from './SharedComponents';
 import { navigateWithDisabledBack } from './Utilities';
 
 export class DisclaimerScreen extends React.Component {
@@ -107,20 +106,13 @@ export class DisclaimerScreen extends React.Component {
 
                 </View>
 
-                <View style={[Styles.alignBottom, {bottom: 0}]}>
-                    <Button
-                        title="Continue"
-                        onPress={() => {
-                            this.props.navigation.navigate('SetPin', { nextRoute: this.props.navigation.state.params.nextRoute })
-                        }}
-                        buttonStyle={{
-                            backgroundColor: Config.theme.primaryColour,
-                            height: 50
-                        }}
-                        disabled={!this.state.feeAccepted || !this.state.keyOwnershipAccepted || !this.state.warrantyAccepted}
-                    />
-                </View>
-
+                <BottomButton
+                    title="Continue"
+                    onPress={() => {
+                        this.props.navigation.navigate('SetPin', { nextRoute: this.props.navigation.state.params.nextRoute })
+                    }}
+                    disabled={!this.state.feeAccepted || !this.state.keyOwnershipAccepted || !this.state.warrantyAccepted}
+                />
             </View>
         );
     }

@@ -8,6 +8,8 @@ import React from 'react';
 
 import { View, Button, Clipboard } from 'react-native';
 
+import { Button as RneButton } from 'react-native-elements';
+
 import Config from './Config';
 
 import { Styles } from './Styles';
@@ -86,3 +88,16 @@ export class Hr extends React.Component {
         );
     }
 }
+
+export const BottomButton = props => (
+    <View style={Styles.alignBottom}>
+        <RneButton
+            buttonStyle={{
+                backgroundColor: Config.theme.primaryColour,
+                height: 50
+            }}
+            {...props}
+            title={props.title.toUpperCase()}
+        />
+    </View>
+);
