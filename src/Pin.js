@@ -18,7 +18,7 @@ import Config from './Config';
 
 import { FadeView } from './FadeView';
 import { loadFromDatabase } from './Database';
-import { Globals, initGlobals } from './Globals';
+import { Globals } from './Globals';
 import { navigateWithDisabledBack } from './Utilities';
 
 /**
@@ -120,9 +120,6 @@ export class RequestPinScreen extends React.Component {
                 await this.fail('Error loading wallet: ' + error);
             } else {
                 Globals.wallet = wallet;
-
-                await initGlobals();
-
                 this.props.navigation.navigate('Home');
             }
         })().catch(err => {

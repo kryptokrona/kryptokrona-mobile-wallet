@@ -26,6 +26,7 @@ import List from './ListContainer';
 
 import { Styles } from './Styles';
 import { Globals } from './Globals';
+import { savePayeeToDatabase } from './Database';
 import { Hr, BottomButton } from './SharedComponents';
 import { removeFee, toAtomic, fromAtomic, addFee } from './Fee';
 
@@ -120,6 +121,7 @@ export class TransferScreen extends React.Component {
             unlockedBalanceHuman: fromAtomic(unlockedBalance),
             youSendAmount: '',
             recipientGetsAmount: '',
+            feeInfo: {},
         }
 
         const minutes = Config.blockTargetTime >= 60;
@@ -187,15 +189,16 @@ export class TransferScreen extends React.Component {
         let numAmount = Number(amount);
 
         let result = '';
+        let feeInfo = {};
 
         if (!isNaN(numAmount) && numAmount > 0) {
-            let feeInfo = removeFee(numAmount);
-
+            feeInfo = removeFee(numAmount);
             result = feeInfo.remaining;
         }
 
         this.setState({
             recipientGetsAmount: result,
+            feeInfo,
         });
     }
 
@@ -207,15 +210,16 @@ export class TransferScreen extends React.Component {
         let numAmount = Number(amount);
 
         let result = '';
+        let feeInfo = {};
 
         if (!isNaN(numAmount) && numAmount > 0) {
-            let feeInfo = addFee(numAmount);
-
+            feeInfo = addFee(numAmount);
             result = feeInfo.original;
         }
 
         this.setState({
             youSendAmount: result,
+            feeInfo
         });
     }
 
@@ -254,6 +258,7 @@ export class TransferScreen extends React.Component {
                         });
 
                         this.convertSentToReceived(text);
+
                         this.checkErrors(text);
                     }}
                     errorMessage={this.state.errMsg}
@@ -304,7 +309,12 @@ export class TransferScreen extends React.Component {
 
                 <BottomButton
                     title="Continue"
-                    onPress={() => this.props.navigation.navigate('ChoosePayee')} 
+                    onPress={() => {
+                        this.props.navigation.navigate(
+                            'ChoosePayee',
+                            { amount: this.state.feeInfo }
+                        );
+                    }} 
                     disabled={!this.state.continueEnabled}
                 />
 
@@ -330,20 +340,11 @@ export class ExistingPayees extends React.Component {
 
                 <List>
                     <FlatList
-                        data={[
-                            {
-                                title: 'Exchange',
-                                address: 'TRTLv2Fyavy8CXG8BPEbNeCHFZ1fuDCYCZ3vW5H5LXN4K2M2MHUpTENip9bbavpHvvPwb4NDkBWrNgURAd5DB38FHXWZyoBh4wW',
-                            },
-                            {
-                                title: 'Tipjar',
-                                address: 'TRTLuxtaj1Q9aGxQ4Tovu59ukhuCam5gE9EP492YrcMEA4vSDHLymoyCQhqNT9YwSRAQvxTAvdazc9QgjMJWf8XAAZsfrbCv4i22eeNaty9F3VXnU8GXwoVRvTvHaVVafpGKTfBJXYGySdQ5C7uwFkx7uSJpp4fwwkv3nUQ54MbFStQmjaC8yFnB5gi',
-                            }
-                        ]}
-                        keyExtractor={item => item.address}
+                        data={Globals.payees}
+                        keyExtractor={item => item.nickname}
                         renderItem={({item}) => (
                             <ListItem
-                                title={item.title}
+                                title={item.nickname}
                                 subtitle={item.address.substr(0, 15) + '...'}
                                 subtitleStyle={{
                                     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace'
@@ -358,7 +359,7 @@ export class ExistingPayees extends React.Component {
                                         borderRadius: 45
                                     }}>
                                         <Text style={[Styles.centeredText, { fontSize: 30, color: Config.theme.primaryColour }]}>
-                                            {item.title[0].toUpperCase()}
+                                            {item.nickname[0].toUpperCase()}
                                         </Text>
                                     </View>
                                 }
@@ -451,7 +452,10 @@ export class NewPayeeScreen extends React.Component {
             return [false, errorMessage];
         }
 
-        /* TODO: Check if nickname already exists */
+        if (Globals.payees.some((payee) => payee.nickname === nickname)) {
+            errorMessage = `A payee with the name ${nickname} already exists.`;
+            return [false, errorMessage];
+        }
 
         return [true, errorMessage];
     }
@@ -593,8 +597,24 @@ export class NewPayeeScreen extends React.Component {
                 <BottomButton
                     title="Continue"
                     onPress={() => {
-                        /* TODO: Store payee */
-                        this.props.navigation.navigate('Confirm', { payee: this.state.nickname });
+                        const payee = {
+                            nickname: this.state.nickname,
+                            address: this.state.address,
+                            paymentID: this.state.paymentID,
+                        };
+
+                        /* Add payee to global payee store */
+                        Globals.payees.push(payee);
+                        
+                        /* Save payee to DB */
+                        savePayeeToDatabase(payee);
+
+                        this.props.navigation.navigate(
+                            'Confirm', {
+                                payee: this.state.nickname,
+                                amount: this.props.navigation.state.params.amount,
+                            }
+                        );
                     }}
                     disabled={!this.state.continueEnabled}
                 />
@@ -653,7 +673,13 @@ export class ChoosePayeeScreen extends React.Component {
                 </Text>
                 
                 <TouchableWithoutFeedback
-                    onPress={() => this.props.navigation.navigate('NewPayee')}
+                    onPress={() => {
+                        this.props.navigation.navigate(
+                            'NewPayee', {
+                                amount: this.props.navigation.state.params.amount
+                            },
+                        );
+                    }}
                 >
                     <View style={{
                         flexDirection: 'row',

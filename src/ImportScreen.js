@@ -20,7 +20,7 @@ import {
 import Config from './Config';
 
 import { Styles } from './Styles';
-import { Globals, initGlobals } from './Globals';
+import { Globals } from './Globals';
 import { saveToDatabase } from './Database';
 import { BottomButton } from './SharedComponents';
 
@@ -178,8 +178,6 @@ export class ImportSeedScreen extends React.Component {
 
         /* Encrypt wallet with pincode in DB */
         saveToDatabase(Globals.wallet, Globals.pinCode);
-
-        initGlobals();
 
         this.props.navigation.navigate('Home');
     }
@@ -449,8 +447,6 @@ export class ImportKeysScreen extends React.Component {
 
         /* Encrypt wallet with pincode in DB */
         saveToDatabase(Globals.wallet, Globals.pinCode);
-
-        initGlobals();
 
         this.props.navigation.navigate('Home');
     }

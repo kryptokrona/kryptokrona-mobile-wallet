@@ -153,6 +153,16 @@ const PreferencesSchema = {
     }
 }
 
+const PayeeSchema = {
+    name: 'Payee',
+    primaryKey: 'nickname',
+    properties: {
+        nickname: 'string',
+        address: 'string',
+        paymentID: 'string',
+    }
+}
+
 function transactionInputToRealm(json, realm) {
     return realm.create('TransactionInput', json);
 }
@@ -396,6 +406,44 @@ export async function loadPriceDataFromDatabase() {
 
     } catch (err) {
         console.log('Error loading database: ' + err);
+        return undefined;
+    }
+}
+
+/**
+ * Note - saves a single payee to the DB, which contains many payees
+ */
+export function savePayeeToDatabase(payee) {
+    Realm.open({
+        schema: [PayeeSchema],
+        path: 'PayeeData.realm',
+        deleteRealmIfMigrationNeeded: true,
+    }).then(realm => {
+        realm.write(() => {
+            return realm.create('Payee', payee, true);
+        });
+    }).catch(err => {
+        console.log('Failed to save payee data to DB: ' + err);
+    });
+}
+
+export async function loadPayeeDataFromDatabase() {
+    try {
+        let realm = await Realm.open({
+            schema: [PayeeSchema],
+            path: 'PayeeData.realm',
+            deleteRealmIfMigrationNeeded: true,
+        });
+
+        if (realm.objects('Payee').length > 0) {
+            /* Has science gone too far? */
+            return realm.objects('Payee').map((x) => JSON.parse(JSON.stringify((x))));
+        }
+
+        return undefined;
+
+    } catch (err) {
+        console.log('Error loading payee data from database: ' + err);
         return undefined;
     }
 }

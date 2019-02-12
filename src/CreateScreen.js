@@ -15,10 +15,10 @@ import {
 import Config from './Config';
 
 import { Styles } from './Styles';
+import { Globals } from './Globals';
 import { FadeView } from './FadeView';
 import { saveToDatabase } from './Database';
 import { updateCoinPrice } from './Currency';
-import { Globals, initGlobals } from './Globals';
 import { navigateWithDisabledBack } from './Utilities';
 import { BottomButton, SeedComponent } from './SharedComponents';
 
@@ -90,8 +90,6 @@ export class CreateWalletScreen extends React.Component {
 
         /* Encrypt wallet with pincode in DB */
         saveToDatabase(Globals.wallet, Globals.pinCode);
-
-        initGlobals();
     };
 
     render() {

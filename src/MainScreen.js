@@ -19,11 +19,11 @@ import {
 import Config from './Config';
 
 import { Styles } from './Styles';
-import { Globals } from './Globals';
 import { coinsToFiat } from './Currency';
 import { ProgressBar } from './ProgressBar';
 import { saveToDatabase } from './Database';
 import { CopyButton } from './SharedComponents';
+import { Globals, initGlobals } from './Globals';
 import { processBlockOutputs } from './NativeCode';
 
 /**
@@ -40,6 +40,8 @@ export class MainScreen extends React.Component {
         this.state = {
             addressOnly: false,
         }
+
+        initGlobals();
 
         /* Use our native C++ func to process blocks, provided we're on android */
         /* TODO: iOS support */
@@ -305,7 +307,7 @@ class SyncComponent extends React.Component {
 
     render() {
         return(
-            <View style={{ justifyContent: 'flex-end', alignItems: 'center', marginBottom: 20, marginTop: 30 }}>
+            <View style={{ justifyContent: 'flex-end', alignItems: 'center', marginBottom: 20, marginTop: 50 }}>
                 <Text>
                     {this.state.walletHeight} / {this.state.networkHeight} - {this.state.percent}%
                 </Text>

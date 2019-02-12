@@ -22,13 +22,7 @@ export async function getCoinPrice() {
         return Globals.coinPrice;
     }
 
-    let result = {};
-
-    for (const currency of Constants.currencies) {
-        result[currency.ticker] = 0;
-    }
-
-    return result;
+    return {};
 }
 
 export async function getCoinPriceFromAPI() {

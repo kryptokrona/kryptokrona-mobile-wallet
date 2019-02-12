@@ -3,7 +3,7 @@
 // Please see the included LICENSE file for more information.
 
 import { getCoinPriceFromAPI } from './Currency';
-import { loadPreferencesFromDatabase } from './Database';
+import { loadPreferencesFromDatabase, loadPayeeDataFromDatabase } from './Database';
 
 class globals {
     constructor() {
@@ -17,26 +17,28 @@ class globals {
         this.backgroundSaveTimer = undefined;
 
         /* Want to cache this so we don't have to keep loading from DB/internet */
-        this.coinPrice = undefined;
+        this.coinPrice = {};
 
         /* Preferences loaded from DB */
         this.preferences = {
             currency: 'usd',
         };
+
+        /* People in our address book */
+        this.payees = [];
     }
 
     reset() {
         this.wallet = undefined;
         this.pinCode = undefined;
         this.backgroundSaveTimer = undefined;
-        this.preferences = {
-            currency: 'usd',
-        }
     }
 }
 
 export let Globals = new globals();
 
+/* Note... you probably don't want to await this function. Can block for a while
+   if no internet. */
 export async function initGlobals() {
     Globals.coinPrice = await getCoinPriceFromAPI();
 
@@ -44,5 +46,13 @@ export async function initGlobals() {
 
     if (prefs !== undefined) {
         Globals.preferences = prefs;
+    }
+
+    const payees = await loadPayeeDataFromDatabase();
+
+    if (payees !== undefined) {
+        Globals.payees = payees;
+        /* TODO: Remove */
+        console.log('Payees: ' + JSON.stringify(payees));
     }
 }
