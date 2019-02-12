@@ -76,12 +76,10 @@ export class ExportKeysScreen extends React.Component {
                     marginTop: 60,
                     marginLeft: 30,
                 }}>
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 10 }}>
+                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 10, fontWeight: 'bold' }}>
                         Mnemonic Seed:
                     </Text>
-                </View>
 
-                <View style={{alignItems: 'center', marginBottom: 30}}>
                     {this.state.mnemonicSeed === undefined ? noSeedComponent : seedComponent}
                 </View>
 
@@ -90,7 +88,7 @@ export class ExportKeysScreen extends React.Component {
                     justifyContent: 'flex-start',
                     flex: 1,
                 }}>
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 10, marginLeft: 30 }}>
+                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 10, marginTop: 20, marginLeft: 30, fontWeight: 'bold' }}>
                         Private Spend Key:
                     </Text>
 
@@ -108,7 +106,7 @@ export class ExportKeysScreen extends React.Component {
                         style={{ marginLeft: 23 }}
                     />
 
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 10, marginTop: 30, marginLeft: 30 }}>
+                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 10, marginTop: 30, marginLeft: 30, fontWeight: 'bold' }}>
                         Private View Key:
                     </Text>
 

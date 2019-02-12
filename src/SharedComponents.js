@@ -30,7 +30,6 @@ export class SeedComponent extends React.Component {
         return(
             <View>
                 <View style={{
-                    alignItems: 'center',
                     marginTop: 10,
                     borderWidth: 1,
                     borderColor: this.props.borderColour,
