@@ -6,7 +6,6 @@
 // Please see the included LICENSE file for more information.
 
 #include <alloca.h>
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
@@ -64,7 +63,6 @@ namespace Crypto {
     ge_p3 point;
     ge_p2 point2;
     ge_p1p1 point3;
-    assert(sc_check(reinterpret_cast<const unsigned char*>(&key2)) == 0);
     if (ge_frombytes_vartime(&point, reinterpret_cast<const unsigned char*>(&key1)) != 0) {
       return false;
     }
@@ -83,12 +81,10 @@ namespace Crypto {
     char *end = buf.output_index;
     buf.derivation = derivation;
     Tools::write_varint(end, output_index);
-    assert(end <= buf.output_index + sizeof buf.output_index);
     hash_to_scalar(&buf, end - reinterpret_cast<char *>(&buf), res);
   }
 
   static void derivation_to_scalar(const KeyDerivation &derivation, size_t output_index, const uint8_t* suffix, size_t suffixLength, EllipticCurveScalar &res) {
-    assert(suffixLength <= 32);
     struct {
       KeyDerivation derivation;
       char output_index[(sizeof(size_t) * 8 + 6) / 7 + 32];
@@ -96,7 +92,6 @@ namespace Crypto {
     char *end = buf.output_index;
     buf.derivation = derivation;
     Tools::write_varint(end, output_index);
-    assert(end <= buf.output_index + sizeof buf.output_index);
     size_t bufSize = end - reinterpret_cast<char *>(&buf);
     memcpy(end, suffix, suffixLength);
     hash_to_scalar(&buf, bufSize + suffixLength, res);
@@ -164,7 +159,6 @@ namespace Crypto {
   void crypto_ops::derive_secret_key(const KeyDerivation &derivation, size_t output_index,
     const SecretKey &base, SecretKey &derived_key) {
     EllipticCurveScalar scalar;
-    assert(sc_check(reinterpret_cast<const unsigned char*>(&base)) == 0);
     derivation_to_scalar(derivation, output_index, scalar);
     sc_add(reinterpret_cast<unsigned char*>(&derived_key), reinterpret_cast<const unsigned char*>(&base), reinterpret_cast<unsigned char*>(&scalar));
   }
@@ -172,7 +166,6 @@ namespace Crypto {
   void crypto_ops::derive_secret_key(const KeyDerivation &derivation, size_t output_index,
     const SecretKey &base, const uint8_t* suffix, size_t suffixLength, SecretKey &derived_key) {
     EllipticCurveScalar scalar;
-    assert(sc_check(reinterpret_cast<const unsigned char*>(&base)) == 0);
     derivation_to_scalar(derivation, output_index, suffix, suffixLength, scalar);
     sc_add(reinterpret_cast<unsigned char*>(&derived_key), reinterpret_cast<const unsigned char*>(&base), reinterpret_cast<unsigned char*>(&scalar));
   }
@@ -231,7 +224,6 @@ namespace Crypto {
     ge_p3 tmp3;
     EllipticCurveScalar c;
     s_comm buf;
-    assert(check_key(pub));
     buf.h = prefix_hash;
     buf.key = reinterpret_cast<const EllipticCurvePoint&>(pub);
     if (ge_frombytes_vartime(&tmp3, reinterpret_cast<const unsigned char*>(&pub)) != 0) {
@@ -282,7 +274,6 @@ namespace Crypto {
   void crypto_ops::generate_key_image(const PublicKey &pub, const SecretKey &sec, KeyImage &image) {
     ge_p3 point;
     ge_p2 point2;
-    assert(sc_check(reinterpret_cast<const unsigned char*>(&sec)) == 0);
     hash_to_ec(pub, point);
     ge_scalarmult(&point2, reinterpret_cast<const unsigned char*>(&sec), &point);
     ge_tobytes(reinterpret_cast<unsigned char*>(&image), &point2);
@@ -311,11 +302,6 @@ namespace Crypto {
     ge_dsmp image_pre;
     EllipticCurveScalar sum, h;
     rs_comm *const buf = reinterpret_cast<rs_comm *>(alloca(rs_comm_size(pubs_count)));
-#if !defined(NDEBUG)
-    for (i = 0; i < pubs_count; i++) {
-      assert(check_key(*pubs[i]));
-    }
-#endif
     if (ge_frombytes_vartime(&image_unp, reinterpret_cast<const unsigned char*>(&image)) != 0) {
       return false;
     }

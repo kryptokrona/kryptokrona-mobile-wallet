@@ -3,7 +3,6 @@
 //
 // Please see the included LICENSE file for more information.
 
-#include <assert.h>
 #include <stdint.h>
 
 #include "crypto-ops.h"
@@ -174,7 +173,6 @@ static void fe_cmov(fe f, const fe g, unsigned int b) {
   int32_t x7 = f7 ^ g7;
   int32_t x8 = f8 ^ g8;
   int32_t x9 = f9 ^ g9;
-  assert((((b - 1) & ~b) | ((b - 2) & ~(b - 1))) == (unsigned int) -1);
   b = -(int) b;
   x0 &= b;
   x1 &= b;
@@ -2656,7 +2654,6 @@ negative:
   fe_mul(x, x, fe_sqrtm1);
   fe_sub(y, w, x);
   if (fe_isnonzero(y)) {
-    assert((fe_add(y, w, x), !fe_isnonzero(y)));
     fe_mul(r->X, r->X, fe_fffb3);
   } else {
     fe_mul(r->X, r->X, fe_fffb4);
@@ -2666,29 +2663,11 @@ negative:
   sign = 1;
 setsign:
   if (fe_isnegative(r->X) != sign) {
-    assert(fe_isnonzero(r->X));
     fe_neg(r->X, r->X);
   }
   fe_add(r->Z, z, w);
   fe_sub(r->Y, z, w);
   fe_mul(r->X, r->X, r->Z);
-#if !defined(NDEBUG)
-  {
-    fe check_x, check_y, check_iz, check_v;
-    fe_invert(check_iz, r->Z);
-    fe_mul(check_x, r->X, check_iz);
-    fe_mul(check_y, r->Y, check_iz);
-    fe_sq(check_x, check_x);
-    fe_sq(check_y, check_y);
-    fe_mul(check_v, check_x, check_y);
-    fe_mul(check_v, fe_d, check_v);
-    fe_add(check_v, check_v, check_x);
-    fe_sub(check_v, check_v, check_y);
-    fe_1(check_x);
-    fe_add(check_v, check_v, check_x);
-    assert(!fe_isnonzero(check_v));
-  }
-#endif
 }
 
 void sc_0(unsigned char *s) {
