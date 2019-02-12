@@ -52,7 +52,5 @@ export async function initGlobals() {
 
     if (payees !== undefined) {
         Globals.payees = payees;
-        /* TODO: Remove */
-        console.log('Payees: ' + JSON.stringify(payees));
     }
 }

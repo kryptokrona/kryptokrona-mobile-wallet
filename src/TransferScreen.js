@@ -323,12 +323,60 @@ export class TransferScreen extends React.Component {
     }
 }
 
-export class ExistingPayees extends React.Component {
+class AddressBook extends React.Component {
     constructor(props) {
         super(props);
     }
 
     render() {
+        return(
+            <List style={{ marginBottom: 20 }}>
+                <FlatList
+                    data={Globals.payees}
+                    keyExtractor={item => item.nickname}
+                    renderItem={({item}) => (
+                        <ListItem
+                            title={item.nickname}
+                            subtitle={item.address.substr(0, 15) + '...'}
+                            subtitleStyle={{
+                                fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace'
+                            }}
+                            leftIcon={
+                                <View style={{
+                                    width: 50,
+                                    height: 50,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    backgroundColor: 'ghostwhite',
+                                    borderRadius: 45
+                                }}>
+                                    <Text style={[Styles.centeredText, { fontSize: 30, color: Config.theme.primaryColour }]}>
+                                        {item.nickname[0].toUpperCase()}
+                                    </Text>
+                                </View>
+                            }
+                        />
+                    )}
+                />
+            </List>
+        );
+    }
+}
+
+class ExistingPayees extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        const noPayeesComponent =
+            <View>
+                <Hr/>
+                <Text style={{ color: Config.theme.primaryColour, marginTop: 10, fontSize: 16}}>
+                    Your address book is empty! Add a new recipient above to populate it.
+                </Text>
+            </View>
+
         return(
             <View style={{
                 flex: 1,
@@ -338,35 +386,7 @@ export class ExistingPayees extends React.Component {
                     Address Book
                 </Text>
 
-                <List>
-                    <FlatList
-                        data={Globals.payees}
-                        keyExtractor={item => item.nickname}
-                        renderItem={({item}) => (
-                            <ListItem
-                                title={item.nickname}
-                                subtitle={item.address.substr(0, 15) + '...'}
-                                subtitleStyle={{
-                                    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace'
-                                }}
-                                leftIcon={
-                                    <View style={{
-                                        width: 50,
-                                        height: 50,
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        backgroundColor: 'ghostwhite',
-                                        borderRadius: 45
-                                    }}>
-                                        <Text style={[Styles.centeredText, { fontSize: 30, color: Config.theme.primaryColour }]}>
-                                            {item.nickname[0].toUpperCase()}
-                                        </Text>
-                                    </View>
-                                }
-                            />
-                        )}
-                    />
-                </List>
+                {Globals.payees.length > 0 ? <AddressBook/> : noPayeesComponent}
             </View>
         );
     }
@@ -516,7 +536,7 @@ export class NewPayeeScreen extends React.Component {
                             nickname: text,
                         }, () => this.checkErrors());
                     }}
-                    errorMessage={this.state.nicknameValid}
+                    errorMessage={this.state.nicknameError}
                 />
 
                 <Input

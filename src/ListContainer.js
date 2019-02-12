@@ -4,7 +4,7 @@
 
 import * as React from 'react';
 
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
 
 import { legacyRNElementsColors } from './Styles';
 
@@ -17,9 +17,16 @@ const styles = StyleSheet.create({
     },
 });
 
-/* https://github.com/react-native-training/react-native-elements/issues/1565 */
-const ListContainer: React.SFC<{ children: React.ReactNode }> = ({
-    children,
-}) => <View style={styles.listContainer}>{children}</View>;
+export default class ListContainer extends React.Component {
+    constructor(props) {
+        super(props);
+    }
 
-export default ListContainer;
+    render() {
+        return(
+            <ScrollView style={[styles.listContainer, this.props.style]}>
+                {this.props.children}
+            </ScrollView>
+        );
+    }
+}
