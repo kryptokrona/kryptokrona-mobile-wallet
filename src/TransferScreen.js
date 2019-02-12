@@ -11,11 +11,12 @@ import QRCodeScanner from 'react-native-qrcode-scanner';
 import { HeaderBackButton } from 'react-navigation';
 
 import {
-    validateAddresses, WalletErrorCode, validatePaymentID
+    validateAddresses, WalletErrorCode, validatePaymentID, prettyPrintAmount,
 } from 'turtlecoin-wallet-backend';
 
 import {
     View, Text, TextInput, TouchableWithoutFeedback, FlatList, Platform,
+    ScrollView,
 } from 'react-native';
 
 import { Input, Button } from 'react-native-elements';
@@ -26,6 +27,7 @@ import List from './ListContainer';
 
 import { Styles } from './Styles';
 import { Globals } from './Globals';
+import { getArrivalTime } from './Utilities';
 import { savePayeeToDatabase } from './Database';
 import { Hr, BottomButton } from './SharedComponents';
 import { removeFee, toAtomic, fromAtomic, addFee } from './Fee';
@@ -122,14 +124,6 @@ export class TransferScreen extends React.Component {
             youSendAmount: '',
             recipientGetsAmount: '',
             feeInfo: {},
-        }
-
-        const minutes = Config.blockTargetTime >= 60;
-
-        if (minutes) {
-            this.timePeriod = Math.ceiling(Config.blockTargetTime / 60) + ' minutes';
-        } else {
-            this.timePeriod = Config.blockTargetTime + ' seconds';
         }
     }
 
@@ -304,7 +298,7 @@ export class TransferScreen extends React.Component {
                     marginLeft: 30,
                     marginTop: 20,
                 }}>
-                    Should arrive in {this.timePeriod}!
+                    Should arrive in {getArrivalTime()}
                 </Text>
 
                 <BottomButton
@@ -355,6 +349,14 @@ class AddressBook extends React.Component {
                                     </Text>
                                 </View>
                             }
+                            onPress={() => {
+                                this.props.navigation.navigate(
+                                    'Confirm', {
+                                        payee: item.nickname,
+                                        amount: this.props.navigation.state.params.amount,
+                                    }
+                                );
+                            }}
                         />
                     )}
                 />
@@ -386,7 +388,7 @@ class ExistingPayees extends React.Component {
                     Address Book
                 </Text>
 
-                {Globals.payees.length > 0 ? <AddressBook/> : noPayeesComponent}
+                {Globals.payees.length > 0 ? <AddressBook {...this.props}/> : noPayeesComponent}
             </View>
         );
     }
@@ -647,19 +649,175 @@ export class NewPayeeScreen extends React.Component {
 export class ConfirmScreen extends React.Component {
     constructor(props) {
         super(props);
+
+        const payee = Globals.payees.find((p) => p.nickname === this.props.navigation.state.params.payee);
+
+        this.state = {
+            payee,
+            amount: this.props.navigation.state.params.amount,
+        };
     }
 
     render() {
         return(
-            <View style={{
-                alignItems: 'flex-start',
-                justifyContent: 'flex-start',
-                flex: 1,
-                marginTop: 60,
-            }}>
-                <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 40, marginLeft: 30 }}>
-                    Review your transfer
-                </Text>
+            <View style={{ flex: 1 }}>
+                <View style={{
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
+                    marginTop: 60,
+                    marginHorizontal: 30,
+                }}>
+                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 25, fontWeight: 'bold' }}>
+                        Review your transfer
+                    </Text>
+                </View>
+
+                <ScrollView contentContainerStyle={{
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
+                    marginHorizontal: 30,
+                    paddingBottom: 70,
+                }}>
+                    <Text style={{ fontSize: 13 }}>
+                        <Text style={{ color: Config.theme.primaryColour, fontWeight: 'bold' }}>
+                            {prettyPrintAmount(this.state.amount.remainingAtomic)}{' '}
+                        </Text>
+                        will reach{' '}
+                        <Text style={{ color: Config.theme.primaryColour, fontWeight: 'bold' }}>
+                            {this.state.payee.nickname}'s{' '}
+                        </Text>
+                        account, in {getArrivalTime()}
+                    </Text>
+
+                    <View style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        marginTop: 15,
+                        width: '100%',
+                        justifyContent: 'space-between'
+                    }}>
+                        <Text style={{ fontSize: 15, color: Config.theme.primaryColour, fontWeight: 'bold' }}>
+                            {this.state.payee.nickname}'s details
+                        </Text>
+
+                        <Button
+                            title='Change'
+                            onPress={() => {
+                                /* TODO */
+                            }}
+                            titleStyle={{
+                                color: Config.theme.primaryColour,
+                                fontSize: 13
+                            }}
+                            type="clear"
+                        />
+                    </View>
+
+                    <View style={{ borderWidth: 0.5, borderColor: 'lightgrey', width: '100%' }}/>
+
+                    <Text style={{ marginBottom: 5, marginTop: 20 }}>
+                        Address
+                    </Text>
+
+                    <Text style={{ color: Config.theme.primaryColour, fontSize: 16 }}>
+                        {this.state.payee.address}
+                    </Text>
+
+                    {this.state.payee.paymentID !== '' &&
+                    <View>
+                        <Text style={{ marginBottom: 5, marginTop: 20 }}>
+                            Payment ID
+                        </Text>
+
+                        <Text style={{ color: Config.theme.primaryColour, fontSize: 16 }}>
+                            {this.state.payee.paymentID}
+                        </Text>
+                    </View>}
+
+                    <View style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        marginTop: 15,
+                        width: '100%',
+                        justifyContent: 'space-between'
+                    }}>
+                        <Text style={{ fontSize: 15, color: Config.theme.primaryColour, fontWeight: 'bold' }}>
+                            Transfer details
+                        </Text>
+
+                        <Button
+                            title='Change'
+                            onPress={() => {
+                                /* TODO */
+                            }}
+                            titleStyle={{
+                                color: Config.theme.primaryColour,
+                                fontSize: 13
+                            }}
+                            type="clear"
+                        />
+                    </View>
+
+                    <View style={{ borderWidth: 0.5, borderColor: 'lightgrey', width: '100%' }}/>
+
+                    <Text style={{ marginBottom: 5, marginTop: 20 }}>
+                        You're sending
+                    </Text>
+
+                    <Text style={{ color: Config.theme.primaryColour, fontSize: 16 }}>
+                        {prettyPrintAmount(this.state.amount.originalAtomic)}
+                    </Text>
+
+                    <Text style={{ marginBottom: 5, marginTop: 20 }}>
+                        {this.state.payee.nickname} gets
+                    </Text>
+
+                    <Text style={{ color: Config.theme.primaryColour, fontSize: 16 }}>
+                        {prettyPrintAmount(this.state.amount.remainingAtomic)}
+                    </Text>
+
+                    <Text style={{ marginBottom: 5, marginTop: 20 }}>
+                        Network fee
+                    </Text>
+
+                    <Text style={{ color: Config.theme.primaryColour, fontSize: 16 }}>
+                        {prettyPrintAmount(this.state.amount.networkFeeAtomic)}
+                    </Text>
+
+                    {this.state.amount.devFeeAtomic > 0 &&
+                    <View>
+                        <Text style={{ marginBottom: 5, marginTop: 20 }}>
+                            Developer fee
+                        </Text>
+
+                        <Text style={{ color: Config.theme.primaryColour, fontSize: 16 }}>
+                            {prettyPrintAmount(this.state.amount.devFeeAtomic)}
+                        </Text>
+                    </View>}
+
+                    {this.state.amount.nodeFeeAtomic > 0 &&
+                    <View>
+                        <Text style={{ marginBottom: 5, marginTop: 20 }}>
+                            Node fee
+                        </Text>
+
+                        <Text style={{ color: Config.theme.primaryColour, fontSize: 16 }}>
+                            {prettyPrintAmount(this.state.amount.nodeFeeAtomic)}
+                        </Text>
+                    </View>}
+
+                    {this.state.amount.totalFeeAtomic > this.state.amount.networkFeeAtomic &&
+                    <View>
+                        <Text style={{ marginBottom: 5, marginTop: 20 }}>
+                            Total fee
+                        </Text>
+
+                        <Text style={{ color: Config.theme.primaryColour, fontSize: 16 }}>
+                            {prettyPrintAmount(this.state.amount.totalFeeAtomic)}
+                        </Text>
+                    </View>}
+
+                </ScrollView>
 
                 <BottomButton
                     title="Send Transaction"
@@ -667,7 +825,6 @@ export class ConfirmScreen extends React.Component {
                         console.log('')
                     }}
                 />
-
             </View>
         );
     }
@@ -731,7 +888,7 @@ export class ChoosePayeeScreen extends React.Component {
 
                 <Hr/>
 
-                <ExistingPayees/>
+                <ExistingPayees {...this.props}/>
 
             </View>
         );

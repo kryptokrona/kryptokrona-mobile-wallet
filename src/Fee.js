@@ -4,15 +4,19 @@
 
 import Config from './Config';
 
+import { Globals } from './Globals';
+
 export function removeFee(amount) {
     const amountAtomic = toAtomic(amount);
 
-    let tmp = amountAtomic - Config.minimumFee;
+    const [feeAddress, nodeFeeAtomic] = Globals.wallet.getNodeFee();
+
+    let tmp = amountAtomic - Config.minimumFee - nodeFeeAtomic;
 
     /* Ensure it's an integer amount */
     const devFeeAtomic = Math.floor(tmp - tmp / (1 + (Config.feePercentage / 100)));
 
-    const totalFeeAtomic = Config.minimumFee + devFeeAtomic;
+    const totalFeeAtomic = Config.minimumFee + devFeeAtomic + nodeFeeAtomic;
 
     const remainingAtomic = amountAtomic - totalFeeAtomic;
 
@@ -24,6 +28,10 @@ export function removeFee(amount) {
         /* The dev fee */
         devFee: fromAtomic(devFeeAtomic),
         devFeeAtomic: devFeeAtomic,
+
+        /* The daemon fee */
+        nodeFee: fromAtomic(nodeFeeAtomic),
+        nodeFeeAtomic: nodeFeeAtomic,
 
         /* The sum of the dev and network fee */
         totalFee: fromAtomic(totalFeeAtomic),

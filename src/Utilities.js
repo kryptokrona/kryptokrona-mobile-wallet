@@ -93,3 +93,13 @@ export function dateToScanHeight(date) {
 
     return getApproximateBlockHeight(jsDate);
 }
+
+export function getArrivalTime() {
+    const minutes = Config.blockTargetTime >= 60;
+
+    if (minutes) {
+        return Math.ceiling(Config.blockTargetTime / 60) + ' minutes!';
+    } else {
+        return Config.blockTargetTime + ' seconds!';
+    }
+}
