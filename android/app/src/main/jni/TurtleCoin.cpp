@@ -115,15 +115,13 @@ WalletBlockInfo makeNativeWalletBlockInfo(JNIEnv *env, jobject jWalletBlockInfo)
 {
     WalletBlockInfo result;
 
-    result.coinbaseTransaction = makeNativeRawTransaction(env, env->GetObjectField(
-        jWalletBlockInfo,
-        WALLET_BLOCK_INFO_COINBASE_TRANSACTION
-    ));
+    jobject tx = env->GetObjectField(jWalletBlockInfo, WALLET_BLOCK_INFO_COINBASE_TRANSACTION);
+    result.coinbaseTransaction = makeNativeRawTransaction(env, tx);
+    env->DeleteLocalRef(tx);
 
-    result.transactions = makeNativeTransactionVector(env, (jobjectArray)env->GetObjectField(
-        jWalletBlockInfo,
-        WALLET_BLOCK_INFO_TRANSACTIONS
-    ));
+    jobjectArray transactions = (jobjectArray)env->GetObjectField(jWalletBlockInfo, WALLET_BLOCK_INFO_TRANSACTIONS);
+    result.transactions = makeNativeTransactionVector(env, transactions);
+    env->DeleteLocalRef(transactions);
 
     return result;
 }
@@ -144,9 +142,9 @@ std::vector<RawTransaction> makeNativeTransactionVector(JNIEnv *env, jobjectArra
 
     for (int i = 0; i < len; i++)
     {
-        transactions.push_back(makeNativeRawTransaction(env, 
-            env->GetObjectArrayElement(jTransactions, i)
-        ));
+        jobject tx = env->GetObjectArrayElement(jTransactions, i);
+        transactions.push_back(makeNativeRawTransaction(env, tx));
+        env->DeleteLocalRef(tx);
     }
 
     return transactions;
@@ -156,18 +154,17 @@ RawTransaction makeNativeRawTransaction(JNIEnv *env, jobject jRawTransaction)
 {
     RawTransaction transaction;
 
-    transaction.keyOutputs = makeNativeKeyOutputVector(env, (jobjectArray)env->GetObjectField(
-        jRawTransaction,
-        RAW_TRANSACTION_KEY_OUTPUTS
-    ));
+    jobjectArray keyOutputs = (jobjectArray)env->GetObjectField(jRawTransaction, RAW_TRANSACTION_KEY_OUTPUTS);
+    transaction.keyOutputs = makeNativeKeyOutputVector(env, keyOutputs);
+    env->DeleteLocalRef(keyOutputs);
 
-    transaction.hash = makeNativeString(env,
-        (jstring)env->GetObjectField(jRawTransaction, RAW_TRANSACTION_HASH)
-    );
+    jstring hash = (jstring)env->GetObjectField(jRawTransaction, RAW_TRANSACTION_HASH);
+    transaction.hash = makeNativeString(env, hash);
+    env->DeleteLocalRef(hash);
 
-    transaction.transactionPublicKey = makeNative32ByteKey<Crypto::PublicKey>(env,
-        (jstring)env->GetObjectField(jRawTransaction, RAW_TRANSACTION_TRANSACTION_PUBLIC_KEY)
-    );
+    jstring key = (jstring)env->GetObjectField(jRawTransaction, RAW_TRANSACTION_TRANSACTION_PUBLIC_KEY);
+    transaction.transactionPublicKey = makeNative32ByteKey<Crypto::PublicKey>(env, key);
+    env->DeleteLocalRef(key);
 
     transaction.unlockTime = env->GetLongField(jRawTransaction, RAW_TRANSACTION_UNLOCK_TIME);
 
@@ -182,9 +179,9 @@ std::vector<KeyOutput> makeNativeKeyOutputVector(JNIEnv *env, jobjectArray jKeyO
 
     for (int i = 0; i < len; i++)
     {
-        keyOutputs.push_back(makeNativeKeyOutput(env, 
-            env->GetObjectArrayElement(jKeyOutputs, i)
-        ));
+        jobject keyOutput = env->GetObjectArrayElement(jKeyOutputs, i);
+        keyOutputs.push_back(makeNativeKeyOutput(env, keyOutput));
+        env->DeleteLocalRef(keyOutput);
     }
 
     return keyOutputs;
@@ -194,9 +191,11 @@ KeyOutput makeNativeKeyOutput(JNIEnv *env, jobject jKeyOutput)
 {
     KeyOutput output;
 
-    output.key = makeNative32ByteKey<Crypto::PublicKey>(env,
-        (jstring)env->GetObjectField(jKeyOutput, KEY_OUTPUT_KEY)
-    );
+    jstring key = (jstring)env->GetObjectField(jKeyOutput, KEY_OUTPUT_KEY);
+
+    output.key = makeNative32ByteKey<Crypto::PublicKey>(env, key);
+
+    env->DeleteLocalRef(key);
 
     output.amount = env->GetLongField(jKeyOutput, KEY_OUTPUT_AMOUNT);
 
@@ -215,13 +214,15 @@ std::unordered_map<Crypto::PublicKey, Crypto::SecretKey> makeNativeSpendKeys(JNI
     {
         jobject jSpendKey = env->GetObjectArrayElement(jSpendKeys, i);
 
-        Crypto::PublicKey publicKey = makeNative32ByteKey<Crypto::PublicKey>(
-            env, (jstring)env->GetObjectField(jSpendKey, SPEND_KEY_PUBLIC_KEY)
-        );
+        jstring pubKey = (jstring)env->GetObjectField(jSpendKey, SPEND_KEY_PUBLIC_KEY);
+        jstring privKey = (jstring)env->GetObjectField(jSpendKey, SPEND_KEY_PRIVATE_KEY);
 
-        Crypto::SecretKey privateKey = makeNative32ByteKey<Crypto::SecretKey>(
-            env, (jstring)env->GetObjectField(jSpendKey, SPEND_KEY_PRIVATE_KEY)
-        );
+        Crypto::PublicKey publicKey = makeNative32ByteKey<Crypto::PublicKey>(env, pubKey);
+        Crypto::SecretKey privateKey = makeNative32ByteKey<Crypto::SecretKey>(env, privKey);
+
+        env->DeleteLocalRef(jSpendKey);
+        env->DeleteLocalRef(pubKey);
+        env->DeleteLocalRef(privKey);
 
         spendKeys[publicKey] = privateKey;
     }
