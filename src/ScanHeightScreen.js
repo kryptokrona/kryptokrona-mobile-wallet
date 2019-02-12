@@ -91,7 +91,7 @@ export class PickMonthScreen extends React.Component {
 
                 <BottomButton
                     title='Continue'
-                    onPress={() => this.props.navigation.navigate('ImportKeysOrSeed', { scanHeight: 0 })}
+                    onPress={() => this.props.navigation.navigate('ImportKeysOrSeed', { scanHeight: dateToScanHeight(this.state.month) })}
                 />
 
             </View>
