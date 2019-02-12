@@ -84,9 +84,7 @@ export class CreateWalletScreen extends React.Component {
     constructor(props) {
         super(props);
         
-        const daemon = new BlockchainCacheApi('blockapi.turtlepay.io', true);
-
-        Globals.wallet = WalletBackend.createWallet(daemon, Config);
+        Globals.wallet = WalletBackend.createWallet(Config.defaultDaemon, Config);
 
         /* Encrypt wallet with pincode in DB */
         saveToDatabase(Globals.wallet, Globals.pinCode);

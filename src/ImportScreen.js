@@ -162,10 +162,8 @@ export class ImportSeedScreen extends React.Component {
     }
 
     importWallet() {
-        const daemon = new BlockchainCacheApi('blockapi.turtlepay.io', true);
-
         const [wallet, error] = WalletBackend.importWalletFromSeed(
-            daemon, this.scanHeight, this.state.seed.join(' '), Config
+            Config.defaultDaemon, this.scanHeight, this.state.seed.join(' '), Config
         );
 
         if (error) {
@@ -430,10 +428,8 @@ export class ImportKeysScreen extends React.Component {
     }
 
     importWallet() {
-        const daemon = new BlockchainCacheApi('blockapi.turtlepay.io', true);
-
         const [wallet, error] = WalletBackend.importWalletFromKeys(
-            daemon, this.scanHeight, this.state.privateViewKey,
+            Config.defaultDaemon, this.scanHeight, this.state.privateViewKey,
             this.state.privateSpendKey, Config
         );
 

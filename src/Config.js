@@ -2,7 +2,9 @@
 //
 // Please see the included LICENSE file for more information.
 
-import { MixinLimit, MixinLimits } from 'turtlecoin-wallet-backend';
+import {
+    MixinLimit, MixinLimits, BlockchainCacheApi, ConventionalDaemon
+} from 'turtlecoin-wallet-backend';
 
 const Config = {
     theme: {
@@ -139,8 +141,18 @@ const Config = {
 
     /**
      * Base url for price API
+     *
+     * The program *should* fail gracefully if your coin is not supported, or
+     * you just set this to an empty string. If you have another API you want
+     * it to support, you're going to have to modify the code in Currency.js.
      */
     priceApiLink: 'https://api.coingecko.com/api/v3/simple/price',
+
+    /**
+     * Default daemon to use. Can either be a BlockchainCacheApi(baseURL, SSL),
+     * or a ConventionalDaemon(url, port).
+     */
+    defaultDaemon: new BlockchainCacheApi('blockapi.turtlepay.io', true),
 };
 
 module.exports = Config;

@@ -108,13 +108,13 @@ export class RequestPinScreen extends React.Component {
             /* Decrypt wallet data from DB */
             let walletData = await loadFromDatabase(pinCode);
 
-            const daemon = new BlockchainCacheApi('blockapi.turtlepay.io', true);
-
             if (walletData === undefined) {
                 await this.fail('Wallet not found in DB...');
             }
 
-            const [wallet, error] = WalletBackend.loadWalletFromJSON(daemon, walletData, Config);
+            const [wallet, error] = WalletBackend.loadWalletFromJSON(
+                Config.defaultDaemon, walletData, Config
+            );
 
             if (error) {
                 await this.fail('Error loading wallet: ' + error);
