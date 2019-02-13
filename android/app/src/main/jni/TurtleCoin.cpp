@@ -12,7 +12,6 @@ jmethodID   RAW_TRANSACTION_CONST;
 jfieldID    RAW_TRANSACTION_KEY_OUTPUTS;
 jfieldID    RAW_TRANSACTION_HASH;
 jfieldID    RAW_TRANSACTION_TRANSACTION_PUBLIC_KEY;
-jfieldID    RAW_TRANSACTION_UNLOCK_TIME;
 
 jclass      KEY_OUTPUT;
 jmethodID   KEY_OUTPUT_CONST;
@@ -29,11 +28,9 @@ jclass      TRANSACTION_INPUT;
 jmethodID   TRANSACTION_INPUT_CONST;
 jfieldID    TRANSACTION_INPUT_KEY_IMAGE;
 jfieldID    TRANSACTION_INPUT_AMOUNT;
-jfieldID    TRANSACTION_INPUT_TRANSACTION_PUBLIC_KEY;
 jfieldID    TRANSACTION_INPUT_TRANSACTION_INDEX;
 jfieldID    TRANSACTION_INPUT_GLOBAL_OUTPUT_INDEX;
 jfieldID    TRANSACTION_INPUT_KEY;
-jfieldID    TRANSACTION_INPUT_UNLOCK_TIME;
 
 jclass      SPEND_KEY;
 jmethodID   SPEND_KEY_CONST;
@@ -55,11 +52,10 @@ extern "C" jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     KEY_OUTPUT_GLOBAL_INDEX = env->GetFieldID(KEY_OUTPUT, "globalIndex", "J");
 
     RAW_TRANSACTION = (jclass) env->NewGlobalRef(env->FindClass("com/tonchan/RawTransaction"));
-    RAW_TRANSACTION_CONST = env->GetMethodID(RAW_TRANSACTION, "<init>", "([Lcom/tonchan/KeyOutput;Ljava/lang/String;Ljava/lang/String;J)V");
+    RAW_TRANSACTION_CONST = env->GetMethodID(RAW_TRANSACTION, "<init>", "([Lcom/tonchan/KeyOutput;Ljava/lang/String;Ljava/lang/String;)V");
     RAW_TRANSACTION_KEY_OUTPUTS = env->GetFieldID(RAW_TRANSACTION, "keyOutputs", "[Lcom/tonchan/KeyOutput;");
     RAW_TRANSACTION_HASH = env->GetFieldID(RAW_TRANSACTION, "hash", "Ljava/lang/String;");
     RAW_TRANSACTION_TRANSACTION_PUBLIC_KEY = env->GetFieldID(RAW_TRANSACTION, "transactionPublicKey", "Ljava/lang/String;");
-    RAW_TRANSACTION_UNLOCK_TIME = env->GetFieldID(RAW_TRANSACTION, "unlockTime", "J");
 
     WALLET_BLOCK_INFO = (jclass) env->NewGlobalRef(env->FindClass("com/tonchan/WalletBlockInfo"));
     WALLET_BLOCK_INFO_CONST = env->GetMethodID(WALLET_BLOCK_INFO, "<init>", "(Lcom/tonchan/RawTransaction;[Lcom/tonchan/RawTransaction;)V");
@@ -67,14 +63,12 @@ extern "C" jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     WALLET_BLOCK_INFO_TRANSACTIONS = env->GetFieldID(WALLET_BLOCK_INFO, "transactions", "[Lcom/tonchan/RawTransaction;");
 
     TRANSACTION_INPUT = (jclass) env->NewGlobalRef(env->FindClass("com/tonchan/TransactionInput"));
-    TRANSACTION_INPUT_CONST = env->GetMethodID(TRANSACTION_INPUT, "<init>", "(Ljava/lang/String;JLjava/lang/String;JJLjava/lang/String;JLjava/lang/String;)V");
+    TRANSACTION_INPUT_CONST = env->GetMethodID(TRANSACTION_INPUT, "<init>", "(Ljava/lang/String;JJJLjava/lang/String;Ljava/lang/String;)V");
     TRANSACTION_INPUT_KEY_IMAGE = env->GetFieldID(TRANSACTION_INPUT, "keyImage", "Ljava/lang/String;");
     TRANSACTION_INPUT_AMOUNT = env->GetFieldID(TRANSACTION_INPUT, "amount", "J");
-    TRANSACTION_INPUT_TRANSACTION_PUBLIC_KEY = env->GetFieldID(TRANSACTION_INPUT, "transactionPublicKey", "Ljava/lang/String;");
     TRANSACTION_INPUT_TRANSACTION_INDEX = env->GetFieldID(TRANSACTION_INPUT, "transactionIndex", "J");
     TRANSACTION_INPUT_GLOBAL_OUTPUT_INDEX = env->GetFieldID(TRANSACTION_INPUT, "globalOutputIndex", "J");
     TRANSACTION_INPUT_KEY = env->GetFieldID(TRANSACTION_INPUT, "key", "Ljava/lang/String;");
-    TRANSACTION_INPUT_UNLOCK_TIME = env->GetFieldID(TRANSACTION_INPUT, "unlockTime", "J");
 
     SPEND_KEY = (jclass) env->NewGlobalRef(env->FindClass("com/tonchan/SpendKey"));
     SPEND_KEY_CONST = env->GetMethodID(SPEND_KEY, "<init>", "(Ljava/lang/String;Ljava/lang/String;)V");
@@ -166,8 +160,6 @@ RawTransaction makeNativeRawTransaction(JNIEnv *env, jobject jRawTransaction)
     transaction.transactionPublicKey = makeNative32ByteKey<Crypto::PublicKey>(env, key);
     env->DeleteLocalRef(key);
 
-    transaction.unlockTime = env->GetLongField(jRawTransaction, RAW_TRANSACTION_UNLOCK_TIME);
-
     return transaction;
 }
 
@@ -255,9 +247,9 @@ jobject makeJNIInput(JNIEnv *env, const TransactionInput &input)
 {
     return env->NewObject(
         TRANSACTION_INPUT, TRANSACTION_INPUT_CONST, makeJNI32ByteKey(env, input.keyImage),
-        input.amount, makeJNI32ByteKey(env, input.transactionPublicKey),
-        input.transactionIndex, input.globalOutputIndex, makeJNI32ByteKey(env, input.key),
-        input.unlockTime, env->NewStringUTF(input.parentTransactionHash.c_str())
+        input.amount, input.transactionIndex, input.globalOutputIndex,
+        makeJNI32ByteKey(env, input.key),
+        env->NewStringUTF(input.parentTransactionHash.c_str())
     );
 }
 
@@ -373,11 +365,9 @@ void processTransactionOutputs(
             TransactionInput input;
 
             input.amount = output.amount;
-            input.transactionPublicKey = tx.transactionPublicKey;
             input.transactionIndex = outputIndex;
             input.globalOutputIndex = output.globalIndex;
             input.key = output.key;
-            input.unlockTime = tx.unlockTime;
             input.parentTransactionHash = tx.hash;
 
             if (!isViewWallet)

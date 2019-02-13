@@ -14,6 +14,9 @@ export async function processBlockOutputs(
     isViewWallet,
     processCoinbaseTransactions) {
 
+    /* We crash if we pass in something bigger than 2^64, cap it */
+    capIntToSafeValue(block);
+
     const javaSpendKeys = spendKeys.map(([publicKey, privateKey]) => {
         return {
             'publicKey': publicKey,
@@ -27,7 +30,10 @@ export async function processBlockOutputs(
     );
 
     let jsInputs = inputs.map((data) => {
+        let tx = block.transactions.find((t) => t.hash === data.input.parentTransactionHash);
+
         const spendHeight = 0;
+
         const globalIndex = data.input.globalOutputIndex === -1 
                           ? undefined : data.input.globalOutputIndex;
 
@@ -35,12 +41,12 @@ export async function processBlockOutputs(
             data.input.keyImage,
             data.input.amount,
             block.blockHeight,
-            data.input.transactionPublicKey,
+            tx.transactionPublicKey,
             data.input.transactionIndex,
             globalIndex,
             data.input.key,
             spendHeight,
-            data.input.unlockTime,
+            tx.unlockTime,
             data.input.parentTransactionHash,
         );
 
@@ -48,4 +54,17 @@ export async function processBlockOutputs(
     });
 
     return jsInputs;
+}
+
+/* Native code will explode if we pass in > 2^64 - 1. So, cap it to this.
+   However, node can't perform math with > 2^53, so we have to cap it to that */
+function capIntToSafeValue(object) {
+    Object.keys(object).forEach(function(element) {
+        /* Recurse if this element is also an object */
+        if (typeof object[element] === 'object') {
+            capIntToSafeValue(object[element]);
+        } else if (typeof object[element] === 'number' && object[element] > Number.MAX_SAFE_INTEGER) {
+            object[element] = Number.MAX_SAFE_INTEGER;
+        }
+    });
 }

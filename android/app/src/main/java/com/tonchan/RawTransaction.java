@@ -7,27 +7,23 @@ public class RawTransaction {
     KeyOutput[] keyOutputs;
     String hash;
     String transactionPublicKey;
-    long unlockTime;
 
     public RawTransaction() {}
 
     public RawTransaction(
         KeyOutput[] keyOutputs,
         String hash,
-        String transactionPublicKey,
-        long unlockTime) {
+        String transactionPublicKey) {
         this.keyOutputs = keyOutputs;
         this.hash = hash;
         this.transactionPublicKey = transactionPublicKey;
-        this.unlockTime = unlockTime;
     }
 
     public RawTransaction(ReadableMap map) {
         this(
             KeyOutputVector(map.getArray("keyOutputs")),
             map.getString("hash"),
-            map.getString("transactionPublicKey"),
-            (long)map.getDouble("unlockTime")
+            map.getString("transactionPublicKey")
         );
     }
 
