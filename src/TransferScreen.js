@@ -703,7 +703,8 @@ export class ConfirmScreen extends React.Component {
                         <Button
                             title='Change'
                             onPress={() => {
-                                /* TODO */
+                                /* Head back to the choose payee screen */
+                                this.props.navigation.goBack('ChoosePayee');
                             }}
                             titleStyle={{
                                 color: Config.theme.primaryColour,
@@ -748,7 +749,7 @@ export class ConfirmScreen extends React.Component {
                         <Button
                             title='Change'
                             onPress={() => {
-                                /* TODO */
+                                this.props.navigation.goBack('AmountInput');
                             }}
                             titleStyle={{
                                 color: Config.theme.primaryColour,
