@@ -305,8 +305,9 @@ export class TransferScreen extends React.Component {
                     title="Continue"
                     onPress={() => {
                         this.props.navigation.navigate(
-                            'ChoosePayee',
-                            { amount: this.state.feeInfo }
+                            'ChoosePayee', {
+                                amount: this.state.feeInfo,
+                            }
                         );
                     }} 
                     disabled={!this.state.continueEnabled}
@@ -354,6 +355,7 @@ class AddressBook extends React.Component {
                                     'Confirm', {
                                         payee: item.nickname,
                                         amount: this.props.navigation.state.params.amount,
+                                        amountScreen: this.props.navigation.state.key,
                                     }
                                 );
                             }}
@@ -635,6 +637,7 @@ export class NewPayeeScreen extends React.Component {
                             'Confirm', {
                                 payee: this.state.nickname,
                                 amount: this.props.navigation.state.params.amount,
+                                choosePayee: this.props.navigation.state.key,
                             }
                         );
                     }}
@@ -703,8 +706,16 @@ export class ConfirmScreen extends React.Component {
                         <Button
                             title='Change'
                             onPress={() => {
-                                /* Head back to the choose payee screen */
-                                this.props.navigation.goBack('ChoosePayee');
+                                /* If we went via the 'Add payee' screen, then
+                                   the choose payee route will be defined,
+                                   and we go back from the Add payee screen,
+                                   to the choose payee screen. If it's not,
+                                   then we went directly from choose payee.
+                                   In this case, we go back, from this screen.
+                                   The whole go back thing in react navigation
+                                   is pretty confusing:
+                                   https://stackoverflow.com/a/45497685/8737306 */
+                                this.props.navigation.goBack(this.props.navigation.state.params.choosePayee || null);
                             }}
                             titleStyle={{
                                 color: Config.theme.primaryColour,
@@ -749,7 +760,7 @@ export class ConfirmScreen extends React.Component {
                         <Button
                             title='Change'
                             onPress={() => {
-                                this.props.navigation.goBack('AmountInput');
+                                this.props.navigation.goBack(this.props.navigation.state.params.amountScreen);
                             }}
                             titleStyle={{
                                 color: Config.theme.primaryColour,
@@ -854,7 +865,8 @@ export class ChoosePayeeScreen extends React.Component {
                     onPress={() => {
                         this.props.navigation.navigate(
                             'NewPayee', {
-                                amount: this.props.navigation.state.params.amount
+                                amount: this.props.navigation.state.params.amount,
+                                amountScreen: this.props.navigation.state.key,
                             },
                         );
                     }}
