@@ -82,7 +82,7 @@ export class TransactionDetailsScreen extends React.Component {
             <View style={{ flex: 1, alignItems: 'flex-start', justifyContent: 'flex-start', marginLeft: 15, marginTop: 60 }}>
                 <ItemDescription
                     title={this.state.transaction.totalAmount() > 0 ? 'Received' : 'Sent'}
-                    item={this.state.complete ? prettyPrintDate(new Date()) : prettyPrintUnixTimestamp(this.state.transaction.timestamp)}/>
+                    item={this.state.complete ? prettyPrintUnixTimestamp(this.state.transaction.timestamp) : prettyPrintDate(new Date())}/>
 
                 <ItemDescription
                     title='Amount'
