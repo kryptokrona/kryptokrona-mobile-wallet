@@ -8,6 +8,8 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 
 import QRCodeScanner from 'react-native-qrcode-scanner';
 
+import TextTicker from 'react-native-text-ticker';
+
 import { HeaderBackButton } from 'react-navigation';
 
 import {
@@ -16,7 +18,7 @@ import {
 
 import {
     View, Text, TextInput, TouchableWithoutFeedback, FlatList, Platform,
-    ScrollView,
+    ScrollView, Clipboard
 } from 'react-native';
 
 import { Input, Button } from 'react-native-elements';
@@ -27,10 +29,10 @@ import List from './ListContainer';
 
 import { Styles } from './Styles';
 import { Globals } from './Globals';
-import { getArrivalTime } from './Utilities';
 import { savePayeeToDatabase } from './Database';
 import { Hr, BottomButton } from './SharedComponents';
 import { removeFee, toAtomic, fromAtomic, addFee } from './Fee';
+import { getArrivalTime, navigateWithDisabledBack, delay, toastPopUp } from './Utilities';
 
 export class QrScannerScreen extends React.Component {
     constructor(props) {
@@ -834,7 +836,16 @@ export class ConfirmScreen extends React.Component {
                 <BottomButton
                     title="Send Transaction"
                     onPress={() => {
-                        console.log('')
+                        /* Reset this stack to be on the transfer screen */
+                        this.props.navigation.dispatch(navigateWithDisabledBack('Transfer'));
+
+                        /* Then send the actual transaction */
+                        this.props.navigation.navigate('SendTransaction', {
+                            amount: this.state.amount,
+                            address: this.state.payee.address,
+                            paymentID: this.state.payee.paymentID,
+                            nickname: this.state.payee.nickname,
+                        });
                     }}
                 />
             </View>
@@ -903,6 +914,167 @@ export class ChoosePayeeScreen extends React.Component {
 
                 <ExistingPayees {...this.props}/>
 
+            </View>
+        );
+    }
+}
+
+export class SendTransactionScreen extends React.Component {
+    static navigationOptions = {
+        header: null,
+    }
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            txInfo: 'Sending transaction, please wait...',
+            errMsg: '',
+            hash: '',
+            amount: this.props.navigation.state.params.amount,
+            address: this.props.navigation.state.params.address,
+            paymentID: this.props.navigation.state.params.paymentID,
+            nickname: this.props.navigation.state.params.nickname,
+            homeEnabled: false,
+        }
+
+        /* Send the tx in the background (it's async) */
+        this.sendTransaction();
+    }
+
+    async sendTransaction() {
+        /* Wait for UI to load before blocking thread */
+        await delay(500);
+
+        const payments = [];
+
+        /* User payment */
+        payments.push([this.state.address, this.state.amount.remainingAtomic]);
+
+        /* Dev payment */
+        if (this.state.amount.devFeeAtomic > 0) {
+            payments.push([Config.devFeeAddress, this.state.amount.devFeeAtomic]);
+        }
+
+        /* Leaving everything else as default, minus payments and paymentID */
+        const [hash, error] = await Globals.wallet.sendTransactionAdvanced(
+            payments, undefined, undefined, this.state.paymentID, undefined,
+            undefined,
+        );
+
+        if (error) {
+            this.setState({
+                errMsg: error.toString(),
+                homeEnabled: true,
+            });
+        } else {
+            this.setState({
+                hash,
+                homeEnabled: true,
+            });
+        }
+    }
+
+    render() {
+        const sending =
+            <View>
+                <Text style={{
+                    color: Config.theme.primaryColour,
+                    fontSize: 25,
+                }}>
+                    Sending transaction, please wait...
+                </Text>
+            </View>;
+
+        const fail =
+            <View>
+                <Text style={{
+                    color: 'red',
+                    fontSize: 25,
+                    marginBottom: 25,
+                    fontWeight: 'bold',
+                }}>
+                    Transaction failed!
+                </Text>
+
+                <Text style={{ fontSize: 13 }}>
+                    {this.state.errMsg}
+                </Text>
+            </View>;
+
+        const success =
+            <View>
+                <Text style={{
+                    color: Config.theme.primaryColour,
+                    fontSize: 25,
+                    marginBottom: 25,
+                    fontWeight: 'bold'
+                }}>
+                    Transaction complete
+                </Text>
+
+                <Text style={{ fontSize: 13 }}>
+                    <Text style={{ color: Config.theme.primaryColour, fontWeight: 'bold' }}>
+                        {prettyPrintAmount(this.state.amount.remainingAtomic)}{' '}
+                    </Text>
+                    was sent to{' '}
+                    <Text style={{ color: Config.theme.primaryColour, fontWeight: 'bold' }}>
+                        {this.state.nickname}'s{' '}
+                    </Text>
+                    account.
+                </Text>
+
+                <Text style={{ fontSize: 15, color: Config.theme.primaryColour, fontWeight: 'bold', marginTop: 15 }}>
+                    Transaction hash
+                </Text>
+
+                <TextTicker
+                    marqueeDelay={1000}
+                    duration={220 * 64}
+                >
+                    {this.state.hash}
+                </TextTicker>
+
+                <Button
+                    containerStyle={{
+                        alignItems: 'flex-start',
+                        justifyContent: 'flex-start',
+                        marginLeft: -8
+                    }}
+                    title='Copy'
+                    onPress={() => {
+                        Clipboard.setString(this.state.hash);
+                        toastPopUp('Transaction hash copied');
+                    }}
+                    titleStyle={{
+                        color: Config.theme.primaryColour,
+                        fontSize: 13
+                    }}
+                    type="clear"
+                />
+
+            </View>;
+
+        return(
+            <View style={{ flex: 1 }}>
+                <View style={{
+                    flex: 1,
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
+                    marginTop: 60,
+                    marginHorizontal: 30,
+                }}>
+                    {this.state.hash !== '' ? success : this.state.errMsg === '' ? sending : fail}
+                </View>
+
+                <BottomButton
+                    title="Home"
+                    onPress={() => {
+                        this.props.navigation.dispatch(navigateWithDisabledBack('Transfer'));
+                        this.props.navigation.navigate('Main');
+                    }} 
+                    disabled={!this.state.homeEnabled}
+                />
             </View>
         );
     }

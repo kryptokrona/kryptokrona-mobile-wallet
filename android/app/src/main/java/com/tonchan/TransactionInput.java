@@ -40,7 +40,7 @@ public class TransactionInput {
 
         map.putDouble("transactionIndex", transactionIndex > Double.MAX_VALUE ? Double.MAX_VALUE : (double)transactionIndex);
 
-        map.putDouble("globalOutputIndex", globalOutputIndex > Double.MAX_VALUE ? Double.MAX_VALUE : (double)transactionIndex);
+        map.putDouble("globalOutputIndex", globalOutputIndex > Double.MAX_VALUE ? Double.MAX_VALUE : (double)globalOutputIndex);
 
         map.putString("key", key);
         map.putString("parentTransactionHash", parentTransactionHash);

@@ -135,9 +135,14 @@ const Config = {
     chainLaunchTimestamp: new Date(1000 * 1513031505),
 
     /**
-     * Fee to take on all transactions
+     * Fee to take on all transactions, in percentage
      */
-    feePercentage: 0.5,
+    devFeePercentage: 0.5,
+
+    /**
+     * Address to send dev fee to
+     */
+    devFeeAddress: 'TRTLv1E3ThL66fHthRHyzPSDqeUazPA9eBQYkuRnp8svKgvdoecQtqhSRaD59CEuH8XnYsw3YGtw1RWsQSqtHLqUXu4tvk9LryR',
 
     /**
      * Base url for price API

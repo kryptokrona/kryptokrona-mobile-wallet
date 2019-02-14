@@ -14,7 +14,7 @@ export function removeFee(amount) {
     let tmp = amountAtomic - Config.minimumFee - nodeFeeAtomic;
 
     /* Ensure it's an integer amount */
-    const devFeeAtomic = Math.floor(tmp - tmp / (1 + (Config.feePercentage / 100)));
+    const devFeeAtomic = Math.floor(tmp - tmp / (1 + (Config.devFeePercentage / 100)));
 
     const totalFeeAtomic = Config.minimumFee + devFeeAtomic + nodeFeeAtomic;
 
@@ -56,7 +56,7 @@ export function addFee(amount) {
     let tmp = amountAtomic + Config.minimumFee;
 
     /* Get the amount with the dev fee added */
-    const devFeeAdded = Math.floor(tmp + ((tmp * Config.feePercentage) / 100));
+    const devFeeAdded = Math.floor(tmp + ((tmp * Config.devFeePercentage) / 100));
 
     const nonAtomic = devFeeAdded / (10 ** Config.decimalPlaces);
 

@@ -56,16 +56,18 @@ export class TransactionDetailsScreen extends React.Component {
     constructor(props) {
         super(props);
 
+        const tx = props.navigation.state.params.transaction;
+
         this.state = {
-            transaction: props.navigation.state.params.transaction,
-            amount: props.navigation.state.params.transaction.totalAmount(),
-            complete: props.navigation.state.params.transaction.timestamp !== 0,
+            transaction: tx,
+            amount: Math.abs(tx.totalAmount()) - (tx.totalAmount() > 0 ? 0 : tx.fee),
+            complete: tx.timestamp !== 0,
             coinValue: '0',
         };
 
         (async () => {
             const coinValue = await coinsToFiat(
-                props.navigation.state.params.transaction.totalAmount(),
+                this.state.amount,
                 Globals.preferences.currency,
             );
 
@@ -79,14 +81,14 @@ export class TransactionDetailsScreen extends React.Component {
         return(
             <View style={{ flex: 1, alignItems: 'flex-start', justifyContent: 'flex-start', marginLeft: 15, marginTop: 60 }}>
                 <ItemDescription
-                    title={this.state.amount > 0 ? 'Received' : 'Sent'}
+                    title={this.state.transaction.totalAmount() > 0 ? 'Received' : 'Sent'}
                     item={this.state.complete ? prettyPrintDate(new Date()) : prettyPrintUnixTimestamp(this.state.transaction.timestamp)}/>
 
                 <ItemDescription
                     title='Amount'
                     item={prettyPrintAmount(this.state.amount)}/>
 
-                {this.state.amount < 0 && <ItemDescription
+                {this.state.transaction.totalAmount() < 0 && <ItemDescription
                     title='Fee'
                     item={prettyPrintAmount(this.state.transaction.fee)}/>}
 
@@ -210,7 +212,7 @@ export class TransactionsScreen extends React.Component {
                     keyExtractor={item => item.hash}
                     renderItem={({item}) => (
                         <ListItem
-                            title={prettyPrintAmount(item.totalAmount())}
+                            title={prettyPrintAmount(Math.abs(item.totalAmount()) - (item.totalAmount() > 0 ? 0 : item.fee))}
                             subtitle={item.timestamp === 0 ? 'Processing ' + prettyPrintDate(new Date()) : 'Completed ' + prettyPrintUnixTimestamp(item.timestamp)}
                             leftIcon={
                                 <View style={{width: 30, alignItems: 'center', justifyContent: 'center', marginRight: 10}}>

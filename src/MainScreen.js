@@ -328,6 +328,7 @@ function backgroundSave() {
 
     try {
         saveToDatabase(Globals.wallet, Globals.pinCode);
+        console.log('Save complete.');
     } catch (err) {
         console.log('Failed to background save: ' + err);
     }
