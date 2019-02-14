@@ -8,6 +8,8 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 
 import QRCode from 'react-native-qrcode-svg';
 
+import BackgroundFetch from "react-native-background-fetch";
+
 import {
     Text, View, Image, Platform, TouchableOpacity,
 } from 'react-native';
@@ -58,6 +60,23 @@ export class MainScreen extends React.Component {
         if (Globals.backgroundSaveTimer === undefined) {
             Globals.backgroundSaveTimer = setInterval(backgroundSave, Config.walletSaveFrequency);
         }
+    }
+
+    componentDidMount() {
+        // Configure it.
+        BackgroundFetch.configure({
+            minimumFetchInterval: 15, // <-- minutes (15 is minimum allowed)
+            stopOnTerminate: false,   // <-- Android-only,
+            startOnBoot: true,        // <-- Android-only
+        }, () => {
+            console.log("[js] Received background-fetch event");
+            // Required: Signal completion of your task to native code
+            // If you fail to do this, the OS can terminate your app
+            // or assign battery-blame for consuming too much background-time
+            BackgroundFetch.finish(BackgroundFetch.FETCH_RESULT_NEW_DATA);
+        }, (error) => {
+            console.log("[js] RNBackgroundFetch failed to start");
+        });
     }
 
     render() {
