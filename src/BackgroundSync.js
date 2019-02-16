@@ -103,7 +103,7 @@ export async function backgroundSync() {
         const [walletBlockCount, localDaemonBlockCount, networkBlockCount] = Globals.wallet.getSyncStatus();
 
         /* Check if we're synced so we don't kill the users battery */
-        if (walletBlockCount >= localDaemonBlockCount) {
+        if (walletBlockCount >= localDaemonBlockCount || walletBlockCount >= networkBlockCount) {
             console.log('[Background Sync] Wallet is synced. Stopping background sync.');
 
             /* Save the wallet */
