@@ -5,13 +5,6 @@
 
 #pragma once
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-#include <stdint.h>
-
 /* From fe.h */
 
 typedef int32_t fe[10];
@@ -130,7 +123,3 @@ void sc_sub(unsigned char *, const unsigned char *, const unsigned char *);
 void sc_mulsub(unsigned char *, const unsigned char *, const unsigned char *, const unsigned char *);
 int sc_check(const unsigned char *);
 int sc_isnonzero(const unsigned char *); /* Doesn't normalize */
-
-#ifdef __cplusplus
-}
-#endif

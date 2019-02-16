@@ -1,4 +1,3 @@
-#include "debug.h"
 #include "crypto.h"
 #include "TurtleCoin.h"
 
@@ -80,6 +79,8 @@ extern "C" jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     INPUT_MAP_PUBLIC_SPEND_KEY = env->GetFieldID(INPUT_MAP, "publicSpendKey", "Ljava/lang/String;");
     INPUT_MAP_TRANSACTION_INPUT = env->GetFieldID(INPUT_MAP, "input", "Lcom/tonchan/TransactionInput;");
 
+    JAVA_STRING = env->FindClass("java/lang/String");
+
     return JNI_VERSION_1_6;
 }
 
@@ -103,6 +104,44 @@ Java_com_tonchan_TurtleCoinModule_processBlockOutputsJNI(
     );
 
     return makeJNIInputs(env, inputs);
+}
+
+extern "C" JNIEXPORT jobjectArray JNICALL
+Java_com_tonchan_TurtleCoinModule_generateRingSignaturesJNI(
+    JNIEnv *env,
+    jobject instance,
+    jstring jPrefixHash,
+    jstring jKeyImage,
+    jobjectArray jPublicKeys,
+    jstring jTransactionSecretKey,
+    jlong realOutput)
+{
+    const Crypto::Hash prefixHash = makeNative32ByteKey<Crypto::Hash>(env, jPrefixHash);
+    const Crypto::KeyImage keyImage = makeNative32ByteKey<Crypto::KeyImage>(env, jKeyImage);
+    const std::vector<Crypto::PublicKey> publicKeys = makeNativePublicKeys(env, jPublicKeys);
+    const Crypto::SecretKey transactionSecretKey = makeNative32ByteKey<Crypto::SecretKey>(env, jTransactionSecretKey);
+
+    const auto [success, signatures] = Crypto::generateRingSignatures(
+        prefixHash, keyImage, publicKeys, transactionSecretKey, realOutput
+    );
+
+    return makeJNISignatures(env, signatures);
+}
+
+std::vector<Crypto::PublicKey> makeNativePublicKeys(JNIEnv *env, jobjectArray jPublicKeys)
+{
+    std::vector<Crypto::PublicKey> publicKeys;
+
+    int len = env->GetArrayLength(jPublicKeys);
+
+    for (int i = 0; i < len; i++)
+    {
+        jstring jPublicKey = (jstring)env->GetObjectArrayElement(jPublicKeys, i);
+        publicKeys.push_back(makeNative32ByteKey<Crypto::PublicKey>(env, jPublicKey));
+        env->DeleteLocalRef(jPublicKey);
+    }
+
+    return publicKeys;
 }
 
 WalletBlockInfo makeNativeWalletBlockInfo(JNIEnv *env, jobject jWalletBlockInfo)
@@ -222,6 +261,23 @@ std::unordered_map<Crypto::PublicKey, Crypto::SecretKey> makeNativeSpendKeys(JNI
     return spendKeys;
 }
 
+jobjectArray makeJNISignatures(JNIEnv *env, const std::vector<Crypto::Signature> &signatures)
+{
+    jobjectArray jniSignatures = env->NewObjectArray(
+        signatures.size(), JAVA_STRING, nullptr
+    );
+
+    int i = 0;
+
+    for (const auto &signature : signatures)
+    {
+        env->SetObjectArrayElement(jniSignatures, i, makeJNI64ByteKey(env, signature));
+        i++;
+    }
+
+    return jniSignatures;
+}
+
 jobjectArray makeJNIInputs(JNIEnv *env, const std::vector<std::tuple<Crypto::PublicKey, TransactionInput>> &inputs)
 {
     jobjectArray jniInputs = env->NewObjectArray(
@@ -253,16 +309,15 @@ jobject makeJNIInput(JNIEnv *env, const TransactionInput &input)
     );
 }
 
-/* input = 32 char byte array.
-   output = 64 char hex string */
-void byteArrayToHexString(const uint8_t *input, char *output)
+/* input should be size of input len. output should be double that. */
+void byteArrayToHexString(const uint8_t *input, char *output, size_t inputLen)
 {
     char hexval[16] = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
         'a', 'b', 'c', 'd', 'e', 'f'
     };
 
-    for (int i = 0; i < 32; i++)
+    for (int i = 0; i < inputLen; i++)
     {
         output[i * 2] = hexval[((input[i] >> 4) & 0xF)];
         output[(i * 2) + 1] = hexval[(input[i]) & 0x0F];
@@ -289,11 +344,10 @@ int char2int(char input)
     return -1;
 }
 
-/* input = 64 char hex string
-   output = 32 char byte array */
-void hexStringToByteArray(const char* input, uint8_t* output)
+/* input should be double size of output len. */
+void hexStringToByteArray(const char* input, uint8_t* output, size_t outputLen)
 {
-    for (int i = 0; i < 32; i++)
+    for (int i = 0; i < outputLen; i++)
     {
         output[i] = char2int(input[i*2]) * 16 +
                     char2int(input[(i*2) + 1]);

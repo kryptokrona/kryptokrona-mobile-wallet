@@ -2,6 +2,8 @@
 
 #include "CryptoTypes.h"
 
+#include <string>
+
 struct KeyOutput
 {
     Crypto::PublicKey key;

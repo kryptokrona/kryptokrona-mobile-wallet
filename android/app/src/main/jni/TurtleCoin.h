@@ -6,6 +6,8 @@
 
 jint JNI_OnLoad(JavaVM *vm, void *reserved);
 
+std::vector<Crypto::PublicKey> makeNativePublicKeys(JNIEnv *env, jobjectArray jPublicKeys);
+
 WalletBlockInfo makeNativeWalletBlockInfo(JNIEnv *env, jobject jWalletBlockInfo);
 
 std::string makeNativeString(JNIEnv *env, jstring jStr);
@@ -16,6 +18,8 @@ jobjectArray makeJNIInputs(JNIEnv *env, const std::vector<std::tuple<Crypto::Pub
 
 jobject makeJNIInput(JNIEnv *env, const TransactionInput &input);
 
+jobjectArray makeJNISignatures(JNIEnv *env, const std::vector<Crypto::Signature> &signatures);
+
 RawTransaction makeNativeRawTransaction(JNIEnv *env, jobject jRawTransaction);
 
 std::vector<KeyOutput> makeNativeKeyOutputVector(JNIEnv *env, jobjectArray jKeyOutputs);
@@ -24,11 +28,11 @@ KeyOutput makeNativeKeyOutput(JNIEnv *env, jobject jKeyOutput);
 
 std::vector<RawTransaction> makeNativeTransactionVector(JNIEnv *env, jobjectArray jTransactions);
 
-void byteArrayToHexString(const uint8_t *input, char *output);
+void byteArrayToHexString(const uint8_t *input, char *output, size_t inputLen);
 
 int char2int(char input);
 
-void hexStringToByteArray(const char* input, uint8_t* output);
+void hexStringToByteArray(const char* input, uint8_t* output, size_t outputLen);
 
 std::vector<std::tuple<Crypto::PublicKey, TransactionInput>> processBlockOutputs(
     const WalletBlockInfo &block,
@@ -49,7 +53,7 @@ T makeNative32ByteKey(JNIEnv *env, jstring jPrivateViewKey)
 {
     T result;
     const char *nativeString = env->GetStringUTFChars(jPrivateViewKey, nullptr);
-    hexStringToByteArray(nativeString, result.data);
+    hexStringToByteArray(nativeString, result.data, 32);
     env->ReleaseStringUTFChars(jPrivateViewKey, nativeString);
     return result;
 }
@@ -58,8 +62,18 @@ template<typename T>
 jstring makeJNI32ByteKey(JNIEnv *env, T byteKey)
 {
     /* +1 for \0 byte */
-    char output[65];
-    byteArrayToHexString(byteKey.data, output);
+    char output[64 + 1];
+    byteArrayToHexString(byteKey.data, output, 32);
     output[64] = '\0';
+    return env->NewStringUTF(output);
+}
+
+template<typename T>
+jstring makeJNI64ByteKey(JNIEnv *env, T byteKey)
+{
+    /* +1 for \0 byte */
+    char output[128 + 1];
+    byteArrayToHexString(byteKey.data, output, 64);
+    output[128] = '\0';
     return env->NewStringUTF(output);
 }

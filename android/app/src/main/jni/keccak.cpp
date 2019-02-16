@@ -6,6 +6,7 @@
 // Please see the included LICENSE file for more information.
 
 #include "keccak.h"
+#include "hash.h"
 
 const uint64_t keccakf_rndc[24] = 
 {
@@ -80,13 +81,6 @@ int keccak(const uint8_t *in, int inlen, uint8_t *md, int mdlen)
     state_t st;
     uint8_t temp[144];
     int i, rsiz, rsizw;
-
-
-    /* for some reason the enum from hash-ops.h is not valid here when
-       compiling - is this a C vs C++ thing? Anyhow, lets just redefine it for 
-       now. */
-
-    const int HASH_DATA_AREA = 136;
 
     rsiz = sizeof(state_t) == mdlen ? HASH_DATA_AREA : 200 - 2 * mdlen;
     rsizw = rsiz / 8;
