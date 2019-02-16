@@ -25,6 +25,7 @@ import { saveToDatabase } from './Database';
 import { CopyButton } from './SharedComponents';
 import { Globals, initGlobals } from './Globals';
 import { processBlockOutputs } from './NativeCode';
+import { initBackgroundSync } from './BackgroundSync';
 
 /**
  * Sync screen, balance
@@ -58,6 +59,10 @@ export class MainScreen extends React.Component {
         if (Globals.backgroundSaveTimer === undefined) {
             Globals.backgroundSaveTimer = setInterval(backgroundSave, Config.walletSaveFrequency);
         }
+    }
+
+    componentDidMount() {
+        initBackgroundSync();
     }
 
     render() {
