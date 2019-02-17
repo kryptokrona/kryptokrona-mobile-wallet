@@ -6,6 +6,10 @@ import {
     MixinLimit, MixinLimits, BlockchainCacheApi, ConventionalDaemon
 } from 'turtlecoin-wallet-backend';
 
+import {
+    derivePublicKey, generateKeyDerivation, generateRingSignatures
+} from './NativeCode';
+
 const Config = {
     theme: {
         /**
@@ -123,6 +127,21 @@ const Config = {
      * this automatically
      */
     integratedAddressLength: 99 + ((64 * 11) / 8),
+
+    /**
+     * Use our native func instead of JS slowness
+     */
+    derivePublicKey: derivePublicKey,
+
+    /**
+     * Use our native func instead of JS slowness
+     */
+    generateKeyDerivation: generateKeyDerivation,
+
+    /**
+     * Use our native func instead of JS slowness
+     */
+    generateRingSignatures: generateRingSignatures,
 
     /**
      * Unix timestamp of the time your chain was launched.

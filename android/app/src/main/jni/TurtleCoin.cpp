@@ -128,6 +128,41 @@ Java_com_tonchan_TurtleCoinModule_generateRingSignaturesJNI(
     return makeJNISignatures(env, signatures);
 }
 
+extern "C" JNIEXPORT jstring JNICALL
+Java_com_tonchan_TurtleCoinModule_generateKeyDerivationJNI(
+    JNIEnv *env,
+    jobject instance,
+    jstring jPublicViewKey,
+    jstring jTransactionPrivateKey)
+{
+    const auto publicViewKey = makeNative32ByteKey<Crypto::PublicKey>(env, jPublicViewKey);
+    const auto transactionPrivateKey = makeNative32ByteKey<Crypto::SecretKey>(env, jTransactionPrivateKey);
+
+    Crypto::KeyDerivation derivation;
+
+    Crypto::generate_key_derivation(publicViewKey, transactionPrivateKey, derivation);
+
+    return makeJNI32ByteKey(env, derivation);
+}
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_com_tonchan_TurtleCoinModule_derivePublicKeyJNI(
+    JNIEnv *env,
+    jobject instance,
+    jstring jDerivation,
+    jlong outputIndex,
+    jstring jPublicSpendKey)
+{
+    const auto derivation = makeNative32ByteKey<Crypto::KeyDerivation>(env, jDerivation);
+    const auto publicSpendKey = makeNative32ByteKey<Crypto::PublicKey>(env, jPublicSpendKey);
+
+    Crypto::PublicKey derivedKey;
+
+    Crypto::derive_public_key(derivation, outputIndex, publicSpendKey, derivedKey);
+
+    return makeJNI32ByteKey(env, derivedKey);
+}
+
 std::vector<Crypto::PublicKey> makeNativePublicKeys(JNIEnv *env, jobjectArray jPublicKeys)
 {
     std::vector<Crypto::PublicKey> publicKeys;

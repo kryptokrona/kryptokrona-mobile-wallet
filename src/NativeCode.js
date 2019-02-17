@@ -7,6 +7,37 @@
 import { NativeModules } from 'react-native';
 import { TransactionInput } from 'turtlecoin-wallet-backend';
 
+export async function derivePublicKey(
+    derivation,
+    outputIndex,
+    publicSpendKey) {
+
+    return NativeModules.TurtleCoin.derivePublicKey(
+        derivation, outputIndex, publicSpendKey
+    );
+}
+
+export async function generateKeyDerivation(
+    publicViewKey,
+    transactionPrivateKey) {
+
+    return NativeModules.TurtleCoin.generateKeyDerivation(
+        publicViewKey, transactionPrivateKey
+    );
+}
+
+export async function generateRingSignatures(
+    transactionPrefixHash,
+    keyImage,
+    inputKeys,
+    privateKey,
+    realIndex) {
+
+    return NativeModules.TurtleCoin.generateRingSignatures(
+        transactionPrefixHash, keyImage, inputKeys, privateKey, realIndex
+    );
+}
+
 export async function processBlockOutputs(
     block,
     privateViewKey,

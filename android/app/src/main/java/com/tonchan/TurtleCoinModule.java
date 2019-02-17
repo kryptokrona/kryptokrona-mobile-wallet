@@ -19,9 +19,70 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
         super(reactContext); //required by React Native
     }
 
+    /* Access this by doing NativeModules.TurtleCoin in react */
     @Override
     public String getName() {
-        return "TurtleCoin"; //HelloWorld is how this module will be referred to from React Native
+        return "TurtleCoin";
+    }
+
+    @ReactMethod
+    public void derivePublicKey(
+        String derivation,
+        long outputIndex,
+        String publicSpendKey,
+        Promise promise) {
+        try {
+            String key = derivePublicKeyJNI(
+                derivation,
+                outputIndex,
+                publicSpendKey
+            );
+
+            promise.resolve(key);
+        } catch (Exception e) {
+            promise.reject("Error in derive public key: ", e);
+        }
+    }
+
+    @ReactMethod
+    public void generateKeyDerivation(
+        String publicViewKey,
+        String transactionPrivateKey,
+        Promise promise) {
+        try {
+            String key = generateKeyDerivationJNI(
+                publicViewKey,
+                transactionPrivateKey
+            );
+
+            promise.resolve(key);
+        } catch (Exception e) {
+            promise.reject("Error in generate key derivation: ", e);
+        }
+    }
+
+    @ReactMethod
+    public void generateRingSignatures(
+        String transactionPrefixHash,
+        String keyImage,
+        ReadableArray inputKeys,
+        String privateKey,
+        long realIndex,
+        Promise promise) {
+
+        try {
+            String[] signatures = generateRingSignaturesJNI(
+                transactionPrefixHash,
+                keyImage,
+                arrayToInputKeys(inputKeys),
+                privateKey,
+                realIndex
+            );
+
+            promise.resolve(signaturesToArray(signatures));
+        } catch (Exception e) {
+            promise.reject("Error in generate ring signatures: ", e);
+        }
     }
 
     @ReactMethod
@@ -45,8 +106,18 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
             promise.resolve(mapToArray(inputs));
 
         } catch (Exception e) {
-            promise.reject("ERR", e);
+            promise.reject("Error in process block outputs: ", e);
         }
+    }
+
+    private String[] arrayToInputKeys(ReadableArray inputKeys) {
+        String[] keys = new String[inputKeys.size()];
+
+        for (int i = 0; i < inputKeys.size(); i++) {
+            keys[i] = inputKeys.getString(i);
+        }
+
+        return keys;
     }
 
     private SpendKey[] arrayToSpendKeys(ReadableArray spendKeys) {
@@ -59,6 +130,16 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
         return keys;
     }
 
+    private WritableArray signaturesToArray(String[] signatures) {
+        WritableArray arr = Arguments.createArray();
+
+        for (String signature : signatures) {
+            arr.pushString(signature);
+        }
+
+        return arr;
+    }
+
     private WritableArray mapToArray(InputMap[] inputs) {
         WritableArray arr = Arguments.createArray();
 
@@ -68,6 +149,25 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
 
         return arr;
     }
+
+    public native String derivePublicKeyJNI(
+        String derivation,
+        long outputIndex,
+        String publicSpendKey
+    );
+
+    public native String generateKeyDerivationJNI(
+        String publicViewKey,
+        String transactionPrivateKey
+    );
+
+    public native String[] generateRingSignaturesJNI(
+        String transactionPrefixHash,
+        String keyImage,
+        String[] inputKeys,
+        String privateKey,
+        long realIndex
+    );
 
     public native InputMap[] processBlockOutputsJNI(
         WalletBlockInfo block,

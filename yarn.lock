@@ -7285,10 +7285,10 @@ tunnel-agent@^0.6.0:
   dependencies:
     safe-buffer "^5.0.1"
 
-turtlecoin-crypto@0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/turtlecoin-crypto/-/turtlecoin-crypto-0.0.1.tgz#33fcc36902b9b9d1f1e320f9d3cbea34d4c3cc31"
-  integrity sha512-S2GOuTTEDapFcMU2uDSQ3g0vL4lusX0ki++Cn22NNkSYdU5Ki6zGsxosyTbAVw2BPLPiAhscOFjXv3+wHtp/kw==
+turtlecoin-crypto@0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/turtlecoin-crypto/-/turtlecoin-crypto-0.0.3.tgz#c7f0ba7d17e9422142179137161ea45c524d7576"
+  integrity sha512-NG/NhSTJ+bg6FH4k+DfWjrMAH5z6yrKs6sgTmHcbqSTzglc+7cbEfVqPR2zK3PXi2+qumg3XjqAZnbIBOR3x/Q==
   dependencies:
     bindings "^1.4.0"
     nan "^2.12.1"
@@ -7302,8 +7302,8 @@ turtlecoin-rpc@^0.12.0:
     request-promise-native "^1.0.5"
 
 "turtlecoin-utils@https://github.com/turtlecoin/turtlecoin-utils.git#development":
-  version "0.0.3"
-  resolved "https://github.com/turtlecoin/turtlecoin-utils.git#b553a8437f5de6ff187be2ddd7a2751dd285b8e7"
+  version "0.0.5"
+  resolved "https://github.com/turtlecoin/turtlecoin-utils.git#645a97451be2aa349f10d337d40f2df920db5b0d"
   dependencies:
     crc "^3.8.0"
     get-random-values "^1.2.0"
@@ -7311,11 +7311,11 @@ turtlecoin-rpc@^0.12.0:
     secure-random-string "^1.1.0"
     varint-decoder "^0.1.1"
   optionalDependencies:
-    turtlecoin-crypto "0.0.1"
+    turtlecoin-crypto "0.0.3"
 
 "turtlecoin-wallet-backend@https://github.com/turtlecoin/turtlecoin-wallet-backend-js":
   version "1.0.0"
-  resolved "https://github.com/turtlecoin/turtlecoin-wallet-backend-js#1ddab6f6bfb3a0f4a35c4935438d931266ffd94a"
+  resolved "https://github.com/turtlecoin/turtlecoin-wallet-backend-js#10207ab0bf62289d95ba68c5906b41588171ec78"
   dependencies:
     "@types/deep-equal" "^1.0.1"
     "@types/lodash" "^4.14.119"
