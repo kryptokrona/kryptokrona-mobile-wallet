@@ -7285,7 +7285,7 @@ tunnel-agent@^0.6.0:
   dependencies:
     safe-buffer "^5.0.1"
 
-turtlecoin-crypto@0.0.3:
+turtlecoin-crypto@0.0.3, turtlecoin-crypto@^0.0.3:
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/turtlecoin-crypto/-/turtlecoin-crypto-0.0.3.tgz#c7f0ba7d17e9422142179137161ea45c524d7576"
   integrity sha512-NG/NhSTJ+bg6FH4k+DfWjrMAH5z6yrKs6sgTmHcbqSTzglc+7cbEfVqPR2zK3PXi2+qumg3XjqAZnbIBOR3x/Q==
