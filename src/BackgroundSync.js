@@ -47,6 +47,12 @@ function setupBackgroundSync() {
         State.running = true;
     }
 
+    /* Not in the background, don't sync */
+    if (AppState.currentState !== 'background') {
+        console.log('[Background Sync] Background sync launched while in foreground. Not starting.');
+        return false;
+    }
+
     /* Wallet not loaded yet. Probably shouldn't happen, but helps to be safe */
     if (Globals.wallet === undefined) {
         console.log('[Background Sync] Wallet not loading. Not starting background sync.');
