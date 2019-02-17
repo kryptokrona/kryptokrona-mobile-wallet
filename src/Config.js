@@ -185,6 +185,16 @@ const Config = {
      * TODO: Update with turtlecoin repo
      */
     repoLink: 'https://github.com/zpalmtree/ton-chan/issues',
+
+    /**
+     * This only controls the name in the settings screen.
+     */
+    appName: 'TonChan',
+
+    /**
+     * Displayed in the settings screen
+     */
+    appVersion: 'v0.0.1',
 };
 
 module.exports = Config;

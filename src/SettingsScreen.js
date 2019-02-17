@@ -12,6 +12,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
 import { deleteUserPinCode } from '@haskkor/react-native-pincode';
 
@@ -217,6 +218,18 @@ export class SettingsScreen extends React.Component {
                             onClick: () => { this.props.navigation.navigate('SwapCurrency') },
                         },
                         {
+                            title: `Find ${Config.appName} on Github`,
+                            description: 'View the source code and give feedback',
+                            icon: {
+                                iconName: 'github',
+                                IconType: AntDesign,
+                            },
+                            onClick: () => { 
+                                Linking.openURL(Config.repoLink)
+                                       .catch((err) => console.log('Failed to open url: ' + err))
+                            },
+                        },
+                        {
                             title: 'Delete Wallet',
                             description: 'Delete your wallet to create or import another',
                             icon: {
@@ -226,13 +239,13 @@ export class SettingsScreen extends React.Component {
                             onClick: () => { deleteWallet(this.props.navigation) },
                         },
                         {
-                            title: 'Report A Bug',
-                            description: 'Visit the GitHub repo to report a bug',
+                            title: Config.appName,
+                            description: Config.appVersion,
                             icon: {
-                                iconName: 'github',
-                                IconType: AntDesign,
+                                iconName: 'info',
+                                IconType: SimpleLineIcons,
                             },
-                            onClick: () => { Linking.openURL(Config.repoLink).catch((err) => console.log('Failed to open url: ' + err))},
+                            onClick: () => {},
                         },
                     ]}
                     keyExtractor={item => item.title}
