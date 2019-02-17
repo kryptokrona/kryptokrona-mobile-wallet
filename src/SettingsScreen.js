@@ -15,7 +15,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import { deleteUserPinCode } from '@haskkor/react-native-pincode';
 
-import { View, FlatList, Alert, Text } from 'react-native';
+import { View, FlatList, Alert, Text, Linking } from 'react-native';
 
 import Config from './Config';
 import ListItem from './ListItem';
@@ -225,7 +225,15 @@ export class SettingsScreen extends React.Component {
                             },
                             onClick: () => { deleteWallet(this.props.navigation) },
                         },
-
+                        {
+                            title: 'Report A Bug',
+                            description: 'Visit the GitHub repo to report a bug',
+                            icon: {
+                                iconName: 'github',
+                                IconType: AntDesign,
+                            },
+                            onClick: () => { Linking.openURL(Config.repoLink).catch((err) => console.log('Failed to open url: ' + err))},
+                        },
                     ]}
                     keyExtractor={item => item.title}
                     renderItem={({item}) => (

@@ -177,6 +177,14 @@ const Config = {
      * or a ConventionalDaemon(url, port).
      */
     defaultDaemon: new BlockchainCacheApi('blockapi.turtlepay.io', true),
+
+    /**
+     * A link to where a bug can be reported for your wallet. Please update
+     * this if you are forking, so we don't get reported bugs for your wallet...
+     *
+     * TODO: Update with turtlecoin repo
+     */
+    repoLink: 'https://github.com/zpalmtree/ton-chan/issues',
 };
 
 module.exports = Config;
