@@ -17,9 +17,9 @@ import {
 import Config from './Config';
 
 import { FadeView } from './FadeView';
-import { loadFromDatabase } from './Database';
 import { Globals } from './Globals';
 import { navigateWithDisabledBack } from './Utilities';
+import { loadFromDatabase, setHaveWallet } from './Database';
 
 /**
  * Enter a pin for the new wallet
