@@ -2,6 +2,8 @@
 //
 // Please see the included LICENSE file for more information.
 
+import { Platform } from 'react-native';
+
 import {
     MixinLimit, MixinLimits, BlockchainCacheApi, ConventionalDaemon
 } from 'turtlecoin-wallet-backend';
@@ -131,17 +133,27 @@ const Config = {
     /**
      * Use our native func instead of JS slowness
      */
-    derivePublicKey: derivePublicKey,
+    derivePublicKey: Platform.OS === 'ios' ? undefined : derivePublicKey,
 
     /**
      * Use our native func instead of JS slowness
      */
-    generateKeyDerivation: generateKeyDerivation,
+    generateKeyDerivation: Platform.OS === 'ios' ? undefined : generateKeyDerivation,
 
     /**
      * Use our native func instead of JS slowness
      */
-    generateRingSignatures: generateRingSignatures,
+    generateRingSignatures: Platform.OS === 'ios' ? undefined : generateRingSignatures,
+
+    /**
+     * Memory to use for storing downloaded blocks - 5MB
+     */
+    blockStoreMemoryLimit: 1024 * 1024 * 5,
+
+    /**
+     * Amount of blocks to request from the daemon at once
+     */
+    blocksPerDaemonRequest: 20,
 
     /**
      * Unix timestamp of the time your chain was launched.

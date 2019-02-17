@@ -4,17 +4,13 @@
 
 'use strict';
 
-import { NativeModules, Platform } from 'react-native';
+import { NativeModules } from 'react-native';
 import { TransactionInput } from 'turtlecoin-wallet-backend';
 
 export async function derivePublicKey(
     derivation,
     outputIndex,
     publicSpendKey) {
-
-    if (Platform.OS === 'ios') {
-        return undefined;
-    }
 
     return NativeModules.TurtleCoin.derivePublicKey(
         derivation, outputIndex, publicSpendKey
@@ -24,10 +20,6 @@ export async function derivePublicKey(
 export async function generateKeyDerivation(
     publicViewKey,
     transactionPrivateKey) {
-
-    if (Platform.OS === 'ios') {
-        return undefined;
-    }
 
     return NativeModules.TurtleCoin.generateKeyDerivation(
         publicViewKey, transactionPrivateKey
@@ -40,10 +32,6 @@ export async function generateRingSignatures(
     inputKeys,
     privateKey,
     realIndex) {
-
-    if (Platform.OS === 'ios') {
-        return undefined;
-    }
 
     return NativeModules.TurtleCoin.generateRingSignatures(
         transactionPrefixHash, keyImage, inputKeys, privateKey, realIndex
