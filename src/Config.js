@@ -146,14 +146,22 @@ const Config = {
     generateRingSignatures: Platform.OS === 'ios' ? undefined : generateRingSignatures,
 
     /**
-     * Memory to use for storing downloaded blocks - 5MB
+     * Memory to use for storing downloaded blocks - 3MB
      */
-    blockStoreMemoryLimit: 1024 * 1024 * 5,
+    blockStoreMemoryLimit: 1024 * 1024 * 3,
 
     /**
      * Amount of blocks to request from the daemon at once
      */
     blocksPerDaemonRequest: 20,
+
+    /**
+     * Max size of a post body response - 500kb
+     * Will decrease the amount of blocks requested from the daemon if this
+     * is exceeded.
+     */
+     /* TEMP LIMITED TO 512MB - FIXME TODO */
+    maxBodyResponseSize: 1024 * 1024 * 512,
 
     /**
      * Unix timestamp of the time your chain was launched.
