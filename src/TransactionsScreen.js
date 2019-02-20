@@ -8,7 +8,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import TextTicker from 'react-native-text-ticker';
 
-import { View, Text, FlatList, Button, Linking } from 'react-native';
+import { View, Text, FlatList, Button, Linking, ScrollView } from 'react-native';
 import { prettyPrintAmount } from 'turtlecoin-wallet-backend';
 
 import Config from './Config';
@@ -79,40 +79,42 @@ export class TransactionDetailsScreen extends React.Component {
 
     render() {
         return(
-            <View style={{ flex: 1, alignItems: 'flex-start', justifyContent: 'flex-start', marginLeft: 15, marginTop: 60 }}>
-                <ItemDescription
-                    title={this.state.transaction.totalAmount() > 0 ? 'Received' : 'Sent'}
-                    item={this.state.complete ? prettyPrintUnixTimestamp(this.state.transaction.timestamp) : prettyPrintDate(new Date())}/>
+            <ScrollView contentContainerStyle={{ flex: 1, alignItems: 'flex-start' }}>
+                <View style={{ flex: 1, alignItems: 'flex-start', justifyContent: 'flex-start', marginLeft: 15, marginTop: 60 }}>
+                    <ItemDescription
+                        title={this.state.transaction.totalAmount() > 0 ? 'Received' : 'Sent'}
+                        item={this.state.complete ? prettyPrintUnixTimestamp(this.state.transaction.timestamp) : prettyPrintDate(new Date())}/>
 
-                <ItemDescription
-                    title='Amount'
-                    item={prettyPrintAmount(this.state.amount)}/>
+                    <ItemDescription
+                        title='Amount'
+                        item={prettyPrintAmount(this.state.amount)}/>
 
-                {this.state.transaction.totalAmount() < 0 && <ItemDescription
-                    title='Fee'
-                    item={prettyPrintAmount(this.state.transaction.fee)}/>}
+                    {this.state.transaction.totalAmount() < 0 && <ItemDescription
+                        title='Fee'
+                        item={prettyPrintAmount(this.state.transaction.fee)}/>}
 
-                <ItemDescription
-                    title='Value'
-                    item={this.state.coinValue}/>
+                    <ItemDescription
+                        title='Value'
+                        item={this.state.coinValue}/>
 
-                <ItemDescription
-                    title='State'
-                    item={this.state.complete ? 'Complete' : 'Processing'}/>
+                    <ItemDescription
+                        title='State'
+                        item={this.state.complete ? 'Complete' : 'Processing'}/>
 
-                {this.state.complete && <ItemDescription
-                    title='Block Height'
-                    item={this.state.transaction.blockHeight.toString()}/>}
-                
-                <ItemDescription
-                    title='Hash'
-                    item={this.state.transaction.hash}/>
+                    {this.state.complete && <ItemDescription
+                        title='Block Height'
+                        item={this.state.transaction.blockHeight.toString()}/>}
+                    
+                    <ItemDescription
+                        title='Hash'
+                        item={this.state.transaction.hash}/>
 
-                {this.state.transaction.paymentID !== '' && <ItemDescription
-                    title='Payment ID'
-                    item={this.state.transaction.paymentID}/>}
+                    {this.state.transaction.paymentID !== '' && <ItemDescription
+                        title='Payment ID'
+                        item={this.state.transaction.paymentID}/>}
+                </View>
 
-                <View style={[Styles.buttonContainer, {alignItems: 'stretch', justifyContent: 'center', width: '100%'}]}>
+                <View style={[Styles.buttonContainer, {alignItems: 'stretch', justifyContent: 'center', width: '100%', marginBottom: 20}]}>
                     <Button
                         title='View on Block Explorer'
                         onPress={() => {
@@ -123,7 +125,7 @@ export class TransactionDetailsScreen extends React.Component {
                     />
                 </View>
 
-            </View>
+            </ScrollView>
         );
     }
 }
