@@ -130,8 +130,8 @@ export class TransactionsScreen extends React.Component {
 
         const [walletHeight, localHeight, networkHeight] = Globals.wallet.getSyncStatus();
 
-        /* Don't display fusions */
-        const transactions = Globals.wallet.getTransactions().filter((x) => x.totalAmount() !== 0);
+        /* Don't display fusions, and display newest first */
+        const transactions = Globals.wallet.getTransactions().filter((x) => x.totalAmount() !== 0).reverse();
 
         this.state = {
             numTransactions: transactions.length,

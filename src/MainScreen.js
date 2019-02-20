@@ -8,8 +8,15 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 
 import QRCode from 'react-native-qrcode-svg';
 
+import moment from 'moment';
+
+import PushNotification from 'react-native-push-notification';
+
+import { NavigationActions } from 'react-navigation';
+
 import {
-    Text, View, Image, Platform, TouchableOpacity,
+    Text, View, Image, Platform, TouchableOpacity, PushNotificationIOS,
+    AppState,
 } from 'react-native';
 
 import { 
@@ -27,6 +34,68 @@ import { Globals, initGlobals } from './Globals';
 import { processBlockOutputs } from './NativeCode';
 import { initBackgroundSync } from './BackgroundSync';
 
+function init() {
+    initGlobals();
+
+    /* Use our native C++ func to process blocks, provided we're on android */
+    /* TODO: iOS support */
+    if (Platform.OS === 'android') {
+        Globals.wallet.setBlockOutputProcessFunc(processBlockOutputs);
+    }
+
+    PushNotification.configure({
+        onNotification: handleNotification,
+
+        permissions: {
+            alert: true,
+            badge: true,
+            sound: true,
+        },
+
+        popInitialNotification: true,
+
+        requestPermissions: true,
+    });
+
+
+    Globals.wallet.on('incomingtx', (transaction) => {
+        sendNotification(transaction);
+    });
+
+    /* Start syncing */
+    Globals.wallet.start();
+
+    Globals.wallet.setLogLevel(LogLevel.DEBUG);
+
+    /* Don't launch if already started */
+    if (Globals.backgroundSaveTimer === undefined) {
+        Globals.backgroundSaveTimer = setInterval(backgroundSave, Config.walletSaveFrequency);
+    }
+}
+
+function handleNotification(notification) {
+    console.log('Notification received');
+    notification.finish(PushNotificationIOS.FetchResult.NoData);
+}
+
+function sendNotification(transaction) {
+    /* Don't show notifications if disabled */
+    if (!Globals.preferences.notificationsEnabled) {
+        return;
+    }
+
+    /* Don't show notifications in foreground */
+    if (AppState.currentState !== 'background') {
+        return;
+    }
+
+    PushNotification.localNotification({
+        title: 'Incoming transaction received!',
+        message: `You were sent ${prettyPrintAmount(transaction.totalAmount())}`,
+        data: JSON.stringify(transaction.hash),
+    });
+}
+
 /**
  * Sync screen, balance
  */
@@ -42,23 +111,7 @@ export class MainScreen extends React.Component {
             addressOnly: false,
         }
 
-        initGlobals();
-
-        /* Use our native C++ func to process blocks, provided we're on android */
-        /* TODO: iOS support */
-        if (Platform.OS === 'android') {
-            Globals.wallet.setBlockOutputProcessFunc(processBlockOutputs);
-        }
-
-        /* Start syncing */
-        Globals.wallet.start();
-
-        Globals.wallet.setLogLevel(LogLevel.DEBUG);
-
-        /* Don't launch if already started */
-        if (Globals.backgroundSaveTimer === undefined) {
-            Globals.backgroundSaveTimer = setInterval(backgroundSave, Config.walletSaveFrequency);
-        }
+        init();
     }
 
     componentDidMount() {

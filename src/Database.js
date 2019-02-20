@@ -150,6 +150,7 @@ const PreferencesSchema = {
     properties: {
         primaryKey: 'int',
         currency: 'string',
+        notificationsEnabled: 'bool',
     }
 }
 

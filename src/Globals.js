@@ -22,6 +22,7 @@ class globals {
         /* Preferences loaded from DB */
         this.preferences = {
             currency: 'usd',
+            notificationsEnabled: true,
         };
 
         /* People in our address book */

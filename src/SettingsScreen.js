@@ -25,8 +25,8 @@ import Constants from './Constants';
 
 import { Styles } from './Styles';
 import { Globals } from './Globals';
-import { navigateWithDisabledBack } from './Utilities';
 import { SeedComponent, CopyButton } from './SharedComponents';
+import { navigateWithDisabledBack, toastPopUp } from './Utilities';
 import { setHaveWallet, savePreferencesToDatabase } from './Database';
 
 export class ExportKeysScreen extends React.Component {
@@ -201,7 +201,7 @@ export class SettingsScreen extends React.Component {
                     data={[
                         {
                             title: 'Backup Keys',
-                            description: 'Display your private keys and mnemonic seed',
+                            description: 'Display your private keys/seed',
                             icon: {
                                 iconName: 'key-change',
                                 IconType: MaterialCommunityIcons,
@@ -218,6 +218,19 @@ export class SettingsScreen extends React.Component {
                             onClick: () => { this.props.navigation.navigate('SwapCurrency') },
                         },
                         {
+                            title: 'Toggle Notifications',
+                            description: 'Enable or disable transaction notifications',
+                            icon: {
+                                iconName: 'ios-notifications',
+                                IconType: Ionicons,
+                            },
+                            onClick: () => {
+                                Globals.preferences.notificationsEnabled = !Globals.preferences.notificationsEnabled;
+                                toastPopUp(Globals.preferences.notificationsEnabled ? 'Notifications enabled' : 'Notifications disabled');
+                                savePreferencesToDatabase(Globals.preferences);
+                            },
+                        },
+                        {
                             title: `Find ${Config.appName} on Github`,
                             description: 'View the source code and give feedback',
                             icon: {
@@ -231,7 +244,7 @@ export class SettingsScreen extends React.Component {
                         },
                         {
                             title: 'Delete Wallet',
-                            description: 'Delete your wallet to create or import another',
+                            description: 'Delete your wallet',
                             icon: {
                                 iconName: 'delete',
                                 IconType: AntDesign,
@@ -255,7 +268,7 @@ export class SettingsScreen extends React.Component {
                             subtitle={item.description}
                             leftIcon={
                                 <View style={{width: 30, alignItems: 'center', justifyContent: 'center', marginRight: 10}}>
-                                    <item.icon.IconType name={item.icon.iconName} size={22} color={Config.theme.primaryColour}/>
+                                    <item.icon.IconType name={item.icon.iconName} size={25} color={Config.theme.primaryColour}/>
                                 </View>
                             }
                             onPress={item.onClick}

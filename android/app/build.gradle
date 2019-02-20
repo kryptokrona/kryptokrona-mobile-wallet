@@ -157,6 +157,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-push-notification')
     compile project(':react-native-background-fetch')
     compile project(':react-native-camera')
     compile project(':react-native-svg')
