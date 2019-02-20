@@ -650,7 +650,8 @@ export class NewPayeeScreen extends React.Component {
                     inputStyle={{
                         color: Config.theme.primaryColour,
                         fontSize: 15,
-                        marginLeft: 5
+                        marginLeft: this.state.paymentIDEnabled ? 5 : 0,
+                        backgroundColor: this.state.paymentIDEnabled ? 'white' : '#F2F2F2',
                     }}
                     value={this.state.paymentID}
                     onChangeText={(text) => {
