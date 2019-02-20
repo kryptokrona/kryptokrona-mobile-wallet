@@ -8,7 +8,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import TextTicker from 'react-native-text-ticker';
 
-import { View, Text, FlatList } from 'react-native';
+import { View, Text, FlatList, Button, Linking } from 'react-native';
 import { prettyPrintAmount } from 'turtlecoin-wallet-backend';
 
 import Config from './Config';
@@ -111,6 +111,18 @@ export class TransactionDetailsScreen extends React.Component {
                 {this.state.transaction.paymentID !== '' && <ItemDescription
                     title='Payment ID'
                     item={this.state.transaction.paymentID}/>}
+
+                <View style={[Styles.buttonContainer, {alignItems: 'stretch', justifyContent: 'center', width: '100%'}]}>
+                    <Button
+                        title='View on Block Explorer'
+                        onPress={() => {
+                            Linking.openURL(Config.explorerBaseURL + this.state.transaction.hash)
+                                   .catch((err) => console.log('Failed to open url: ' + err));
+                        }}
+                        color={Config.theme.primaryColour}
+                    />
+                </View>
+
             </View>
         );
     }
