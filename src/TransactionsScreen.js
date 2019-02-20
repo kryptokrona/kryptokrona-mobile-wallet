@@ -79,8 +79,18 @@ export class TransactionDetailsScreen extends React.Component {
 
     render() {
         return(
-            <ScrollView contentContainerStyle={{ flex: 1, alignItems: 'flex-start' }}>
-                <View style={{ flex: 1, alignItems: 'flex-start', justifyContent: 'flex-start', marginLeft: 15, marginTop: 60 }}>
+            <View style={{ flex: 1, alignItems: 'flex-start', marginTop: 60 }}>
+                <ScrollView
+                    style={{
+                        flex: 1,
+                    }}
+                    contentContainerStyle={{
+                        alignItems: 'flex-start',
+                        justifyContent: 'flex-start',
+                        marginHorizontal: 15,
+                        paddingBottom: 60,
+                    }}
+                >
                     <ItemDescription
                         title={this.state.transaction.totalAmount() > 0 ? 'Received' : 'Sent'}
                         item={this.state.complete ? prettyPrintUnixTimestamp(this.state.transaction.timestamp) : prettyPrintDate(new Date())}/>
@@ -112,9 +122,9 @@ export class TransactionDetailsScreen extends React.Component {
                     {this.state.transaction.paymentID !== '' && <ItemDescription
                         title='Payment ID'
                         item={this.state.transaction.paymentID}/>}
-                </View>
+                </ScrollView>
 
-                <View style={[Styles.buttonContainer, {alignItems: 'stretch', justifyContent: 'center', width: '100%', marginBottom: 20}]}>
+                {this.state.complete && <View style={[Styles.buttonContainer, {width: '100%', marginBottom: 20 }]}>
                     <Button
                         title='View on Block Explorer'
                         onPress={() => {
@@ -123,9 +133,9 @@ export class TransactionDetailsScreen extends React.Component {
                         }}
                         color={Config.theme.primaryColour}
                     />
-                </View>
+                </View>}
 
-            </ScrollView>
+            </View>
         );
     }
 }
@@ -170,7 +180,7 @@ export class TransactionsScreen extends React.Component {
 
         if (numTransactions !== this.state.numTransactions) {
             /* Don't display fusions */
-            const transactions = Globals.wallet.getTransactions().filter((x) => x.totalAmount() !== 0);
+            const transactions = Globals.wallet.getTransactions().filter((x) => x.totalAmount() !== 0).reverse();
 
             this.setState({
                 numTransactions,
