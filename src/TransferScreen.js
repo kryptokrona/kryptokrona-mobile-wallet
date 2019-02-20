@@ -10,6 +10,8 @@ import QRCodeScanner from 'react-native-qrcode-scanner';
 
 import TextTicker from 'react-native-text-ticker';
 
+import HeaderButtons, { HeaderButton, Item } from 'react-navigation-header-buttons';
+
 import { HeaderBackButton } from 'react-navigation';
 
 import {
@@ -96,6 +98,35 @@ class AmountInput extends React.Component {
     }
 }
 
+const CrossIcon = passMeFurther => (
+    <HeaderButton {...passMeFurther} IconComponent={AntDesign} iconSize={23} color='red'/>
+);
+
+class CrossButton extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return(
+            <HeaderButtons HeaderButtonComponent={CrossIcon}>
+                <Item
+                    title=''
+                    iconName='close'
+                    onPress={() => {
+                        /* Reset the stack to be on the first transfer screen */
+                        this.props.navigation.dispatch(navigateWithDisabledBack('Transfer'));
+
+                        /* And head back to the main screen */
+                        this.props.navigation.navigate('Main');
+                    }}
+                    buttonWrapperStyle={{ marginRight: 10 }}
+                />
+            </HeaderButtons>
+        );
+    }
+}
+
 /**
  * Send a transaction
  */
@@ -108,6 +139,9 @@ export class TransferScreen extends React.Component {
                     tintColor={Config.theme.primaryColour}
                     onPress={() => { navigation.navigate('Main') }}
                 />
+            ),
+            headerRight: (
+                <CrossButton navigation={navigation}/>
             ),
         }
     };
@@ -399,6 +433,14 @@ class ExistingPayees extends React.Component {
 }
 
 export class NewPayeeScreen extends React.Component {
+    static navigationOptions = ({ navigation }) => {
+        return {
+            headerRight: (
+                <CrossButton navigation={navigation}/>
+            ),
+        }
+    };
+
     constructor(props) {
         super(props);
 
@@ -652,6 +694,14 @@ export class NewPayeeScreen extends React.Component {
 }
 
 export class ConfirmScreen extends React.Component {
+    static navigationOptions = ({ navigation }) => {
+        return {
+            headerRight: (
+                <CrossButton navigation={navigation}/>
+            ),
+        }
+    };
+
     constructor(props) {
         super(props);
 
@@ -857,6 +907,14 @@ export class ChoosePayeeScreen extends React.Component {
     constructor(props) {
         super(props);
     }
+
+    static navigationOptions = ({ navigation }) => {
+        return {
+            headerRight: (
+                <CrossButton navigation={navigation}/>
+            ),
+        }
+    };
 
     render() {
         return(

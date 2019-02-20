@@ -5953,6 +5953,11 @@ react-native-permissions@^1.1.1:
   resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-1.1.1.tgz#4876004681ff8556454613d85249b01baff9b35b"
   integrity sha512-t0Ujm177bagjUOSzhpmkSz+LqFW04HnY9TeZFavDCmV521fQvFz82aD+POXqWsAdsJVOK3umJYBNNqCjC3g0hQ==
 
+react-native-platform-touchable@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/react-native-platform-touchable/-/react-native-platform-touchable-1.1.1.tgz#fde4acc65eea585d28b164d0c3716a42129a68e4"
+  integrity sha1-/eSsxl7qWF0osWTQw3FqQhKaaOQ=
+
 react-native-push-notification@^3.1.2:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/react-native-push-notification/-/react-native-push-notification-3.1.2.tgz#a6129fb2897773a19c7b42bba1b51a9a4aac7df3"
@@ -6139,6 +6144,13 @@ react-navigation-drawer@1.1.0:
   integrity sha512-OtO8g+t0pufbL0aiyZ9y2+j7cWIu9+agiaJfOiE2vPDOqGimpVfEYEuWj0xodKVRrEC4xrb8flqoxMxpE0wjdg==
   dependencies:
     react-native-tab-view "^1.2.0"
+
+react-navigation-header-buttons@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/react-navigation-header-buttons/-/react-navigation-header-buttons-2.1.2.tgz#1d8b3eb19aa0dd5367f0a39b7b3da5b334b92855"
+  integrity sha512-I2LyJnwQMlGZ6qYO3xWNt8hqS31RpJjas6PmISuP6xSUpuKcAUIrn4h2ouo3fivB+VfcpLwzuAZf/xSIIkeY2Q==
+  dependencies:
+    react-native-platform-touchable "^1.1.1"
 
 react-navigation-stack@1.0.9:
   version "1.0.9"

@@ -73,7 +73,7 @@ export class CopyButton extends React.Component {
                         color: Config.theme.primaryColour,
                         textDecorationLine: 'underline',
                     }}
-                    type="clear"
+                    type='clear'
                 />
             </View>
         );
