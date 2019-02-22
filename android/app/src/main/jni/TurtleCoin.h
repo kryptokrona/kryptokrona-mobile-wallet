@@ -49,12 +49,12 @@ void processTransactionOutputs(
     std::vector<std::tuple<Crypto::PublicKey, TransactionInput>> &inputs);
 
 template<typename T>
-T makeNative32ByteKey(JNIEnv *env, jstring jPrivateViewKey)
+T makeNative32ByteKey(JNIEnv *env, jstring jKey)
 {
     T result;
-    const char *nativeString = env->GetStringUTFChars(jPrivateViewKey, nullptr);
+    const char *nativeString = env->GetStringUTFChars(jKey, nullptr);
     hexStringToByteArray(nativeString, result.data, 32);
-    env->ReleaseStringUTFChars(jPrivateViewKey, nativeString);
+    env->ReleaseStringUTFChars(jKey, nativeString);
     return result;
 }
 

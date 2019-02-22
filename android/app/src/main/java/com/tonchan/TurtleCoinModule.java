@@ -26,15 +26,51 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void generateKeyImage(
+        String publicEphemeral,
+        String privateEphemeral,
+        Promise promise) {
+        try {
+            String key = generateKeyImageJNI(
+                publicEphemeral,
+                privateEphemeral
+            );
+
+            promise.resolve(key);
+        } catch (Exception e) {
+            promise.reject("Error in generate key image: ", e);
+        }
+    }
+
+    @ReactMethod
+    public void deriveSecretKey(
+        String derivation,
+        ReadableMap outputIndex,
+        String privateSpendKey,
+        Promise promise) {
+        try {
+            String key = deriveSecretKeyJNI(
+                derivation,
+                (long)outputIndex.getDouble("outputIndex"),
+                privateSpendKey
+            );
+
+            promise.resolve(key);
+        } catch (Exception e) {
+            promise.reject("Error in derive secret key: ", e);
+        }
+    }
+
+    @ReactMethod
     public void derivePublicKey(
         String derivation,
-        long outputIndex,
+        ReadableMap outputIndex,
         String publicSpendKey,
         Promise promise) {
         try {
             String key = derivePublicKeyJNI(
                 derivation,
-                outputIndex,
+                (long)outputIndex.getDouble("outputIndex"),
                 publicSpendKey
             );
 
@@ -67,7 +103,7 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
         String keyImage,
         ReadableArray inputKeys,
         String privateKey,
-        long realIndex,
+        ReadableMap realIndex,
         Promise promise) {
 
         try {
@@ -76,7 +112,7 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
                 keyImage,
                 arrayToInputKeys(inputKeys),
                 privateKey,
-                realIndex
+                (long)realIndex.getDouble("realIndex")
             );
 
             promise.resolve(signaturesToArray(signatures));
@@ -149,6 +185,17 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
 
         return arr;
     }
+
+    public native String generateKeyImageJNI(
+        String publicEphemeral,
+        String privateEphemeral
+    );
+
+    public native String deriveSecretKeyJNI(
+        String derivation,
+        long outputIndex,
+        String privateSpendKey
+    );
 
     public native String derivePublicKeyJNI(
         String derivation,

@@ -79,7 +79,7 @@ extern "C" jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     INPUT_MAP_PUBLIC_SPEND_KEY = env->GetFieldID(INPUT_MAP, "publicSpendKey", "Ljava/lang/String;");
     INPUT_MAP_TRANSACTION_INPUT = env->GetFieldID(INPUT_MAP, "input", "Lcom/tonchan/TransactionInput;");
 
-    JAVA_STRING = env->FindClass("java/lang/String");
+    JAVA_STRING = (jclass) env->NewGlobalRef(env->FindClass("java/lang/String"));
 
     return JNI_VERSION_1_6;
 }
@@ -143,6 +143,41 @@ Java_com_tonchan_TurtleCoinModule_generateKeyDerivationJNI(
     Crypto::generate_key_derivation(publicViewKey, transactionPrivateKey, derivation);
 
     return makeJNI32ByteKey(env, derivation);
+}
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_com_tonchan_TurtleCoinModule_generateKeyImageJNI(
+    JNIEnv *env,
+    jobject instance,
+    jstring jPublicEphemeral,
+    jstring jPrivateEphemeral)
+{
+    const auto publicEphemeral = makeNative32ByteKey<Crypto::PublicKey>(env, jPublicEphemeral);
+    const auto privateEphemeral = makeNative32ByteKey<Crypto::SecretKey>(env, jPrivateEphemeral);
+
+    Crypto::KeyImage keyImage;
+
+    Crypto::generate_key_image(publicEphemeral, privateEphemeral, keyImage);
+
+    return makeJNI32ByteKey(env, keyImage);
+}
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_com_tonchan_TurtleCoinModule_deriveSecretKeyJNI(
+    JNIEnv *env,
+    jobject instance,
+    jstring jDerivation,
+    jlong outputIndex,
+    jstring jPrivateSpendKey)
+{
+    const auto derivation = makeNative32ByteKey<Crypto::KeyDerivation>(env, jDerivation);
+    const auto privateSpendKey = makeNative32ByteKey<Crypto::SecretKey>(env, jPrivateSpendKey);
+
+    Crypto::SecretKey derivedKey;
+
+    Crypto::derive_secret_key(derivation, outputIndex, privateSpendKey, derivedKey);
+
+    return makeJNI32ByteKey(env, derivedKey);
 }
 
 extern "C" JNIEXPORT jstring JNICALL

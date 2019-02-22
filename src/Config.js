@@ -9,7 +9,8 @@ import {
 } from 'turtlecoin-wallet-backend';
 
 import {
-    derivePublicKey, generateKeyDerivation, generateRingSignatures
+    derivePublicKey, generateKeyDerivation, generateRingSignatures,
+    deriveSecretKey, generateKeyImage,
 } from './NativeCode';
 
 const Config = {
@@ -144,6 +145,16 @@ const Config = {
      * Use our native func instead of JS slowness
      */
     generateRingSignatures: Platform.OS === 'ios' ? undefined : generateRingSignatures,
+
+    /**
+     * Use our native func instead of JS slowness
+     */
+    deriveSecretKey: Platform.OS === 'ios' ? undefined : deriveSecretKey,
+
+    /**
+     * Use our native func instead of JS slowness
+     */
+    generateKeyImage: Platform.OS === 'ios' ? undefined : generateKeyImage,
 
     /**
      * Memory to use for storing downloaded blocks - 3MB
