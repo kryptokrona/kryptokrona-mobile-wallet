@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
 const ListItem = props => (
     <RneListItem
         containerStyle={[styles.listItemContainer, props.containerStyle]}
+        underlayColor='transparent'
         {...props}
     />
 );
