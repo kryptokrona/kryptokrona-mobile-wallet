@@ -112,6 +112,8 @@ export class RequestPinScreen extends React.Component {
                 await this.fail('Wallet not found in DB...');
             }
 
+            Config.scanCoinbaseTransactions = Globals.preferences.scanCoinbaseTransactions;
+
             const [wallet, error] = WalletBackend.loadWalletFromJSON(
                 Config.defaultDaemon, walletData, Config
             );

@@ -16,7 +16,7 @@ import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
 import { deleteUserPinCode } from '@haskkor/react-native-pincode';
 
-import { View, FlatList, Alert, Text, Linking } from 'react-native';
+import { View, FlatList, Alert, Text, Linking, BackHandler } from 'react-native';
 
 import Config from './Config';
 import ListItem from './ListItem';
@@ -219,7 +219,7 @@ export class SettingsScreen extends React.Component {
                         },
                         {
                             title: 'Toggle Notifications',
-                            description: 'Enable or disable transaction notifications',
+                            description: 'Enable or disable transaction notifications. Default is enabled',
                             icon: {
                                 iconName: 'ios-notifications',
                                 IconType: Ionicons,
@@ -228,6 +228,36 @@ export class SettingsScreen extends React.Component {
                                 Globals.preferences.notificationsEnabled = !Globals.preferences.notificationsEnabled;
                                 toastPopUp(Globals.preferences.notificationsEnabled ? 'Notifications enabled' : 'Notifications disabled');
                                 savePreferencesToDatabase(Globals.preferences);
+                            },
+                        },
+                        {
+                            title: 'Toggle Coinbase Transactions Scan',
+                            description: 'Enable or disable scanning coinbase transactions. Default is disabled',
+                            icon: {
+                                iconName: 'money-check-alt',
+                                IconType: FontAwesome,
+                            },
+                            onClick: () => {
+                                Alert.alert(
+                                    'Requires Restart',
+                                    'This change requires a restart of the application to take into effect. Please make sure to remove the application from Recent menu',
+                                    [
+                                        {
+                                            text: 'Cancel',
+                                            style: 'cancel'
+                                        },
+                                        {
+                                            text: 'OK',
+                                            onPress: () => {
+                                                Globals.preferences.scanCoinbaseTransactions = !Globals.preferences.scanCoinbaseTransactions;
+                                                toastPopUp(Globals.preferences.scanCoinbaseTransactions ? 'Scanning Coinbase Transactions enabled' : 'Scanning Coinbase Transactions disabled');
+                                                savePreferencesToDatabase(Globals.preferences);
+                                                BackHandler.exitApp()
+                                            }
+                                        },
+                                    ],
+                                    {cancelable: false},
+                                );
                             },
                         },
                         {

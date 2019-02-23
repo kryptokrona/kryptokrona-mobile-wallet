@@ -162,6 +162,8 @@ export class ImportSeedScreen extends React.Component {
     }
 
     importWallet() {
+        Config.scanCoinbaseTransactions = Globals.preferences.scanCoinbaseTransactions;
+
         const [wallet, error] = WalletBackend.importWalletFromSeed(
             Config.defaultDaemon, this.scanHeight, this.state.seed.join(' '), Config
         );
@@ -428,6 +430,8 @@ export class ImportKeysScreen extends React.Component {
     }
 
     importWallet() {
+        Config.scanCoinbaseTransactions = Globals.preferences.scanCoinbaseTransactions;
+
         const [wallet, error] = WalletBackend.importWalletFromKeys(
             Config.defaultDaemon, this.scanHeight, this.state.privateViewKey,
             this.state.privateSpendKey, Config

@@ -23,6 +23,7 @@ class globals {
         this.preferences = {
             currency: 'usd',
             notificationsEnabled: true,
+            scanCoinbaseTransactions: false,
         };
 
         /* People in our address book */

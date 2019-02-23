@@ -82,6 +82,8 @@ export class CreateWalletScreen extends React.Component {
 
     constructor(props) {
         super(props);
+
+        Config.scanCoinbaseTransactions = Globals.preferences.scanCoinbaseTransactions;
         
         Globals.wallet = WalletBackend.createWallet(Config.defaultDaemon, Config);
 
