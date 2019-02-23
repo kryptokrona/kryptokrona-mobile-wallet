@@ -26,7 +26,7 @@ import { loadFromDatabase, setHaveWallet } from './Database';
  */
 export class SetPinScreen extends React.Component {
     static navigationOptions = {
-        header: null,
+        title: '',
     }
 
     constructor(props) {
