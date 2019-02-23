@@ -16,7 +16,6 @@ import Config from './Config';
 
 import { Styles } from './Styles';
 import { Globals } from './Globals';
-import { FadeView } from './FadeView';
 import { saveToDatabase } from './Database';
 import { updateCoinPrice } from './Currency';
 import { navigateWithDisabledBack } from './Utilities';
@@ -37,7 +36,7 @@ export class WalletOptionScreen extends React.Component {
     render() {
         return(
             /* Fade in over 1.5 secs */
-            <FadeView duration={1500} startValue={0.2} style={{ flex: 1, justifyContent: 'flex-start'}}>
+            <View startValue={0.2} style={{ flex: 1, justifyContent: 'flex-start'}}>
 
                 <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 50}}>
                     <Image
@@ -67,7 +66,7 @@ export class WalletOptionScreen extends React.Component {
                     />
                 </View>
 
-            </FadeView>
+            </View>
         );
     }
 }
