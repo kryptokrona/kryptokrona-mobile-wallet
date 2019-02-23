@@ -1,4 +1,4 @@
-# ton-chan - A mobile, native TurtleCoin wallet
+# TonChan - A mobile, native TurtleCoin wallet
 
 ![Screenshot](https://i.imgur.com/MbZxkdu.png)
 
@@ -6,9 +6,9 @@
 
 * Clone the repo:
 
-`git clone https://github.com/turtlecoin/turtlecion-mobile-wallet.git`
+`git clone https://github.com/turtlecoin/turtlecoin-mobile-wallet.git`
 
-`cd ton-chan`
+`cd turtlecoin-mobile-wallet`
 
 * Install yarn if you don't have it already:
 
@@ -116,7 +116,7 @@ Run `npm install -g yo generator-rn-toolbox` (You may need to run this with sudo
 
 Run `yo rn-toolbox:assets --icon assets/img/icon.png --force`
 
-When it asks for the name of your react-native project, enter `TonChan` (Not ton-chan!)
+When it asks for the name of your react-native project, enter `TonChan`
 
 #### Renaming app
 
