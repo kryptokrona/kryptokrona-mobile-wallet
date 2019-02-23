@@ -214,9 +214,8 @@ const Config = {
      * A link to where a bug can be reported for your wallet. Please update
      * this if you are forking, so we don't get reported bugs for your wallet...
      *
-     * TODO: Update with turtlecoin repo
      */
-    repoLink: 'https://github.com/zpalmtree/ton-chan/issues',
+    repoLink: 'https://github.com/turtlecoin/turtlecoin-mobile-wallet/issues',
 
     /**
      * This only controls the name in the settings screen.
