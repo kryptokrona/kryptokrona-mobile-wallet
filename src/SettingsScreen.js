@@ -192,6 +192,10 @@ export class SettingsScreen extends React.Component {
 
     constructor(props) {
         super(props);
+
+        this.state = {
+            notifsEnabled: Globals.preferences.notificationsEnabled,
+        }
     }
 
     render() {
@@ -218,14 +222,19 @@ export class SettingsScreen extends React.Component {
                             onClick: () => { this.props.navigation.navigate('SwapCurrency') },
                         },
                         {
-                            title: 'Toggle Notifications',
-                            description: 'Enable or disable transaction notifications',
+                            title: this.state.notifsEnabled ? 'Disable Notifications' : 'Enable Notifications',
+                            description: this.state.notifsEnabled ? 'Disable transaction notifications' : 'Get notified when you are sent money',
                             icon: {
                                 iconName: 'ios-notifications',
                                 IconType: Ionicons,
                             },
                             onClick: () => {
                                 Globals.preferences.notificationsEnabled = !Globals.preferences.notificationsEnabled;
+
+                                this.setState({
+                                    notifsEnabled: Globals.preferences.notificationsEnabled,
+                                });
+
                                 toastPopUp(Globals.preferences.notificationsEnabled ? 'Notifications enabled' : 'Notifications disabled');
                                 savePreferencesToDatabase(Globals.preferences);
                             },
