@@ -6,7 +6,7 @@
 
 * Clone the repo:
 
-`git clone https://github.com/zpalmtree/ton-chan.git`
+`git clone https://github.com/turtlecoin/turtlecion-mobile-wallet.git`
 
 `cd ton-chan`
 
