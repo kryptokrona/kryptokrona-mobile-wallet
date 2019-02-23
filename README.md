@@ -10,6 +10,10 @@
 
 `cd turtlecoin-mobile-wallet`
 
+* Install React Native CLI
+
+`npm install -g react-native-cli`
+
 * Install yarn if you don't have it already:
 
 `npm install -g yarn`
