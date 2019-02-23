@@ -178,15 +178,13 @@ export class TransactionsScreen extends React.Component {
             });
         }
 
-        if (numTransactions !== this.state.numTransactions) {
-            /* Don't display fusions */
-            const transactions = Globals.wallet.getTransactions().filter((x) => x.totalAmount() !== 0);
+        /* Don't display fusions */
+        const transactions = Globals.wallet.getTransactions().filter((x) => x.totalAmount() !== 0);
 
-            this.setState({
-                numTransactions,
-                transactions,
-            });
-        }
+        this.setState({
+            numTransactions,
+            transactions,
+        });
     }
 
     componentDidMount() {
