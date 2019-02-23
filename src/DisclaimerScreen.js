@@ -13,7 +13,7 @@ import { BottomButton } from './SharedComponents';
 
 export class DisclaimerScreen extends React.Component {
     static navigationOptions = {
-        header: null
+        title: '',
     };
 
     constructor(props) {

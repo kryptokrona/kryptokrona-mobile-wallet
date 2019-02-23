@@ -43,8 +43,6 @@ function setupBackgroundSync() {
     if (State.running) {
         console.log('[Background Sync] Background sync already running. Not starting.');
         return false;
-    } else {
-        State.running = true;
     }
 
     /* Not in the background, don't sync */
@@ -89,6 +87,8 @@ export async function backgroundSync() {
     if (!setupBackgroundSync()) {
         BackgroundFetch.finish(BackgroundFetch.FETCH_RESULT_NO_DATA);
         return;
+    } else {
+        State.running = true;
     }
 
     const startTime = new Date();

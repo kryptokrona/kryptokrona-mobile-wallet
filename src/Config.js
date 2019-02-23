@@ -171,8 +171,9 @@ const Config = {
      * Will decrease the amount of blocks requested from the daemon if this
      * is exceeded.
      */
-     /* TEMP LIMITED TO 512MB - FIXME TODO */
-    maxBodyResponseSize: 1024 * 1024 * 512,
+     /* TODO: Currently doesn't work. React native bug. node-fetch, request,
+      * http/https - all fuck up somewhere when trying to implement this */
+    maxBodyResponseSize: 1024 * 512,
 
     /**
      * Unix timestamp of the time your chain was launched.
