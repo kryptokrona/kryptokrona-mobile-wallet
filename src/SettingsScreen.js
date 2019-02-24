@@ -68,7 +68,7 @@ export class ExportKeysScreen extends React.Component {
                 borderColour={Config.theme.primaryColour}
             />;
 
-        return (
+        return(
             <View style={{ justifyContent: 'flex-start', flex: 1 }}>
 
                 <View style={{
@@ -142,7 +142,7 @@ export class SwapCurrencyScreen extends React.Component {
     }
 
     render() {
-        return (
+        return(
             <View style={{
                 marginTop: 30,
             }}>
@@ -150,12 +150,12 @@ export class SwapCurrencyScreen extends React.Component {
                     <FlatList
                         data={Constants.currencies}
                         keyExtractor={item => item.ticker}
-                        renderItem={({ item }) => (
+                        renderItem={({item}) => (
                             <ListItem
                                 title={item.coinName}
                                 subtitle={item.symbol + ' / ' + item.ticker.toUpperCase()}
                                 leftIcon={
-                                    <View style={{ width: 30, alignItems: 'center', justifyContent: 'center', marginRight: 10 }}>
+                                    <View style={{width: 30, alignItems: 'center', justifyContent: 'center', marginRight: 10}}>
                                         <Text style={{ fontSize: 25 }}>
                                             {item.symbol}
                                         </Text>
@@ -199,7 +199,7 @@ export class SettingsScreen extends React.Component {
     }
 
     render() {
-        return (
+        return(
             <List>
                 <FlatList
                     data={[
@@ -243,8 +243,8 @@ export class SettingsScreen extends React.Component {
                             title: Globals.preferences.scanCoinbaseTransactions ? 'Skip Coinbase Transactions' : 'Scan Coinbase Transactions',
                             description: Globals.preferences.scanCoinbaseTransactions ? 'Disable Coinbase Transactions scanning' : 'Enable Coinbase Transactions scanning',
                             icon: {
-                                iconName: 'money-check-alt',
-                                IconType: FontAwesome,
+                                iconName: 'ios-notifications',
+                                IconType: Ionicons,
                             },
                             onClick: () => {
                                 Globals.preferences.scanCoinbaseTransactions = !Globals.preferences.scanCoinbaseTransactions;
@@ -260,9 +260,9 @@ export class SettingsScreen extends React.Component {
                                 iconName: 'github',
                                 IconType: AntDesign,
                             },
-                            onClick: () => {
+                            onClick: () => { 
                                 Linking.openURL(Config.repoLink)
-                                    .catch((err) => console.log('Failed to open url: ' + err))
+                                       .catch((err) => console.log('Failed to open url: ' + err))
                             },
                         },
                         {
@@ -281,17 +281,17 @@ export class SettingsScreen extends React.Component {
                                 iconName: 'info',
                                 IconType: SimpleLineIcons,
                             },
-                            onClick: () => { },
+                            onClick: () => {},
                         },
                     ]}
                     keyExtractor={item => item.title}
-                    renderItem={({ item }) => (
+                    renderItem={({item}) => (
                         <ListItem
                             title={item.title}
                             subtitle={item.description}
                             leftIcon={
-                                <View style={{ width: 30, alignItems: 'center', justifyContent: 'center', marginRight: 10 }}>
-                                    <item.icon.IconType name={item.icon.iconName} size={25} color={Config.theme.primaryColour} />
+                                <View style={{width: 30, alignItems: 'center', justifyContent: 'center', marginRight: 10}}>
+                                    <item.icon.IconType name={item.icon.iconName} size={25} color={Config.theme.primaryColour}/>
                                 </View>
                             }
                             onPress={item.onClick}
@@ -311,30 +311,28 @@ function deleteWallet(navigation) {
         'Delete Wallet?',
         'Are you sure you want to delete your wallet? If your seed is not backed up, your funds will be lost!',
         [
-            {
-                text: 'Delete', onPress: () => {
-                    /* Disabling saving */
-                    clearInterval(Globals.backgroundSaveTimer);
+            {text: 'Delete', onPress: () => {
+                /* Disabling saving */
+                clearInterval(Globals.backgroundSaveTimer);
 
-                    /* Delete pin code */
-                    deleteUserPinCode();
+                /* Delete pin code */
+                deleteUserPinCode();
 
-                    /* Delete old wallet */
-                    Realm.deleteFile({});
+                /* Delete old wallet */
+                Realm.deleteFile({});
 
-                    setHaveWallet(false);
+                setHaveWallet(false);
 
-                    Globals.wallet.stop();
+                Globals.wallet.stop();
 
-                    Globals.wallet = undefined;
-                    Globals.pinCode = undefined;
-                    Globals.backgroundSaveTimer = undefined;
+                Globals.wallet = undefined;
+                Globals.pinCode = undefined;
+                Globals.backgroundSaveTimer = undefined;
 
-                    /* And head back to the wallet choose screen */
-                    navigation.navigate('Login');
-                }
-            },
-            { text: 'Cancel', style: 'cancel' },
+                /* And head back to the wallet choose screen */
+                navigation.navigate('Login');
+            }},
+            {text: 'Cancel', style: 'cancel'},
         ],
     )
 }

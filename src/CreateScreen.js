@@ -34,21 +34,21 @@ export class WalletOptionScreen extends React.Component {
     }
 
     render() {
-        return (
+        return(
             /* Fade in over 1.5 secs */
-            <View startValue={0.2} style={{ flex: 1, justifyContent: 'flex-start' }}>
+            <View startValue={0.2} style={{ flex: 1, justifyContent: 'flex-start'}}>
 
-                <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 50 }}>
+                <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 50}}>
                     <Image
                         source={require('../assets/img/logo.png')}
                         style={Styles.logo}
                     />
-                    <Text style={{ fontSize: 20 }}>
+                    <Text style={{fontSize: 20}}>
                         Fast. Safe. Easy.
                     </Text>
                 </View>
 
-                <View style={[Styles.buttonContainer, { bottom: 100, position: 'absolute', alignItems: 'stretch', justifyContent: 'center', width: '100%' }]}>
+                <View style={[Styles.buttonContainer, {bottom: 100, position: 'absolute', alignItems: 'stretch', justifyContent: 'center', width: '100%'}]}>
                     <Button
                         title='Create New Wallet'
                         /* Request a pin for the new wallet */
@@ -57,7 +57,7 @@ export class WalletOptionScreen extends React.Component {
                     />
                 </View>
 
-                <View style={[Styles.buttonContainer, { bottom: 40, position: 'absolute', alignItems: 'stretch', justifyContent: 'center', width: '100%' }]}>
+                <View style={[Styles.buttonContainer, {bottom: 40, position: 'absolute', alignItems: 'stretch', justifyContent: 'center', width: '100%'}]}>
                     <Button
                         title='Recover Wallet'
                         /* Get the import data */
@@ -82,7 +82,7 @@ export class CreateWalletScreen extends React.Component {
 
     constructor(props) {
         super(props);
-
+        
         Globals.wallet = WalletBackend.createWallet(Config.defaultDaemon, Config);
 
         /* Encrypt wallet with pincode in DB */
@@ -90,7 +90,7 @@ export class CreateWalletScreen extends React.Component {
     };
 
     render() {
-        return (
+        return(
             <View style={{ flex: 1, justifyContent: 'flex-start' }}>
 
                 <View style={{
@@ -122,7 +122,7 @@ export class CreateWalletScreen extends React.Component {
 
                     <BottomButton
                         title="Continue"
-                        onPress={() => this.props.navigation.navigate('Home')}
+                        onPress={() => this.props.navigation.navigate('Home')} 
                     />
                 </View>
 

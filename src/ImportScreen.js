@@ -31,13 +31,13 @@ export class ImportWalletScreen extends React.Component {
     static navigationOptions = {
         title: '',
     };
-
+    
     constructor(props) {
         super(props);
     }
 
     render() {
-        return (
+        return(
             <View style={{ flex: 1 }}>
                 <View style={{
                     justifyContent: 'flex-start',
@@ -60,7 +60,7 @@ export class ImportWalletScreen extends React.Component {
                     justifyContent: 'flex-start',
                     alignItems: 'center',
                 }}>
-                    <View style={[Styles.buttonContainer, { alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5 }]}>
+                    <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5}]}>
                         <Button
                             title="Pick a month"
                             onPress={() => this.props.navigation.navigate('PickMonth')}
@@ -68,7 +68,7 @@ export class ImportWalletScreen extends React.Component {
                         />
                     </View>
 
-                    <View style={[Styles.buttonContainer, { alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5 }]}>
+                    <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5}]}>
                         <Button
                             title="Pick an approximate block height"
                             onPress={() => this.props.navigation.navigate('PickBlockHeight')}
@@ -76,7 +76,7 @@ export class ImportWalletScreen extends React.Component {
                         />
                     </View>
 
-                    <View style={[Styles.buttonContainer, { alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5 }]}>
+                    <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5}]}>
                         <Button
                             title="I don't Know"
                             onPress={() => this.props.navigation.navigate('ImportKeysOrSeed', { scanHeight: 0 })}
@@ -102,7 +102,7 @@ export class ImportKeysOrSeedScreen extends React.Component {
     }
 
     render() {
-        return (
+        return(
             <View style={{ flex: 1 }}>
                 <View style={{
                     justifyContent: 'flex-start',
@@ -117,7 +117,7 @@ export class ImportKeysOrSeedScreen extends React.Component {
                 </View>
 
                 <View style={{ justifyContent: 'center', alignItems: 'flex-start' }}>
-                    <View style={[Styles.buttonContainer, { alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5 }]}>
+                    <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5}]}>
                         <Button
                             title="25 Word Mnemonic Seed"
                             onPress={() => this.props.navigation.navigate('ImportSeed', { scanHeight: this.scanHeight })}
@@ -125,7 +125,7 @@ export class ImportKeysOrSeedScreen extends React.Component {
                         />
                     </View>
 
-                    <View style={[Styles.buttonContainer, { alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5 }]}>
+                    <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5}]}>
                         <Button
                             title="Private Spend + Private View Key"
                             onPress={() => this.props.navigation.navigate('ImportKeys', { scanHeight: this.scanHeight })}
@@ -162,7 +162,6 @@ export class ImportSeedScreen extends React.Component {
     }
 
     importWallet() {
-
         const [wallet, error] = WalletBackend.importWalletFromSeed(
             Config.defaultDaemon, this.scanHeight, this.state.seed.join(' '), Config
         );
@@ -182,7 +181,7 @@ export class ImportSeedScreen extends React.Component {
     }
 
     render() {
-        return (
+        return(
             <View style={{ flex: 1 }}>
                 <View style={{
                     justifyContent: 'flex-start',
@@ -203,9 +202,9 @@ export class ImportSeedScreen extends React.Component {
                 <KeyboardAwareScrollView
                     enableOnAndroid={true}
                     extraScrollHeight={200}
-                    containerContentStyle={{ flex: 1, justifyContent: 'center', alignItems: 'flex-start' }}
+                    containerContentStyle={{ flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}
                 >
-                    <InputSeedComponent enableButton={(seed, enable) => this.toggleButton(seed, enable)} />
+                    <InputSeedComponent enableButton={(seed, enable) => this.toggleButton(seed, enable)}/>
                 </KeyboardAwareScrollView>
 
                 <BottomButton
@@ -291,30 +290,30 @@ class InputSeedComponent extends React.Component {
     }
 
     render() {
-        return (
+        return(
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <View style={{
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginRight: 15,
-                    marginLeft: 15,
-                    borderWidth: 1,
-                    borderColor: Config.theme.primaryColour,
+                <View style={{ 
+                    justifyContent: 'center', 
+                    alignItems: 'center', 
+                    marginRight: 15, 
+                    marginLeft: 15, 
+                    borderWidth: 1, 
+                    borderColor: Config.theme.primaryColour, 
                     height: 350
                 }}>
                     {[1, 2, 3, 4, 5].map((row) => {
-                        return (
+                        return(
                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }} key={row}>
                                 {[1, 2, 3, 4, 5].map((col) => {
-                                    return (
-                                        <SeedWord row={row} column={col} key={col} storeWord={(word, index) => this.storeWord(word, index)} />
+                                    return(
+                                        <SeedWord row={row} column={col} key={col} storeWord={(word, index) => this.storeWord(word, index)}/>
                                     );
                                 })}
                             </View>
                         );
                     })}
                 </View>
-                <Text style={{ marginLeft: 10, marginRight: 10, color: 'red', marginTop: 10, alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{marginLeft: 10, marginRight: 10, color: 'red', marginTop: 10, alignItems: 'center', justifyContent: 'center'}}>
                     {this.state.invalidMessage}
                 </Text>
             </View>
@@ -352,7 +351,7 @@ class SeedWord extends React.Component {
     }
 
     render() {
-        return (
+        return(
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                 <TextInput
                     style={{ height: 40, width: 70, textAlign: 'center', color: 'gray' }}
@@ -361,9 +360,9 @@ class SeedWord extends React.Component {
                     borderBottomColor={this.state.badWord ? 'red' : 'lightgray'}
                     maxLength={20}
                     autoCapitalize={'none'}
-                    onChangeText={(text) => this.setState({ word: text })}
+                    onChangeText={(text) => this.setState({ word: text }) }
                     onBlur={() => this.checkWord()}
-                    onFocus={() => this.setState({ badWord: false })}
+                    onFocus={() => this.setState({ badWord: false }) }
                 />
                 <Text style={{ color: Config.theme.primaryColour }}>
                     {this.state.wordNumber}
@@ -449,7 +448,7 @@ export class ImportKeysScreen extends React.Component {
     }
 
     render() {
-        return (
+        return(
             <View style={{ flex: 1 }}>
                 <View style={{
                     justifyContent: 'flex-start',
