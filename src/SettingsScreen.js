@@ -241,7 +241,7 @@ export class SettingsScreen extends React.Component {
                         },
                         {
                             title: Globals.preferences.scanCoinbaseTransactions ? 'Skip Coinbase Transactions' : 'Scan Coinbase Transactions',
-                            description: Globals.preferences.scanCoinbaseTransactions ? 'Disable Coinbase Transactions scanning' : 'Enable Coinbase Transactions scanning',
+                            description: 'Enable this if you have ever solo mined a block',
                             icon: {
                                 iconName: 'ios-notifications',
                                 IconType: Ionicons,
