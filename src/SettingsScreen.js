@@ -240,14 +240,15 @@ export class SettingsScreen extends React.Component {
                             },
                         },
                         {
-                            title: 'Toggle Coinbase Transactions Scan',
-                            description: 'Enable or disable scanning coinbase transactions. Disabled by default',
+                            title: Globals.preferences.scanCoinbaseTransactions ? 'Skip Coinbase Transactions' : 'Scan Coinbase Transactions',
+                            description: Globals.preferences.scanCoinbaseTransactions ? 'Disable Coinbase Transactions scanning' : 'Enable Coinbase Transactions scanning',
                             icon: {
                                 iconName: 'money-check-alt',
                                 IconType: FontAwesome,
                             },
                             onClick: () => {
                                 Globals.preferences.scanCoinbaseTransactions = !Globals.preferences.scanCoinbaseTransactions;
+                                Globals.wallet.scanCoinbaseTransactions(Globals.preferences.scanCoinbaseTransactions);
                                 toastPopUp(Globals.preferences.scanCoinbaseTransactions ? 'Scanning Coinbase Transactions enabled' : 'Scanning Coinbase Transactions disabled');
                                 savePreferencesToDatabase(Globals.preferences);
                             },

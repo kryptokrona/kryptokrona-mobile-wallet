@@ -50,6 +50,8 @@ export async function initGlobals() {
         Globals.preferences = prefs;
     }
 
+    Globals.wallet.scanCoinbaseTransactions(Globals.preferences.scanCoinbaseTransactions);
+
     const payees = await loadPayeeDataFromDatabase();
 
     if (payees !== undefined) {

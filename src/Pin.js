@@ -122,8 +122,6 @@ export class RequestPinScreen extends React.Component {
                 Globals.wallet = wallet;
                 this.props.navigation.navigate('Home');
             }
-
-            Globals.wallet.scanCoinbaseTransactions(Globals.preferences.scanCoinbaseTransactions);
         })().catch(err => {
             this.fail('Error loading from DB: ' + err);
         });

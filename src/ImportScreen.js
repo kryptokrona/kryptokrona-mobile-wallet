@@ -175,8 +175,6 @@ export class ImportSeedScreen extends React.Component {
 
         Globals.wallet = wallet;
 
-        Globals.wallet.scanCoinbaseTransactions(Globals.preferences.scanCoinbaseTransactions);
-
         /* Encrypt wallet with pincode in DB */
         saveToDatabase(Globals.wallet, Globals.pinCode);
 
@@ -443,8 +441,6 @@ export class ImportKeysScreen extends React.Component {
         }
 
         Globals.wallet = wallet;
-
-        Globals.wallet.scanCoinbaseTransactions(Globals.preferences.scanCoinbaseTransactions);
 
         /* Encrypt wallet with pincode in DB */
         saveToDatabase(Globals.wallet, Globals.pinCode);
