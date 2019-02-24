@@ -32,7 +32,7 @@ export class SetPinScreen extends React.Component {
     constructor(props) {
         super(props);
     }
-    
+
     continue(pinCode) {
         Globals.pinCode = pinCode;
         /* Continue on to create or import a wallet */
@@ -42,8 +42,8 @@ export class SetPinScreen extends React.Component {
     render() {
         const subtitle = `to keep your ${Config.coinName} secure`;
 
-        return(
-            <View style={{flex: 1}}>
+        return (
+            <View style={{ flex: 1 }}>
                 <PINCode
                     status={'choose'}
                     finishProcess={(pinCode) => this.continue(pinCode)}
@@ -112,8 +112,6 @@ export class RequestPinScreen extends React.Component {
                 await this.fail('Wallet not found in DB...');
             }
 
-            Config.scanCoinbaseTransactions = Globals.preferences.scanCoinbaseTransactions;
-
             const [wallet, error] = WalletBackend.loadWalletFromJSON(
                 Config.defaultDaemon, walletData, Config
             );
@@ -124,15 +122,17 @@ export class RequestPinScreen extends React.Component {
                 Globals.wallet = wallet;
                 this.props.navigation.navigate('Home');
             }
+
+            Globals.wallet.scanCoinbaseTransactions(Globals.preferences.scanCoinbaseTransactions);
         })().catch(err => {
             this.fail('Error loading from DB: ' + err);
         });
     }
 
     render() {
-        return(
+        return (
             /* Fade in over 1.5 secs */
-            <FadeView duration={1500} startValue={0.2} style={{flex: 1}}>
+            <FadeView duration={1500} startValue={0.2} style={{ flex: 1 }}>
                 <PINCode
                     status={'enter'}
                     finishProcess={(pinCode) => this.continue(pinCode)}
