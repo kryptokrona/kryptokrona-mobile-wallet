@@ -132,15 +132,15 @@ extern "C" JNIEXPORT jstring JNICALL
 Java_com_tonchan_TurtleCoinModule_generateKeyDerivationJNI(
     JNIEnv *env,
     jobject instance,
-    jstring jPublicViewKey,
-    jstring jTransactionPrivateKey)
+    jstring jTransactionPublicKey,
+    jstring jPrivateViewKey)
 {
-    const auto publicViewKey = makeNative32ByteKey<Crypto::PublicKey>(env, jPublicViewKey);
-    const auto transactionPrivateKey = makeNative32ByteKey<Crypto::SecretKey>(env, jTransactionPrivateKey);
+    const auto transactionPublicKey = makeNative32ByteKey<Crypto::PublicKey>(env, jTransactionPublicKey);
+    const auto privateViewKey = makeNative32ByteKey<Crypto::SecretKey>(env, jPrivateViewKey);
 
     Crypto::KeyDerivation derivation;
 
-    Crypto::generate_key_derivation(publicViewKey, transactionPrivateKey, derivation);
+    Crypto::generate_key_derivation(transactionPublicKey, privateViewKey, derivation);
 
     return makeJNI32ByteKey(env, derivation);
 }

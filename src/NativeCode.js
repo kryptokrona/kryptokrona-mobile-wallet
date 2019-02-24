@@ -34,10 +34,11 @@ export async function derivePublicKey(
 }
 
 export async function generateKeyDerivation(
-    publicViewKey,
-    transactionPrivateKey) {
-    return NativeModules.TurtleCoin.generateKeyDerivation(
-        publicViewKey, transactionPrivateKey
+    transactionPublicKey,
+    privateViewKey) {
+    
+    return await NativeModules.TurtleCoin.generateKeyDerivation(
+        transactionPublicKey, privateViewKey,
     );
 }
 

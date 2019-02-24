@@ -82,13 +82,13 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void generateKeyDerivation(
-        String publicViewKey,
-        String transactionPrivateKey,
+        String transactionPublicKey,
+        String privateViewKey,
         Promise promise) {
         try {
             String key = generateKeyDerivationJNI(
-                publicViewKey,
-                transactionPrivateKey
+                transactionPublicKey,
+                privateViewKey
             );
 
             promise.resolve(key);
@@ -204,8 +204,8 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
     );
 
     public native String generateKeyDerivationJNI(
-        String publicViewKey,
-        String transactionPrivateKey
+        String transactionPublicKey,
+        String privateViewKey
     );
 
     public native String[] generateRingSignaturesJNI(
