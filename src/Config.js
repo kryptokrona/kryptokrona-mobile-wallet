@@ -225,7 +225,7 @@ const Config = {
     /**
      * Displayed in the settings screen
      */
-    appVersion: 'v0.0.3',
+    appVersion: 'v0.0.4',
 
     /**
      * Base URL for us to chuck a hash on the end, and find a transaction
