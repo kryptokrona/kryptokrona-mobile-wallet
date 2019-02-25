@@ -195,6 +195,8 @@ export class SettingsScreen extends React.Component {
 
         this.state = {
             notifsEnabled: Globals.preferences.notificationsEnabled,
+            scanCoinbase: Globals.preferences.scanCoinbaseTransactions,
+            limitData: Globals.preferences.limitData,
         }
     }
 
@@ -240,7 +242,7 @@ export class SettingsScreen extends React.Component {
                             },
                         },
                         {
-                            title: Globals.preferences.scanCoinbaseTransactions ? 'Skip Coinbase Transactions' : 'Scan Coinbase Transactions',
+                            title: this.state.scanCoinbase ? 'Skip Coinbase Transactions' : 'Scan Coinbase Transactions',
                             description: 'Enable this if you have ever solo mined a block',
                             icon: {
                                 iconName: 'pickaxe',
@@ -248,20 +250,30 @@ export class SettingsScreen extends React.Component {
                             },
                             onClick: () => {
                                 Globals.preferences.scanCoinbaseTransactions = !Globals.preferences.scanCoinbaseTransactions;
+
+                                this.setState({
+                                    scanCoinbase: Globals.preferences.scanCoinbaseTransactions,
+                                });
+
                                 Globals.wallet.scanCoinbaseTransactions(Globals.preferences.scanCoinbaseTransactions);
                                 toastPopUp(Globals.preferences.scanCoinbaseTransactions ? 'Scanning Coinbase Transactions enabled' : 'Scanning Coinbase Transactions disabled');
                                 savePreferencesToDatabase(Globals.preferences);
                             },
                         },
                         {
-                            title: Globals.preferences.limitData ? 'Disable data limit' : 'Limit data',
-                            description: Globals.preferences.limitData ? 'Sync when using mobile data' : 'Only sync when connected to WiFi',
+                            title: this.state.limitData ? 'Disable data limit' : 'Limit data',
+                            description: this.state.limitData ? 'Sync when using mobile data' : 'Only sync when connected to WiFi',
                             icon: {
-                                iconName: Globals.preferences.limitData ? 'signal' : 'signal-off',
+                                iconName: this.state.limitData ? 'signal' : 'signal-off',
                                 IconType: MaterialCommunityIcons,
                             },
                             onClick: () => {
                                 Globals.preferences.limitData = !Globals.preferences.limitData;
+
+                                this.setState({
+                                    limitData: Globals.preferences.limitData,
+                                });
+
                                 toastPopUp(Globals.preferences.limitData ? 'Data limiting enabled' : 'Data limiting disabled');
                                 savePreferencesToDatabase(Globals.preferences);
                             },
