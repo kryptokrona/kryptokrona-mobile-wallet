@@ -4,6 +4,8 @@
 
 import React from 'react';
 
+import moment from 'moment';
+
 import { Text, Platform, ToastAndroid } from 'react-native';
 
 import { StackActions, NavigationActions } from 'react-navigation';
@@ -48,21 +50,19 @@ export function navigateWithDisabledBack(route, routeParams) {
 }
 
 export function prettyPrintUnixTimestamp(timestamp) {
-    return prettyPrintDate(new Date(timestamp * 1000));
+    return prettyPrintDate(moment(timestamp * 1000));
 }
 
 export function prettyPrintDate(date) {
-    const today = new Date();
-
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-    const dateAndMonth = date.getDate().toString() + ' ' + months[date.getMonth()];
-
-    if (today.getFullYear() === date.getFullYear()) {
-        return dateAndMonth;
+    if (date === undefined) {
+        date = moment();
     }
 
-    return dateAndMonth + ' ' + date.getFullYear();
+    if (moment().year() === date.year()) {
+        return date.format('D MMM, HH:mm');
+    }
+
+    return date.format('D MMM, YYYY HH:mm');
 }
 
 /** 

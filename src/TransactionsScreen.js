@@ -93,7 +93,7 @@ export class TransactionDetailsScreen extends React.Component {
                 >
                     <ItemDescription
                         title={this.state.transaction.totalAmount() > 0 ? 'Received' : 'Sent'}
-                        item={this.state.complete ? prettyPrintUnixTimestamp(this.state.transaction.timestamp) : prettyPrintDate(new Date())}/>
+                        item={this.state.complete ? prettyPrintUnixTimestamp(this.state.transaction.timestamp) : prettyPrintDate()}/>
 
                     <ItemDescription
                         title='Amount'
@@ -235,7 +235,7 @@ export class TransactionsScreen extends React.Component {
                     renderItem={({item}) => (
                         <ListItem
                             title={prettyPrintAmount(Math.abs(item.totalAmount()) - (item.totalAmount() > 0 ? 0 : item.fee))}
-                            subtitle={item.timestamp === 0 ? 'Processing ' + prettyPrintDate(new Date()) : 'Completed ' + prettyPrintUnixTimestamp(item.timestamp)}
+                            subtitle={item.timestamp === 0 ? 'Processing at ' + prettyPrintDate() : 'Completed on ' + prettyPrintUnixTimestamp(item.timestamp)}
                             leftIcon={
                                 <View style={{width: 30, alignItems: 'center', justifyContent: 'center', marginRight: 10}}>
                                     <Ionicons name={this.getIconName(item)} size={30} color={this.getIconColour(item)}/>
