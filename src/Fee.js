@@ -68,7 +68,7 @@ export function addFee(amount) {
  * Converts a human amount to an atomic amount, for use internally
  */
 export function toAtomic(amount) {
-    return amount * (10 ** Config.decimalPlaces);
+    return Math.round(amount * (10 ** Config.decimalPlaces));
 }
 
 /** 
