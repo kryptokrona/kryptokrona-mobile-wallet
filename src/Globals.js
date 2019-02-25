@@ -2,6 +2,8 @@
 //
 // Please see the included LICENSE file for more information.
 
+import { NetInfo } from 'react-native';
+
 import { getCoinPriceFromAPI } from './Currency';
 import { loadPreferencesFromDatabase, loadPayeeDataFromDatabase } from './Database';
 
@@ -35,10 +37,20 @@ class globals {
         this.wallet = undefined;
         this.pinCode = undefined;
         this.backgroundSaveTimer = undefined;
+
+        NetInfo.removeEventListener('connectionChange', updateConnection);
     }
 }
 
 export let Globals = new globals();
+
+function updateConnection(connection) {
+    if (Globals.preferences.limitData && connection.type === 'cellular') {
+        Globals.wallet.stop();
+    } else {
+        Globals.wallet.start();
+    }
+}
 
 /* Note... you probably don't want to await this function. Can block for a while
    if no internet. */
@@ -50,6 +62,11 @@ export async function initGlobals() {
     if (prefs !== undefined) {
         Globals.preferences = prefs;
     }
+
+    const netInfo = NetInfo.getConnectionInfo();
+    updateConnection(netInfo);
+
+    NetInfo.addEventListener('connectionChange', updateConnection);
 
     Globals.wallet.scanCoinbaseTransactions(Globals.preferences.scanCoinbaseTransactions);
 

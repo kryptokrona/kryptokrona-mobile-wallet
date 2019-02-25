@@ -16,7 +16,7 @@ import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
 import { deleteUserPinCode } from '@haskkor/react-native-pincode';
 
-import { View, FlatList, Alert, Text, Linking } from 'react-native';
+import { View, FlatList, Alert, Text, Linking, NetInfo } from 'react-native';
 
 import Config from './Config';
 import ListItem from './ListItem';
@@ -267,12 +267,20 @@ export class SettingsScreen extends React.Component {
                                 iconName: this.state.limitData ? 'signal' : 'signal-off',
                                 IconType: MaterialCommunityIcons,
                             },
-                            onClick: () => {
+                            onClick: async () => {
                                 Globals.preferences.limitData = !Globals.preferences.limitData;
 
                                 this.setState({
                                     limitData: Globals.preferences.limitData,
                                 });
+
+                                const netInfo = await NetInfo.getConnectionInfo();
+                                
+                                if (Globals.preferences.limitData && netInfo.type === 'cellular') {
+                                    Globals.wallet.stop();
+                                } else {
+                                    Globals.wallet.start();
+                                }
 
                                 toastPopUp(Globals.preferences.limitData ? 'Data limiting enabled' : 'Data limiting disabled');
                                 savePreferencesToDatabase(Globals.preferences);
@@ -350,9 +358,7 @@ function deleteWallet(navigation) {
 
                 Globals.wallet.stop();
 
-                Globals.wallet = undefined;
-                Globals.pinCode = undefined;
-                Globals.backgroundSaveTimer = undefined;
+                Globals.reset();
 
                 /* And head back to the wallet choose screen */
                 navigation.navigate('Login');
