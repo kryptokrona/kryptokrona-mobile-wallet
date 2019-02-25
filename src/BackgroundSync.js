@@ -4,7 +4,7 @@
 
 import BackgroundFetch from "react-native-background-fetch";
 
-import { AppState, Platform } from 'react-native';
+import { AppState, Platform, NetInfo } from 'react-native';
 
 import Config from './Config';
 
@@ -38,7 +38,7 @@ function onStateChange(state) {
 /**
  * Check background syncing is all good and setup a few vars
  */
-function setupBackgroundSync() {
+async function setupBackgroundSync() {
     /* Probably shouldn't happen... but check we're not already running. */
     if (State.running) {
         console.log('[Background Sync] Background sync already running. Not starting.');
@@ -54,6 +54,13 @@ function setupBackgroundSync() {
     /* Wallet not loaded yet. Probably shouldn't happen, but helps to be safe */
     if (Globals.wallet === undefined) {
         console.log('[Background Sync] Wallet not loading. Not starting background sync.');
+        return false;
+    }
+
+    const netInfo = NetInfo.getConnectionInfo();
+
+    if (Globals.preferences.limitData && netInfo.type === 'cellular') {
+        console.log('[Background Sync] On mobile data. Not starting background sync.');
         return false;
     }
 
@@ -84,7 +91,7 @@ function finishBackgroundSync() {
  * Note - don't use anything with setInterval here, it won't run in the background
  */
 export async function backgroundSync() {
-    if (!setupBackgroundSync()) {
+    if (!await setupBackgroundSync()) {
         BackgroundFetch.finish(BackgroundFetch.FETCH_RESULT_NO_DATA);
         return;
     } else {
