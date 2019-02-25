@@ -10,6 +10,8 @@ import moment from 'moment';
 
 import { View, Text, Button } from 'react-native';
 
+import { Input } from 'react-native-elements';
+
 import Config from './Config';
 
 import { Styles } from './Styles';
@@ -94,6 +96,110 @@ export class PickMonthScreen extends React.Component {
                     onPress={() => this.props.navigation.navigate('ImportKeysOrSeed', { scanHeight: dateToScanHeight(this.state.month) })}
                 />
 
+            </View>
+        );
+    }
+}
+
+export class PickExactBlockHeightScreen extends React.Component {
+    static navigationOptions = {
+        title: '',
+    };
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            value: '',
+            errorMessage: '',
+            valid: false,
+        };
+    }
+
+    scanHeightIsValid(scanHeightText) {
+        if (scanHeightText === '' || scanHeightText === undefined) {
+            return [false, ''];
+        }
+
+        const scanHeight = Number(scanHeightText);
+
+        if (isNaN(scanHeight)) {
+            return [false, 'Scan height is not a number.'];
+        }
+
+        if (scanHeight < 0) {
+            return [false, 'Scan height is negative.'];
+        }
+
+        if (!Number.isInteger(scanHeight)) {
+            return [false, 'Scan height is not an integer.'];
+        }
+
+        return [true, ''];
+    }
+
+    onChangeText(text) {
+        const [valid, error] = this.scanHeightIsValid(text);
+
+        this.setState({
+            value: text,
+            errorMessage: error,
+            valid,
+        });
+    }
+
+    render() {
+        return(
+            <View style={{ flex: 1 }}>
+                <View style={{
+                    justifyContent: 'flex-start',
+                    alignItems: 'flex-start',
+                    marginTop: 60,
+                    marginLeft: 30,
+                    marginRight: 10,
+                }}>
+                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 5 }}>
+                        What block did you create your wallet at?
+                    </Text>
+
+                    <Text style={{ color: Config.theme.primaryColour, fontSize: 16, marginBottom: 60 }}>
+                        This helps us scan your wallet faster.
+                    </Text>
+                </View>
+
+                <View style={{ justifyContent: 'center', alignItems: 'flex-start' }}>
+                    <Input
+                        containerStyle={{
+                            width: '90%',
+                            marginLeft: 20,
+                        }}
+                        inputContainerStyle={{
+                            borderColor: 'lightgrey',
+                            borderWidth: 1,
+                            borderRadius: 2,
+                        }}
+                        label={this.props.label}
+                        labelStyle={{
+                            marginBottom: 5,
+                            marginRight: 2,
+                        }}
+                        keyboardType={'number-pad'}
+                        inputStyle={{
+                            color: Config.theme.primaryColour,
+                            fontSize: 30,
+                            marginLeft: 5
+                        }}
+                        errorMessage={this.state.errorMessage}
+                        value={this.state.value}
+                        onChangeText={(text) => this.onChangeText(text)}
+                    />
+                </View>
+
+                <BottomButton
+                    title='Continue'
+                    onPress={() => this.props.navigation.navigate('ImportKeysOrSeed', { scanHeight: Number(this.state.value) })}
+                    disabled={!this.state.valid}
+                />
             </View>
         );
     }

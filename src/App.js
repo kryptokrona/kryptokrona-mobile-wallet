@@ -19,9 +19,12 @@ import { SplashScreen } from './SplashScreen';
 import { DisclaimerScreen } from './DisclaimerScreen';
 import { SetPinScreen, RequestPinScreen } from './Pin.js';
 import { WalletOptionScreen, CreateWalletScreen } from './CreateScreen';
-import { PickMonthScreen, PickBlockHeightScreen } from './ScanHeightScreen';
 import { TransactionsScreen, TransactionDetailsScreen } from './TransactionsScreen';
 import { SettingsScreen, SwapCurrencyScreen, ExportKeysScreen } from './SettingsScreen';
+
+import {
+    PickMonthScreen, PickBlockHeightScreen, PickExactBlockHeightScreen
+} from './ScanHeightScreen';
 
 import {
     TransferScreen, ChoosePayeeScreen, NewPayeeScreen, ConfirmScreen,
@@ -175,6 +178,9 @@ const LoginNavigator = createStackNavigator(
 
         /* Pick a block range to start the wallet scanning from */
         PickBlockHeight: PickBlockHeightScreen,
+
+        /* Pick a specific height to start the wallet scanning from */
+        PickExactBlockHeight: PickExactBlockHeightScreen,
 
         /* Explain fee, I'm not responsible for anything, etc */
         Disclaimer: DisclaimerScreen,

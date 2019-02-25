@@ -78,6 +78,14 @@ export class ImportWalletScreen extends React.Component {
 
                     <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5}]}>
                         <Button
+                            title="Pick an exact block height"
+                            onPress={() => this.props.navigation.navigate('PickExactBlockHeight')}
+                            color={Config.theme.primaryColour}
+                        />
+                    </View>
+
+                    <View style={[Styles.buttonContainer, {alignItems: 'stretch', width: '100%', marginTop: 5, marginBottom: 5}]}>
+                        <Button
                             title="I don't Know"
                             onPress={() => this.props.navigation.navigate('ImportKeysOrSeed', { scanHeight: 0 })}
                             color={Config.theme.primaryColour}
