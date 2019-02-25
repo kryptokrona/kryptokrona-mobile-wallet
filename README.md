@@ -90,6 +90,13 @@ There is a flow chart describing screen navigation in the `flowcharts` folder.
 
 There is also an xml file that you can import into [draw.io](https://draw.io) if you want to modify the flowchart.
 
+### Creating a release
+
+You need to bump the version number in:
+
+* `src/Config.js` - `appVersion`
+* `android/app/build.gradle` - `versionCode` and `versionName`
+
 ## Running natively on your Android device
 
 Follow [this](https://facebook.github.io/react-native/docs/running-on-device.html) guide.
