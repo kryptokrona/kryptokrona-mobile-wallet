@@ -152,6 +152,7 @@ const PreferencesSchema = {
         currency: 'string',
         notificationsEnabled: 'bool',
         scanCoinbaseTransactions: 'bool',
+        limitData: 'bool',
     }
 }
 

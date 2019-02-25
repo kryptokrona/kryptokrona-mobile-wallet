@@ -24,6 +24,7 @@ class globals {
             currency: 'usd',
             notificationsEnabled: true,
             scanCoinbaseTransactions: false,
+            limitData: false,
         };
 
         /* People in our address book */
