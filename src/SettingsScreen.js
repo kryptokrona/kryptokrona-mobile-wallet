@@ -240,6 +240,20 @@ export class SettingsScreen extends React.Component {
                             },
                         },
                         {
+                            title: Globals.preferences.scanCoinbaseTransactions ? 'Skip Coinbase Transactions' : 'Scan Coinbase Transactions',
+                            description: 'Enable this if you have ever solo mined a block',
+                            icon: {
+                                iconName: 'pickaxe',
+                                IconType: MaterialCommunityIcons,
+                            },
+                            onClick: () => {
+                                Globals.preferences.scanCoinbaseTransactions = !Globals.preferences.scanCoinbaseTransactions;
+                                Globals.wallet.scanCoinbaseTransactions(Globals.preferences.scanCoinbaseTransactions);
+                                toastPopUp(Globals.preferences.scanCoinbaseTransactions ? 'Scanning Coinbase Transactions enabled' : 'Scanning Coinbase Transactions disabled');
+                                savePreferencesToDatabase(Globals.preferences);
+                            },
+                        },
+                        {
                             title: `Find ${Config.appName} on Github`,
                             description: 'View the source code and give feedback',
                             icon: {

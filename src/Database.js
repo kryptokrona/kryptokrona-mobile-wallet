@@ -151,6 +151,7 @@ const PreferencesSchema = {
         primaryKey: 'int',
         currency: 'string',
         notificationsEnabled: 'bool',
+        scanCoinbaseTransactions: 'bool',
     }
 }
 

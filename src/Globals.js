@@ -23,6 +23,7 @@ class globals {
         this.preferences = {
             currency: 'usd',
             notificationsEnabled: true,
+            scanCoinbaseTransactions: false,
         };
 
         /* People in our address book */
@@ -48,6 +49,8 @@ export async function initGlobals() {
     if (prefs !== undefined) {
         Globals.preferences = prefs;
     }
+
+    Globals.wallet.scanCoinbaseTransactions(Globals.preferences.scanCoinbaseTransactions);
 
     const payees = await loadPayeeDataFromDatabase();
 
