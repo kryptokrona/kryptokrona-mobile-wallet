@@ -254,6 +254,19 @@ export class SettingsScreen extends React.Component {
                             },
                         },
                         {
+                            title: Globals.preferences.limitData ? 'Disable data limit' : 'Limit data',
+                            description: Globals.preferences.limitData ? 'Sync when using mobile data' : 'Only sync when connected to WiFi',
+                            icon: {
+                                iconName: Globals.preferences.limitData ? 'signal' : 'signal-off',
+                                IconType: MaterialCommunityIcons,
+                            },
+                            onClick: () => {
+                                Globals.preferences.limitData = !Globals.preferences.limitData;
+                                toastPopUp(Globals.preferences.limitData ? 'Data limiting enabled' : 'Data limiting disabled');
+                                savePreferencesToDatabase(Globals.preferences);
+                            },
+                        },
+                        {
                             title: `Find ${Config.appName} on Github`,
                             description: 'View the source code and give feedback',
                             icon: {
