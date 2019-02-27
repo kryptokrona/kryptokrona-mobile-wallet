@@ -143,3 +143,38 @@ export class OR extends React.Component {
         );
     }
 }
+
+export class OneLineText extends React.Component {
+    constructor(props) {
+        super(props);
+
+        if (!this.props.style || !this.props.style.fontSize) {
+            throw new Error('Fontsize property is mandatory!');
+        }
+
+        if (this.props.style.fontSize === 0) {
+            throw new Error('Font size cannot be zero!');
+        }
+
+        this.multiplier = this.props.multiplier || 20;
+    }
+
+    calculateFontSize(fontSize, text) {
+        if (text.length === 0) {
+            return fontSize;
+        }
+
+        /* Get a decent guess of the right font size to use to fit on one line */
+        let maxFontSize = Math.round(((1 / text.length) / fontSize) * this.multiplier * 1000);
+
+        return Math.min(maxFontSize, fontSize);
+    }
+
+    render() {
+        return(
+            <Text {...this.props} style={[{...this.props.style}, {fontSize: this.calculateFontSize(this.props.style.fontSize, this.props.children)}]}>
+                {this.props.children}
+            </Text>
+        );
+    }
+}

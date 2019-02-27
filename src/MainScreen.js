@@ -29,10 +29,10 @@ import { Styles } from './Styles';
 import { coinsToFiat } from './Currency';
 import { ProgressBar } from './ProgressBar';
 import { saveToDatabase } from './Database';
-import { CopyButton } from './SharedComponents';
 import { Globals, initGlobals } from './Globals';
 import { processBlockOutputs } from './NativeCode';
 import { initBackgroundSync } from './BackgroundSync';
+import { CopyButton, OneLineText } from './SharedComponents';
 
 function init() {
     initGlobals();
@@ -249,41 +249,37 @@ class BalanceComponent extends React.Component {
     }
 
     render() {
-        const compactBalance = <Text style={{ color: this.state.lockedBalance === 0 ? Config.theme.primaryColour : 'orange', fontSize: 35}}
+        const compactBalance = <OneLineText
+                                     style={{ color: this.state.lockedBalance === 0 ? Config.theme.primaryColour : 'orange', fontSize: 35}}
                                      onPress={() => this.setState({
                                          expandedBalance: !this.state.expandedBalance
-                                     })}>
+                                     })}
+                                >
                                      {prettyPrintAmount(this.state.unlockedBalance + this.state.lockedBalance)}
-                               </Text>;
+                               </OneLineText>;
 
         const lockedBalance = <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                                    <Text style={{ color: 'orange', fontSize: 25, paddingLeft: 5}}
+                                    <FontAwesome name={'lock'} size={22} color={'orange'} style={{marginRight: 7}}/>
+                                    <OneLineText style={{ color: 'orange', fontSize: 25}}
                                           onPress={() => this.setState({
                                              expandedBalance: !this.state.expandedBalance
                                           })}>
                                         {prettyPrintAmount(this.state.lockedBalance)}
-                                    </Text>
-                                    <FontAwesome name={'lock'} size={22} color={'orange'} style={{marginLeft: 7}}/>
+                                    </OneLineText>
                               </View>;
 
         const unlockedBalance = <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                                     <FontAwesome name={'unlock'} size={22} color={Config.theme.primaryColour} style={{marginRight: 7}}/>
-                                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, paddingRight: 5}}
+                                    <OneLineText style={{ color: Config.theme.primaryColour, fontSize: 25}}
                                           onPress={() => this.setState({
                                              expandedBalance: !this.state.expandedBalance
                                           })}>
                                         {prettyPrintAmount(this.state.unlockedBalance)}
-                                    </Text>
+                                    </OneLineText>
                                 </View>;
 
-        const expandedBalance = <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+        const expandedBalance = <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                                     {unlockedBalance}
-                                    <Text style={{ color: 'lightgray', fontSize: 30 }}
-                                          onPress={() => this.setState({
-                                            expandedBalance: !this.state.expandedBalance
-                                          })}>
-                                        |
-                                    </Text>
                                     {lockedBalance}
                                 </View>;
 
