@@ -1326,9 +1326,9 @@ big-integer@^1.6.7:
   integrity sha512-d5AT9lMTYJ/ZE/4gzxb+5ttPcRWljVsvv7lF1w9KzkPhVUhBtHrjDo1J8swfZKepfLsliDhYa31zRYwcD0Yg9w==
 
 bindings@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/bindings/-/bindings-1.4.0.tgz#909efa49f2ebe07ecd3cb136778f665052040127"
-  integrity sha512-7znEVX22Djn+nYjxCWKDne0RRloa9XfYa84yk3s+HkE3LpDYZmhArYr9O9huBoHY3/oXispx5LorIX7Sl2CgSQ==
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/bindings/-/bindings-1.5.0.tgz#10353c9e945334bc0511a6d90b38fbc7c9c504df"
+  integrity sha512-p2q/t/mhvuOj/UeLlV6566GD/guowlr0hHxClI0W9m7MWYkL1F0hLo+0Aexs9HSPCtR1SXQ0TD3MMKrXZajbiQ==
   dependencies:
     file-uri-to-path "1.0.0"
 
@@ -7245,7 +7245,7 @@ turtlecoin-rpc@^0.12.0:
 
 "turtlecoin-wallet-backend@https://github.com/turtlecoin/turtlecoin-wallet-backend-js":
   version "1.0.0"
-  resolved "https://github.com/turtlecoin/turtlecoin-wallet-backend-js#e7f4f299fa1bb67b41536c39ceaccb7960c50a24"
+  resolved "https://github.com/turtlecoin/turtlecoin-wallet-backend-js#bafa365eeaab79d55b201e0950243a815745135e"
   dependencies:
     abort-controller "^2.0.2"
     lodash "^4.17.11"

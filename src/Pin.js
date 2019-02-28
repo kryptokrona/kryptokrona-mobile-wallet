@@ -84,7 +84,7 @@ export class RequestPinScreen extends React.Component {
     }
 
     async fail(msg) {
-        console.log(msg);
+        Globals.logger.addLogMessage(msg);
 
         /* So we don't infinite loop */
         await setHaveWallet(false);

@@ -11,6 +11,8 @@ import { sha512 } from 'js-sha512';
 import Config from './Config';
 import Constants from './Constants';
 
+import { Globals } from './Globals';
+
 function getPriceDataSchema() {
     var obj = {
         name: 'PriceData',
@@ -353,7 +355,7 @@ export function savePreferencesToDatabase(preferences) {
             return realm.create('Preferences', preferences, true);
         });
     }).catch(err => {
-        console.log('Failed to save preferences to DB: ' + err);
+        Globals.logger.addLogMessage('Failed to save preferences to DB: ' + err);
     });
 }
 
@@ -372,7 +374,7 @@ export async function loadPreferencesFromDatabase() {
         return undefined;
 
     } catch (err) {
-        console.log('Error loading preferences from database: ' + err);
+        Globals.logger.addLogMessage('Error loading preferences from database: ' + err);
         return undefined;
     }
 }
@@ -389,7 +391,7 @@ export function savePriceDataToDatabase(priceData) {
             return realm.create('PriceData', priceData, true);
         });
     }).catch(err => {
-        console.log('Failed to save price data to DB: ' + err);
+        Globals.logger.addLogMessage('Failed to save price data to DB: ' + err);
     });
 }
 
@@ -408,7 +410,7 @@ export async function loadPriceDataFromDatabase() {
         return undefined;
 
     } catch (err) {
-        console.log('Error loading database: ' + err);
+        Globals.logger.addLogMessage('Error loading database: ' + err);
         return undefined;
     }
 }
@@ -426,7 +428,7 @@ export function savePayeeToDatabase(payee) {
             return realm.create('Payee', payee, true);
         });
     }).catch(err => {
-        console.log('Failed to save payee data to DB: ' + err);
+        Globals.logger.addLogMessage('Failed to save payee data to DB: ' + err);
     });
 }
 
@@ -446,7 +448,7 @@ export async function loadPayeeDataFromDatabase() {
         return undefined;
 
     } catch (err) {
-        console.log('Error loading payee data from database: ' + err);
+        Globals.logger.addLogMessage('Error loading payee data from database: ' + err);
         return undefined;
     }
 }
@@ -471,7 +473,7 @@ export function saveToDatabase(wallet, pinCode) {
             setHaveWallet(true);
         })
     }).catch(err => {
-        console.log('Err saving wallet: ' + err);
+        Globals.logger.addLogMessage('Err saving wallet: ' + err);
     });
 }
 
@@ -495,7 +497,7 @@ export async function loadFromDatabase(pinCode) {
 
         return undefined;
     } catch(err) {
-        console.log('Error loading database: ' + err);
+        Globals.logger.addLogMessage('Error loading database: ' + err);
         return undefined;
     }
 }
@@ -510,7 +512,7 @@ export async function haveWallet() {
 
         return false;
     } catch (error) {
-        console.log('Error determining if we have data: ' + error);
+        Globals.logger.addLogMessage('Error determining if we have data: ' + error);
         return false;
     }
 }
@@ -519,6 +521,6 @@ export async function setHaveWallet(haveWallet) {
     try {
         await AsyncStorage.setItem(Config.coinName + 'HaveWallet', haveWallet.toString());
     } catch (error) {
-        console.log('Failed to save have wallet status: ' + error);
+        Globals.logger.addLogMessage('Failed to save have wallet status: ' + error);
     }
 }

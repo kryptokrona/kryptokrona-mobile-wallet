@@ -14,10 +14,10 @@ import { NavigationActions } from 'react-navigation';
 
 import {
     Text, View, Image, TouchableOpacity, PushNotificationIOS,
-    AppState,
+    AppState, Platform,
 } from 'react-native';
 
-import { prettyPrintAmount } from 'turtlecoin-wallet-backend';
+import { prettyPrintAmount, LogLevel } from 'turtlecoin-wallet-backend';
 
 import Config from './Config';
 
@@ -26,10 +26,34 @@ import { coinsToFiat } from './Currency';
 import { ProgressBar } from './ProgressBar';
 import { saveToDatabase } from './Database';
 import { Globals, initGlobals } from './Globals';
+import { processBlockOutputs } from './NativeCode';
 import { initBackgroundSync } from './BackgroundSync';
 import { CopyButton, OneLineText } from './SharedComponents';
 
 function init() {
+    Globals.wallet.scanCoinbaseTransactions(Globals.preferences.scanCoinbaseTransactions);
+
+    Globals.wallet.on('incomingtx', (transaction) => {
+        sendNotification(transaction);
+    });
+
+    Globals.wallet.setLoggerCallback((prettyMessage, message) => {
+        Globals.logger.addLogMessage(message);
+    });
+
+    Globals.wallet.setLogLevel(LogLevel.DEBUG);
+
+    /* Don't launch if already started */
+    if (Globals.backgroundSaveTimer === undefined) {
+        Globals.backgroundSaveTimer = setInterval(backgroundSave, Config.walletSaveFrequency);
+    }
+
+    /* Use our native C++ func to process blocks, provided we're on android */
+    /* TODO: iOS support */
+    if (Platform.OS === 'android') {
+        Globals.wallet.setBlockOutputProcessFunc(processBlockOutputs);
+    }
+
     initGlobals();
 
     PushNotification.configure({
@@ -48,7 +72,6 @@ function init() {
 }
 
 function handleNotification(notification) {
-    console.log('Notification received');
     notification.finish(PushNotificationIOS.FetchResult.NoData);
 }
 
@@ -182,20 +205,7 @@ class BalanceComponent extends React.Component {
             expandedBalance: false,
         };
 
-        (async () => {
-            const [unlockedBalance, lockedBalance] = Globals.wallet.getBalance();
-
-            const coinValue = await coinsToFiat(
-                unlockedBalance + lockedBalance, Globals.preferences.currency
-            );
-
-            this.setState({
-                unlockedBalance,
-                lockedBalance,
-                coinValue,
-            });
-
-        })();
+        this.tick();
     }
 
     tick() {
@@ -215,7 +225,7 @@ class BalanceComponent extends React.Component {
     }
 
     componentDidMount() {
-        this.interval = setInterval(() => this.tick(), 1000);
+        this.interval = setInterval(() => this.tick(), 10000);
     }
 
     componentWillUnmount() {
@@ -345,5 +355,19 @@ class SyncComponent extends React.Component {
                 />
             </View>
         );
+    }
+}
+
+/**
+ * Save wallet in background
+ */
+function backgroundSave() {
+    Globals.logger.addLogMessage('Saving wallet...');
+
+    try {
+        saveToDatabase(Globals.wallet, Globals.pinCode);
+        Globals.logger.addLogMessage('Save complete.');
+    } catch (err) {
+        Globals.logger.addLogMessage('Failed to background save: ' + err);
     }
 }

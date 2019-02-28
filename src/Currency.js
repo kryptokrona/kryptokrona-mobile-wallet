@@ -43,8 +43,7 @@ export async function getCoinPriceFromAPI() {
 
         return coinData;
     } catch (error) {
-        console.log('Failed to get price from API: ' + error);
-
+        Globals.logger.addLogMessage('Failed to get price from API: ' + error);
         return undefined;
     }
 }
@@ -84,7 +83,7 @@ export async function coinsToFiat(amount, currencyTicker) {
         }
     }
 
-    console.log('Failed to find currency: ' + currencyTicker);
+    Globals.logger.addLogMessage('Failed to find currency: ' + currencyTicker);
 
     return '';
 }

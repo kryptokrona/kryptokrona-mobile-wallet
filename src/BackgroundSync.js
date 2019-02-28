@@ -19,7 +19,7 @@ export function initBackgroundSync() {
     }, async () => {
         await backgroundSync();
     }, (error) => {
-        console.log("[js] RNBackgroundFetch failed to start");
+        Globals.logger.addLogMessage("[js] RNBackgroundFetch failed to start");
     });
 }
 
@@ -40,26 +40,26 @@ function onStateChange(state) {
 async function setupBackgroundSync() {
     /* Probably shouldn't happen... but check we're not already running. */
     if (State.running) {
-        console.log('[Background Sync] Background sync already running. Not starting.');
+        Globals.logger.addLogMessage('[Background Sync] Background sync already running. Not starting.');
         return false;
     }
 
     /* Not in the background, don't sync */
     if (AppState.currentState !== 'background') {
-        console.log('[Background Sync] Background sync launched while in foreground. Not starting.');
+        Globals.logger.addLogMessage('[Background Sync] Background sync launched while in foreground. Not starting.');
         return false;
     }
 
     /* Wallet not loaded yet. Probably shouldn't happen, but helps to be safe */
     if (Globals.wallet === undefined) {
-        console.log('[Background Sync] Wallet not loading. Not starting background sync.');
+        Globals.logger.addLogMessage('[Background Sync] Wallet not loading. Not starting background sync.');
         return false;
     }
 
     const netInfo = NetInfo.getConnectionInfo();
 
     if (Globals.preferences.limitData && netInfo.type === 'cellular') {
-        console.log('[Background Sync] On mobile data. Not starting background sync.');
+        Globals.logger.addLogMessage('[Background Sync] On mobile data. Not starting background sync.');
         return false;
     }
 
@@ -67,7 +67,7 @@ async function setupBackgroundSync() {
 
     State.shouldStop = false;
 
-    console.log('[Background Sync] Running background sync...');
+    Globals.logger.addLogMessage('[Background Sync] Running background sync...');
 
     return true;
 }
@@ -82,7 +82,7 @@ function finishBackgroundSync() {
 
     State.running = false;
 
-    console.log('[Background Sync] Background sync complete.');
+    Globals.logger.addLogMessage('[Background Sync] Background sync complete.');
 }
 
 /**
@@ -116,7 +116,7 @@ export async function backgroundSync() {
 
         /* Check if we're synced so we don't kill the users battery */
         if (walletBlockCount >= localDaemonBlockCount || walletBlockCount >= networkBlockCount) {
-            console.log('[Background Sync] Wallet is synced. Stopping background sync.');
+            Globals.logger.addLogMessage('[Background Sync] Wallet is synced. Stopping background sync.');
 
             /* Save the wallet */
             saveToDatabase(Globals.wallet, Globals.pinCode);
@@ -133,7 +133,7 @@ export async function backgroundSync() {
             await Globals.wallet.internal().sync(false);
         }
 
-        console.log('[Background Sync] Saving wallet in background.');
+        Globals.logger.addLogMessage('[Background Sync] Saving wallet in background.');
 
         /* Save the wallet */
         saveToDatabase(Globals.wallet, Globals.pinCode);

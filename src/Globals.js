@@ -2,13 +2,10 @@
 //
 // Please see the included LICENSE file for more information.
 
-import { NetInfo, Platform } from 'react-native';
-import { LogLevel } from 'turtlecoin-wallet-backend';
+import { NetInfo, Alert } from 'react-native';
 
-import Config from './Config';
 import { Logger } from './Logger';
 import { getCoinPriceFromAPI } from './Currency';
-import { processBlockOutputs } from './NativeCode';
 
 import {
     saveToDatabase, loadPreferencesFromDatabase, loadPayeeDataFromDatabase
@@ -73,55 +70,26 @@ export async function initGlobals() {
         Globals.preferences = prefs;
     }
 
-    Globals.wallet.scanCoinbaseTransactions(Globals.preferences.scanCoinbaseTransactions);
-
     const payees = await loadPayeeDataFromDatabase();
 
     if (payees !== undefined) {
         Globals.payees = payees;
     }
-
-    Globals.wallet.on('incomingtx', (transaction) => {
-        sendNotification(transaction);
-    });
-
-    Globals.wallet.setLoggerCallback((prettyMessage, message) => {
-        Globals.logger.addLogMessage(message);
-    });
-
-    Globals.wallet.setLogLevel(LogLevel.DEBUG);
-
-    /* Don't launch if already started */
-    if (Globals.backgroundSaveTimer === undefined) {
-        Globals.backgroundSaveTimer = setInterval(backgroundSave, Config.walletSaveFrequency);
-    }
-
-    /* Use our native C++ func to process blocks, provided we're on android */
-    /* TODO: iOS support */
-    if (Platform.OS === 'android') {
-        Globals.wallet.setBlockOutputProcessFunc(processBlockOutputs);
-    }
-
+    
     const netInfo = NetInfo.getConnectionInfo();
 
     /* Start syncing */
-    if (!(Globals.preferences.limitData && connection.type === 'cellular')) {
+    if ((Globals.preferences.limitData && connection.type === 'cellular')) {
+        Alert.alert(
+            'Not Syncing',
+            'You enabled data limits, and are on a limited connection. Not starting sync.',
+            [
+                {text: 'OK'},
+            ]
+        );
+    } else {
         Globals.wallet.start();
     }
 
     NetInfo.addEventListener('connectionChange', updateConnection);
-}
-
-/**
- * Save wallet in background
- */
-function backgroundSave() {
-    console.log('Saving wallet...');
-
-    try {
-        saveToDatabase(Globals.wallet, Globals.pinCode);
-        console.log('Save complete.');
-    } catch (err) {
-        console.log('Failed to background save: ' + err);
-    }
 }

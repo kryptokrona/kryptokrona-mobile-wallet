@@ -7,11 +7,13 @@ import moment from 'moment';
 export class Logger {
     constructor() {
         this.logs = [];
-        this.MAX_LOG_SIZE = 1000;
+        this.MAX_LOG_SIZE = 100;
     }
 
     addLogMessage(message) {
-        this.logs.push(`[${moment().format('HH:mm:ss')}]: ${message}`);
+        const index = this.logs.push(`[${moment().format('HH:mm:ss')}]: ${message}`);
+
+        console.log(this.logs[index-1]);
 
         if (this.logs.length > this.MAX_LOG_SIZE) {
             this.logs.shift();

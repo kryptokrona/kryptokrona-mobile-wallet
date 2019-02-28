@@ -49,7 +49,7 @@ export class LoggingScreen extends React.Component {
     }
 
     componentDidMount() {
-        this.interval = setInterval(() => this.tick(), 1000);
+        this.interval = setInterval(() => this.tick(), 10000);
     }
 
     componentWillUnmount() {
@@ -347,7 +347,7 @@ export class SettingsScreen extends React.Component {
                             },
                             onClick: () => { 
                                 Linking.openURL(Config.repoLink)
-                                       .catch((err) => console.log('Failed to open url: ' + err))
+                                       .catch((err) => Globals.logger.addLogMessage('Failed to open url: ' + err))
                             },
                         },
                         {

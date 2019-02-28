@@ -176,7 +176,7 @@ export class ImportSeedScreen extends React.Component {
 
         if (error) {
             /* TODO: Report to user */
-            console.log('Failed to import wallet: ' + error.toString());
+            Globals.logger.addLogMessage('Failed to import wallet: ' + error.toString());
             this.props.navigation.navigate('Login');
         }
 
@@ -443,7 +443,7 @@ export class ImportKeysScreen extends React.Component {
 
         if (error) {
             /* TODO: Report to user */
-            console.log('Failed to import wallet: ' + error.toString());
+            Globals.logger.addLogMessage('Failed to import wallet: ' + error.toString());
             this.props.navigation.navigate('Login');
         }
 

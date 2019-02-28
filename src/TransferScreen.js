@@ -254,7 +254,7 @@ export class TransferScreen extends React.Component {
     }
 
     componentDidMount() {
-        this.interval = setInterval(() => this.tick(), 1000);
+        this.interval = setInterval(() => this.tick(), 10000);
     }
 
     componentWillUnmount() {

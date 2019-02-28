@@ -129,7 +129,7 @@ export class TransactionDetailsScreen extends React.Component {
                         title='View on Block Explorer'
                         onPress={() => {
                             Linking.openURL(Config.explorerBaseURL + this.state.transaction.hash)
-                                   .catch((err) => console.log('Failed to open url: ' + err));
+                                   .catch((err) => Globals.logger.addLogMessage('Failed to open url: ' + err));
                         }}
                         color={Config.theme.primaryColour}
                     />
@@ -163,12 +163,37 @@ export class TransactionsScreen extends React.Component {
             walletHeight,
             networkHeight,
         };
+
+        /* Only update transactions list when transaction is sent/received.
+           With lots of transactions, it can be very inefficient to constantly
+           refetch. */
+        Globals.wallet.on('transaction', () => {
+            this.updateTransactions();
+        });
+
+        /* When we create a transaction, it is in pending state, which we
+           want to display. The on('transaction') will be triggered when it
+           gets scanned by the wallet, updating it to confirmed. */
+        Globals.wallet.on('createdtx', () => {
+            this.updateTransactions();
+        });
+    }
+
+    updateTransactions() {
+        /* Don't display fusions */
+        const transactions = Globals.wallet.getTransactions().filter((x) => x.totalAmount() !== 0);
+
+        this.setState({
+            numTransactions: transactions.length,
+            transactions,
+        });
     }
 
     tick() {
-        /* Small optimization to prevent us fetching a ton of data constantly */
         const numTransactions = Globals.wallet.getNumTransactions();
 
+        /* If we have no transactions, update the heights, to display the
+           not sent / not synced msg */
         if (numTransactions === 0) {
             const [walletHeight, localHeight, networkHeight] = Globals.wallet.getSyncStatus();
 
@@ -177,18 +202,10 @@ export class TransactionsScreen extends React.Component {
                 networkHeight,
             });
         }
-
-        /* Don't display fusions */
-        const transactions = Globals.wallet.getTransactions().filter((x) => x.totalAmount() !== 0);
-
-        this.setState({
-            numTransactions,
-            transactions,
-        });
     }
 
     componentDidMount() {
-        this.interval = setInterval(() => this.tick(), 1000);
+        this.interval = setInterval(() => this.tick(), 10000);
     }
 
     componentWillUnmount() {
