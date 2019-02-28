@@ -32,26 +32,5 @@ export class Spinner extends React.Component {
                 />
             </Animated.View>
         );
-
-        /* This gives a view where you have two components, one which spins,
-           and one which doesn't. You can use this to make just the hexagon
-           spin, or just the logo spin, whatever.
-        return(
-            <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                <Animated.View style={{transform: [{rotate: rotation}], justifyContent: 'center', alignItems: 'center'}}>
-                    <Image
-                        source={require('../assets/img/spinner-outer.png')}
-                        style={{resizeMode: 'contain', width: 200, height: 200}}
-                    />
-                </Animated.View>
-                <View style={{position: 'absolute', justifyContent: 'center', alignItems: 'center'}}>
-                    <Image
-                        source={require('../assets/img/spinner-inner.png')}
-                        style={{resizeMode: 'contain', width: 200, height: 200}}
-                    />
-                </View>
-            </View>
-        );
-        */
     }
 }
