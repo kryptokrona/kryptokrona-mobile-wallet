@@ -16,7 +16,6 @@ import { saveToDatabase } from './Database';
 export function initBackgroundSync() {
     BackgroundFetch.configure({
         minimumFetchInterval: 15, // <-- minutes (15 is minimum allowed)
-        stopOnTerminate: false,   // <-- Android-only,
     }, async () => {
         await backgroundSync();
     }, (error) => {
