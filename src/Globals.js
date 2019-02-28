@@ -2,10 +2,17 @@
 //
 // Please see the included LICENSE file for more information.
 
-import { NetInfo } from 'react-native';
+import { NetInfo, Platform } from 'react-native';
+import { LogLevel } from 'turtlecoin-wallet-backend';
 
+import Config from './Config';
+import { Logger } from './Logger';
 import { getCoinPriceFromAPI } from './Currency';
-import { loadPreferencesFromDatabase, loadPayeeDataFromDatabase } from './Database';
+import { processBlockOutputs } from './NativeCode';
+
+import {
+    saveToDatabase, loadPreferencesFromDatabase, loadPayeeDataFromDatabase
+} from './Database';
 
 class globals {
     constructor() {
@@ -31,12 +38,15 @@ class globals {
 
         /* People in our address book */
         this.payees = [];
+
+        this.logger = new Logger();
     }
 
     reset() {
         this.wallet = undefined;
         this.pinCode = undefined;
         this.backgroundSaveTimer = undefined;
+        this.logger = new Logger();
 
         NetInfo.removeEventListener('connectionChange', updateConnection);
     }
@@ -63,16 +73,55 @@ export async function initGlobals() {
         Globals.preferences = prefs;
     }
 
-    const netInfo = NetInfo.getConnectionInfo();
-    updateConnection(netInfo);
-
-    NetInfo.addEventListener('connectionChange', updateConnection);
-
     Globals.wallet.scanCoinbaseTransactions(Globals.preferences.scanCoinbaseTransactions);
 
     const payees = await loadPayeeDataFromDatabase();
 
     if (payees !== undefined) {
         Globals.payees = payees;
+    }
+
+    Globals.wallet.on('incomingtx', (transaction) => {
+        sendNotification(transaction);
+    });
+
+    Globals.wallet.setLoggerCallback((prettyMessage, message) => {
+        Globals.logger.addLogMessage(message);
+    });
+
+    Globals.wallet.setLogLevel(LogLevel.DEBUG);
+
+    /* Don't launch if already started */
+    if (Globals.backgroundSaveTimer === undefined) {
+        Globals.backgroundSaveTimer = setInterval(backgroundSave, Config.walletSaveFrequency);
+    }
+
+    /* Use our native C++ func to process blocks, provided we're on android */
+    /* TODO: iOS support */
+    if (Platform.OS === 'android') {
+        Globals.wallet.setBlockOutputProcessFunc(processBlockOutputs);
+    }
+
+    const netInfo = NetInfo.getConnectionInfo();
+
+    /* Start syncing */
+    if (!(Globals.preferences.limitData && connection.type === 'cellular')) {
+        Globals.wallet.start();
+    }
+
+    NetInfo.addEventListener('connectionChange', updateConnection);
+}
+
+/**
+ * Save wallet in background
+ */
+function backgroundSave() {
+    console.log('Saving wallet...');
+
+    try {
+        saveToDatabase(Globals.wallet, Globals.pinCode);
+        console.log('Save complete.');
+    } catch (err) {
+        console.log('Failed to background save: ' + err);
     }
 }

@@ -20,10 +20,13 @@ import { DisclaimerScreen } from './DisclaimerScreen';
 import { SetPinScreen, RequestPinScreen } from './Pin.js';
 import { WalletOptionScreen, CreateWalletScreen } from './CreateScreen';
 import { TransactionsScreen, TransactionDetailsScreen } from './TransactionsScreen';
-import { SettingsScreen, SwapCurrencyScreen, ExportKeysScreen } from './SettingsScreen';
 
 import {
-    PickMonthScreen, PickBlockHeightScreen, PickExactBlockHeightScreen
+    SettingsScreen, SwapCurrencyScreen, ExportKeysScreen, LoggingScreen,
+} from './SettingsScreen';
+
+import {
+    PickMonthScreen, PickBlockHeightScreen, PickExactBlockHeightScreen,
 } from './ScanHeightScreen';
 
 import {
@@ -33,7 +36,7 @@ import {
 
 import { 
     ImportWalletScreen, ImportKeysOrSeedScreen, ImportSeedScreen, 
-    ImportKeysScreen
+    ImportKeysScreen,
 } from './ImportScreen';
 
 /* Transactions screen and more info on transactions */
@@ -88,6 +91,7 @@ const SettingsNavigator = createStackNavigator(
         Settings: SettingsScreen,
         SwapCurrency: SwapCurrencyScreen,
         ExportKeys: ExportKeysScreen,
+        Logging: LoggingScreen,
     },
     {
         initialRouteName: 'Settings',

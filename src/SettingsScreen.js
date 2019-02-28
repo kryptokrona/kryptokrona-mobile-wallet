@@ -16,7 +16,7 @@ import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
 import { deleteUserPinCode } from '@haskkor/react-native-pincode';
 
-import { View, FlatList, Alert, Text, Linking, NetInfo } from 'react-native';
+import { View, FlatList, Alert, Text, Linking, NetInfo, ScrollView } from 'react-native';
 
 import Config from './Config';
 import ListItem from './ListItem';
@@ -28,6 +28,58 @@ import { Globals } from './Globals';
 import { SeedComponent, CopyButton } from './SharedComponents';
 import { navigateWithDisabledBack, toastPopUp } from './Utilities';
 import { setHaveWallet, savePreferencesToDatabase } from './Database';
+
+export class LoggingScreen extends React.Component {
+    static navigationOptions = {
+        title: 'Logs',
+    };
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            logs: Globals.logger.getLogs(),
+        }
+    }
+
+    tick() {
+        this.setState({
+            logs: Globals.logger.getLogs(),
+        });
+    }
+
+    componentDidMount() {
+        this.interval = setInterval(() => this.tick(), 1000);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.interval);
+    }
+
+    render() {
+        return(
+            <ScrollView
+                ref={ref => this.scrollView = ref}
+                onContentSizeChange={(contentWidth, contentHeight) => {
+                    this.scrollView.scrollToEnd({animated: true});
+                }}
+                style={{
+                    marginTop: 50,
+                    marginBottom: 10,
+                    marginHorizontal: 10,
+                }}
+            >
+                {this.state.logs.map((value, index) => {
+                    return(
+                        <Text key={index}>
+                            {value}
+                        </Text>
+                    );
+                })}
+            </ScrollView>
+        );
+    }
+}
 
 export class ExportKeysScreen extends React.Component {
     static navigationOptions = {
@@ -296,6 +348,17 @@ export class SettingsScreen extends React.Component {
                             onClick: () => { 
                                 Linking.openURL(Config.repoLink)
                                        .catch((err) => console.log('Failed to open url: ' + err))
+                            },
+                        },
+                        {
+                            title: 'View logs',
+                            description: 'View debugging information',
+                            icon: {
+                                iconName: 'note-text',
+                                IconType: MaterialCommunityIcons,
+                            },
+                            onClick: () => {
+                                this.props.navigation.navigate('Logging');
                             },
                         },
                         {
