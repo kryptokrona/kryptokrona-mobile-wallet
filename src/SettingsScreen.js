@@ -139,42 +139,63 @@ export class ExportKeysScreen extends React.Component {
                 <View style={{
                     alignItems: 'flex-start',
                     justifyContent: 'flex-start',
-                    flex: 1,
+                    marginTop: 10,
+                    marginLeft: 30,
                 }}>
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 10, marginTop: 20, marginLeft: 30 }}>
+                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 10 }}>
                         Private Spend Key:
                     </Text>
+                    <View style={{
+                        marginTop: 10,
+                        marginRight: 30,
+                        borderWidth: 1,
+                        borderColor: Config.theme.primaryColour,
+                        padding: 10,
+                    }}>
+                        <Text style={{
+                            fontSize: 12,
+                        }}>
+                            {this.state.privateSpendKey}
+                        </Text>
 
-                    <TextTicker
-                        style={{ color: Config.theme.primaryColour, fontSize: 20, marginLeft: 30 }}
-                        marqueeDelay={1000}
-                        duration={220 * 64}
-                    >
-                        {this.state.privateSpendKey}
-                    </TextTicker>
+                    </View>
 
                     <CopyButton
                         data={this.state.privateSpendKey}
                         name='Private Spend Key'
-                        style={{ marginLeft: 23 }}
+                        style={{ marginLeft: 0 }}
                     />
 
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 10, marginTop: 30, marginLeft: 30 }}>
+                </View>
+
+                <View style={{
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
+                    marginTop: 10,
+                    marginLeft: 30,
+                }}>
+                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 10 }}>
                         Private View Key:
                     </Text>
+                    <View style={{
+                        marginTop: 10,
+                        marginRight: 30,
+                        borderWidth: 1,
+                        borderColor: Config.theme.primaryColour,
+                        padding: 10,
+                    }}>
+                        <Text style={{
+                            fontSize: 12,
+                        }}>
+                            {this.state.privateViewKey}
+                        </Text>
 
-                    <TextTicker
-                        style={{ color: Config.theme.primaryColour, fontSize: 20, marginLeft: 30 }}
-                        marqueeDelay={1000}
-                        duration={220 * 64}
-                    >
-                        {this.state.privateViewKey}
-                    </TextTicker>
+                    </View>
 
                     <CopyButton
                         data={this.state.privateViewKey}
                         name='Private View Key'
-                        style={{ marginLeft: 23 }}
+                        style={{ marginLeft: 0 }}
                     />
 
                 </View>
