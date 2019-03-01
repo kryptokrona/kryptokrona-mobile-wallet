@@ -98,7 +98,7 @@ export function getArrivalTime() {
     const minutes = Config.blockTargetTime >= 60;
 
     if (minutes) {
-        return Math.ceiling(Config.blockTargetTime / 60) + ' minutes!';
+        return Math.ceil(Config.blockTargetTime / 60) + ' minutes!';
     } else {
         return Config.blockTargetTime + ' seconds!';
     }
