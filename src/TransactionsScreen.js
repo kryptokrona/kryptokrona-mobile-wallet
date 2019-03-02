@@ -113,7 +113,7 @@ export class TransactionDetailsScreen extends React.Component {
 
                     {this.state.complete && <ItemDescription
                         title='Block Height'
-                        item={this.state.transaction.blockHeight.toString()}/>}
+                        item={this.state.transaction.blockHeight.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}/>}
                     
                     <ItemDescription
                         title='Hash'
