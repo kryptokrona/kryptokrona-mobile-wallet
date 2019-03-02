@@ -42,6 +42,8 @@ export async function getCoinPriceFromAPI() {
 
         savePriceDataToDatabase(coinData);
 
+        Globals.logger.addLogMessage('Updated coin price from API');
+
         return coinData;
     } catch (error) {
         Globals.logger.addLogMessage('Failed to get price from API: ' + error);

@@ -62,8 +62,6 @@ function updateConnection(connection) {
 /* Note... you probably don't want to await this function. Can block for a while
    if no internet. */
 export async function initGlobals() {
-    Globals.coinPrice = await getCoinPriceFromAPI();
-
     const prefs = await loadPreferencesFromDatabase();
 
     if (prefs !== undefined) {

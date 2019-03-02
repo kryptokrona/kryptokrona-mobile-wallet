@@ -22,13 +22,13 @@ import { prettyPrintAmount, LogLevel } from 'turtlecoin-wallet-backend';
 import Config from './Config';
 
 import { Styles } from './Styles';
-import { coinsToFiat } from './Currency';
 import { ProgressBar } from './ProgressBar';
 import { saveToDatabase } from './Database';
 import { Globals, initGlobals } from './Globals';
 import { processBlockOutputs } from './NativeCode';
 import { initBackgroundSync } from './BackgroundSync';
 import { CopyButton, OneLineText } from './SharedComponents';
+import { coinsToFiat, getCoinPriceFromAPI } from './Currency';
 
 function init() {
     Globals.wallet.scanCoinbaseTransactions(Globals.preferences.scanCoinbaseTransactions);
@@ -198,18 +198,32 @@ class BalanceComponent extends React.Component {
     constructor(props) {
         super(props);
 
+        const [unlockedBalance, lockedBalance] = Globals.wallet.getBalance();
+
         this.state = {
-            unlockedBalance: 0,
-            lockedBalance: 0,
-            coinValue: 0,
+            unlockedBalance,
+            lockedBalance,
             expandedBalance: false,
         };
+
+        this.counter = 0;
 
         this.tick();
     }
 
     tick() {
         (async () => {
+            /* Due to a limitation in react native, setting large values for
+               setInterval() is discouraged. Instead, piggy back of the existing
+               10000ms timer (10s), and refresh the coin price every 30 minutes. */
+            if (this.counter % 180 === 0) {
+                const tmpPrice = await getCoinPriceFromAPI();
+
+                if (tmpPrice !== undefined) {
+                    Globals.coinPrice = tmpPrice;
+                }
+            }
+
             const [unlockedBalance, lockedBalance] = Globals.wallet.getBalance();
 
             const coinValue = await coinsToFiat(
@@ -221,6 +235,8 @@ class BalanceComponent extends React.Component {
                 lockedBalance,
                 coinValue,
             });
+
+            this.counter++;
         })();
     }
 
