@@ -13,7 +13,15 @@ import { Button } from 'react-native-elements';
 import Config from './Config';
 
 import { Styles } from './Styles';
-import { toastPopUp, TextFixedWidth } from './Utilities';
+import { toastPopUp } from './Utilities';
+
+export function TextFixedWidth({ children }) {
+    const fontFamily = Platform.OS === 'ios' ? 'Courier' : 'monospace'
+
+    return (
+        <Text style={{fontFamily, fontSize: 12}}>{ children }</Text>
+    )
+}
 
 /**
  * Display the seed in a nice way

@@ -2,6 +2,7 @@
 //
 // Please see the included LICENSE file for more information.
 
+/* TODO: replace with node fetch */
 const request = require('request-promise-native');
 
 import Config from './Config';

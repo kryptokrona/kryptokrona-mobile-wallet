@@ -17,7 +17,7 @@ import Config from './Config';
 import { MainScreen } from './MainScreen';
 import { SplashScreen } from './SplashScreen';
 import { DisclaimerScreen } from './DisclaimerScreen';
-import { SetPinScreen, RequestPinScreen } from './Pin.js';
+import { SetPinScreen, RequestPinScreen } from './Pin';
 import { WalletOptionScreen, CreateWalletScreen } from './CreateScreen';
 import { TransactionsScreen, TransactionDetailsScreen } from './TransactionsScreen';
 

@@ -26,14 +26,6 @@ export function toastPopUp(message) {
     ToastAndroid.show(message, ToastAndroid.SHORT);
 }
 
-export function TextFixedWidth({ children }) {
-    const fontFamily = Platform.OS === 'ios' ? 'Courier' : 'monospace'
-
-    return (
-        <Text style={{fontFamily, fontSize: 12}}>{ children }</Text>
-    )
-}
-
 /* Navigate to a route, resetting the stack, so the user cannot go back.
    We want to do this so when we go from the splash screen to the menu screen,
    the user can't return, and get stuck there. */
