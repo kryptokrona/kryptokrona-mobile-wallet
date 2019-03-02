@@ -155,6 +155,7 @@ const PreferencesSchema = {
         notificationsEnabled: 'bool',
         scanCoinbaseTransactions: 'bool',
         limitData: 'bool',
+        darkMode: 'bool',
     }
 }
 

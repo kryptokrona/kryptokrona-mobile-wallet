@@ -8,6 +8,7 @@ import Realm from 'realm';
 
 import TextTicker from 'react-native-text-ticker';
 
+import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
@@ -356,6 +357,24 @@ export class SettingsScreen extends React.Component {
                                 }
 
                                 toastPopUp(Globals.preferences.limitData ? 'Data limiting enabled' : 'Data limiting disabled');
+                                savePreferencesToDatabase(Globals.preferences);
+                            },
+                        },
+                        {
+                            title: this.state.darkMode ? 'Enable light mode' : 'Enable dark mode',
+                            description: this.state.darkMode ? 'Enable light mode if you like eye strain' : 'Pretend you\'re a leet h4xor with dark mode',
+                            icon: {
+                                iconName: this.state.darkMode ? 'light-up' : 'light-down',
+                                IconType: Entypo,
+                            },
+                            onClick: () => {
+                                Globals.preferences.darkMode = !Globals.preferences.darkMode;
+
+                                this.setState({
+                                    darkMode: Globals.preferences.darkMode,
+                                });
+
+                                toastPopUp(Globals.preferences.darkMode ? 'Dark mode enabled' : 'Light mode enabled');
                                 savePreferencesToDatabase(Globals.preferences);
                             },
                         },

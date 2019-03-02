@@ -31,6 +31,7 @@ class globals {
             notificationsEnabled: true,
             scanCoinbaseTransactions: false,
             limitData: false,
+            darkMode: false,
         };
 
         /* People in our address book */
