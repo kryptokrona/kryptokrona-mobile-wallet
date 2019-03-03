@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 
 import React from 'react';
 
-import { View, Clipboard, Text } from 'react-native';
+import { Platform, View, Clipboard, Text } from 'react-native';
 
 import { Button } from 'react-native-elements';
 
