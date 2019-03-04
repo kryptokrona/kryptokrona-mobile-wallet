@@ -35,15 +35,16 @@ export class WalletOptionScreen extends React.Component {
 
     render() {
         return(
-            /* Fade in over 1.5 secs */
-            <View startValue={0.2} style={{ flex: 1, justifyContent: 'flex-start'}}>
-
+            <View style={{ flex: 1, justifyContent: 'flex-start', backgroundColor: this.props.screenProps.theme.backgroundColour }}>
                 <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 50}}>
                     <Image
-                        source={require('../assets/img/logo.png')}
+                        source={this.props.screenProps.theme.logo}
                         style={Styles.logo}
                     />
-                    <Text style={{fontSize: 20}}>
+                    <Text style={{
+                        fontSize: 20,
+                        color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                    }}>
                         Fast. Safe. Easy.
                     </Text>
                 </View>
@@ -53,7 +54,7 @@ export class WalletOptionScreen extends React.Component {
                         title='Create New Wallet'
                         /* Request a pin for the new wallet */
                         onPress={() => this.props.navigation.navigate('Disclaimer', { nextRoute: 'CreateWallet' })}
-                        color={Config.theme.primaryColour}
+                        color={this.props.screenProps.theme.primaryColour}
                     />
                 </View>
 
@@ -62,7 +63,7 @@ export class WalletOptionScreen extends React.Component {
                         title='Recover Wallet'
                         /* Get the import data */
                         onPress={() => this.props.navigation.navigate('Disclaimer', { nextRoute: 'ImportWallet' })}
-                        color={Config.theme.primaryColour}
+                        color={this.props.screenProps.theme.primaryColour}
                     />
                 </View>
 
@@ -91,8 +92,7 @@ export class CreateWalletScreen extends React.Component {
 
     render() {
         return(
-            <View style={{ flex: 1, justifyContent: 'flex-start' }}>
-
+            <View style={{ flex: 1, justifyContent: 'flex-start', backgroundColor: this.props.screenProps.theme.backgroundColour }}>
                 <View style={{
                     alignItems: 'flex-start',
                     justifyContent: 'flex-start',
@@ -100,11 +100,11 @@ export class CreateWalletScreen extends React.Component {
                     marginLeft: 30,
                     marginRight: 10,
                 }}>
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 40 }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 40 }}>
                         Your wallet has been created!
                     </Text>
 
-                    <Text style={{ fontSize: 15, marginBottom: 20 }}>
+                    <Text style={{ fontSize: 15, marginBottom: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                         Please save the following backup words somewhere safe.
                     </Text>
 
@@ -118,11 +118,13 @@ export class CreateWalletScreen extends React.Component {
                     <SeedComponent
                         seed={Globals.wallet.getMnemonicSeed()[0]}
                         borderColour={'red'}
+                        {...this.props}
                     />
 
                     <BottomButton
                         title="Continue"
                         onPress={() => this.props.navigation.navigate('Home')} 
+                        {...this.props}
                     />
                 </View>
 

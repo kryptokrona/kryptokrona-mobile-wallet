@@ -7,6 +7,8 @@ import Entypo from 'react-native-vector-icons/Entypo';
 
 import React from 'react';
 
+import { View } from 'react-native';
+
 import {
     createStackNavigator, createAppContainer, createBottomTabNavigator,
     createSwitchNavigator,
@@ -14,10 +16,13 @@ import {
 
 import Config from './Config';
 
+import { Themes } from './Themes';
+import { Globals } from './Globals';
 import { MainScreen } from './MainScreen';
 import { SplashScreen } from './SplashScreen';
 import { DisclaimerScreen } from './DisclaimerScreen';
 import { SetPinScreen, RequestPinScreen } from './Pin';
+import { loadPreferencesFromDatabase } from './Database';
 import { WalletOptionScreen, CreateWalletScreen } from './CreateScreen';
 import { TransactionsScreen, TransactionDetailsScreen } from './TransactionsScreen';
 
@@ -58,6 +63,15 @@ const TransactionNavigator = createStackNavigator(
         },
     }
 );
+
+TransactionNavigator.navigationOptions = ({ navigation, screenProps }) => ({
+    tabBarOptions: {
+        activeBackgroundColor: screenProps.theme.backgroundColour,
+        inactiveBackgroundColor: screenProps.theme.backgroundColour,
+        activeTintColor: screenProps.theme.primaryColour,
+        inactiveTintColor: screenProps.theme.slightlyMoreVisibleColour,
+    }
+});
 
 const TransferNavigator = createStackNavigator(
     {
@@ -106,6 +120,15 @@ const SettingsNavigator = createStackNavigator(
         },
     }
 );
+
+SettingsNavigator.navigationOptions = ({ navigation, screenProps }) => ({
+    tabBarOptions: {
+        activeBackgroundColor: screenProps.theme.backgroundColour,
+        inactiveBackgroundColor: screenProps.theme.backgroundColour,
+        activeTintColor: screenProps.theme.primaryColour,
+        inactiveTintColor: screenProps.theme.slightlyMoreVisibleColour,
+    }
+});
 
 /* Main screen for a logged in wallet */
 const HomeNavigator = createBottomTabNavigator(
@@ -217,8 +240,52 @@ const AppContainer = createAppContainer(createSwitchNavigator(
     }
 ));
 
+/* TODO: Need to load preferences to set theme */
 export default class App extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            loaded: false,
+            screenProps: {
+                theme: Themes[Globals.preferences.theme],
+            },
+        }
+
+        this.init();
+    }
+
+    async init() {
+        const prefs = await loadPreferencesFromDatabase();
+
+        if (prefs !== undefined) {
+            Globals.preferences = prefs;
+        }
+
+        this.setState({
+            screenProps: {
+                theme: Themes[Globals.preferences.theme],
+            },
+            loaded: true,
+        });
+
+        Globals.updateTheme = () => {
+            this.setState({
+                screenProps: {
+                    theme: Themes[Globals.preferences.theme],
+                }
+            });
+        };
+    }
+
     render() {
-        return <AppContainer/>;
+        const loadedComponent = <AppContainer screenProps={this.state.screenProps}/>;
+        const notLoadedComponent = <View></View>;
+
+        return(
+            <View style={{ flex: 1 }}>
+                {this.state.loaded ? loadedComponent : notLoadedComponent}
+            </View>
+        );
     }
 }

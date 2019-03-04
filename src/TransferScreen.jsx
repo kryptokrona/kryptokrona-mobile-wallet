@@ -70,7 +70,7 @@ class AmountInput extends React.Component {
                     marginBottom: this.props.marginBottom || 0,
                 }}
                 inputContainerStyle={{
-                    borderColor: 'lightgrey',
+                    borderColor: this.props.screenProps.theme.notVeryVisibleColour,
                     borderWidth: 1,
                     borderRadius: 2,
                 }}
@@ -78,15 +78,16 @@ class AmountInput extends React.Component {
                 labelStyle={{
                     marginBottom: 5,
                     marginRight: 2,
+                    color: this.props.screenProps.theme.slightlyMoreVisibleColour,
                 }}
                 rightIcon={
-                    <Text style={{ fontSize: 30, marginRight: 10, color: Config.theme.primaryColour }}>
+                    <Text style={{ fontSize: 30, marginRight: 10, color: this.props.screenProps.theme.primaryColour }}>
                         {Config.ticker}
                     </Text>
                 }
                 keyboardType={'number-pad'}
                 inputStyle={{
-                    color: Config.theme.primaryColour,
+                    color: this.props.screenProps.theme.primaryColour,
                     fontSize: 30,
                     marginLeft: 5
                 }}
@@ -131,12 +132,12 @@ class CrossButton extends React.Component {
  * Send a transaction
  */
 export class TransferScreen extends React.Component {
-    static navigationOptions = ({ navigation }) => {
+    static navigationOptions = ({ navigation, screenProps }) => {
         return {
             title: '',
             headerLeft: (
                 <HeaderBackButton
-                    tintColor={Config.theme.primaryColour}
+                    tintColor={screenProps.theme.primaryColour}
                     onPress={() => { navigation.navigate('Main') }}
                 />
             ),
@@ -264,91 +265,100 @@ export class TransferScreen extends React.Component {
     render() {
         return(
             <View style={{
-                alignItems: 'flex-start',
-                justifyContent: 'flex-start',
+                backgroundColor: this.props.screenProps.theme.backgroundColour,
                 flex: 1,
-                marginTop: 60,
             }}>
-
-                <Text style={{
-                    color: Config.theme.primaryColour,
-                    fontSize: 25,
-                    marginBottom: 40,
-                    marginLeft: 30
+                <View style={{
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
+                    flex: 1,
+                    marginTop: 60,
+                    backgroundColor: this.props.screenProps.theme.backgroundColour,
                 }}>
-                    How much {Config.coinName} do you want to send?
-                </Text>
 
-                <AmountInput
-                    label={'You send'}
-                    value={this.state.youSendAmount}
-                    onChangeText={(text) => {
-                        this.setState({
-                            youSendAmount: text,
-                        });
+                    <Text style={{
+                        color: this.props.screenProps.theme.primaryColour,
+                        fontSize: 25,
+                        marginBottom: 40,
+                        marginLeft: 30
+                    }}>
+                        How much {Config.coinName} do you want to send?
+                    </Text>
 
-                        this.convertSentToReceived(text);
-
-                        this.checkErrors(text);
-                    }}
-                    errorMessage={this.state.errMsg}
-                    marginBottom={40}
-                />
-
-                <AmountInput
-                    label={'Recipient gets'}
-                    value={this.state.recipientGetsAmount}
-                    onChangeText={(text) => {
-                        this.setState({
-                            recipientGetsAmount: text,
-                        });
-
-                        this.convertReceivedToSent(text);
-                        this.checkErrors(text);
-                    }}
-                />
-
-                <View style={{ marginLeft: '70%' }}>
-                    <Button
-                        title="Send Max"
-                        onPress={() => {
+                    <AmountInput
+                        label={'You send'}
+                        value={this.state.youSendAmount}
+                        onChangeText={(text) => {
                             this.setState({
-                                youSendAmount: this.state.unlockedBalanceHuman,
+                                youSendAmount: text,
                             });
 
-                            this.convertSentToReceived(this.state.unlockedBalanceHuman);
+                            this.convertSentToReceived(text);
 
-                            this.checkErrors(this.state.unlockedBalanceHuman);
+                            this.checkErrors(text);
                         }}
-                        titleStyle={{
-                            color: Config.theme.primaryColour,
-                            textDecorationLine: 'underline',
-                        }}
-                        type="clear"
+                        errorMessage={this.state.errMsg}
+                        marginBottom={40}
+                        {...this.props}
                     />
+
+                    <AmountInput
+                        label={'Recipient gets'}
+                        value={this.state.recipientGetsAmount}
+                        onChangeText={(text) => {
+                            this.setState({
+                                recipientGetsAmount: text,
+                            });
+
+                            this.convertReceivedToSent(text);
+                            this.checkErrors(text);
+                        }}
+                        {...this.props}
+                    />
+
+                    <View style={{ marginLeft: '70%' }}>
+                        <Button
+                            title="Send Max"
+                            onPress={() => {
+                                this.setState({
+                                    youSendAmount: this.state.unlockedBalanceHuman,
+                                });
+
+                                this.convertSentToReceived(this.state.unlockedBalanceHuman);
+
+                                this.checkErrors(this.state.unlockedBalanceHuman);
+                            }}
+                            titleStyle={{
+                                color: this.props.screenProps.theme.primaryColour,
+                                textDecorationLine: 'underline',
+                            }}
+                            type="clear"
+                        />
+                    </View>
+
+                    <Text style={{
+                        color: this.props.screenProps.theme.primaryColour,
+                        fontSize: 18,
+                        marginLeft: 30,
+                        marginTop: 20,
+                    }}>
+                        Should arrive in {getArrivalTime()}
+                    </Text>
+
+                    <BottomButton
+                        title="Continue"
+                        onPress={() => {
+                            this.props.navigation.navigate(
+                                'ChoosePayee', {
+                                    amount: this.state.feeInfo,
+                                }
+                            );
+                        }} 
+                        disabled={!this.state.continueEnabled}
+                        {...this.props}
+                    />
+
                 </View>
-
-                <Text style={{
-                    color: Config.theme.primaryColour,
-                    fontSize: 18,
-                    marginLeft: 30,
-                    marginTop: 20,
-                }}>
-                    Should arrive in {getArrivalTime()}
-                </Text>
-
-                <BottomButton
-                    title="Continue"
-                    onPress={() => {
-                        this.props.navigation.navigate(
-                            'ChoosePayee', {
-                                amount: this.state.feeInfo,
-                            }
-                        );
-                    }} 
-                    disabled={!this.state.continueEnabled}
-                />
-
             </View>
         );
     }
@@ -361,7 +371,10 @@ class AddressBook extends React.Component {
 
     render() {
         return(
-            <List style={{ marginBottom: 20 }}>
+            <List style={{
+                marginBottom: 20,
+                backgroundColor: this.props.screenProps.theme.backgroundColour
+            }}>
                 <FlatList
                     data={Globals.payees}
                     keyExtractor={item => item.nickname}
@@ -378,14 +391,23 @@ class AddressBook extends React.Component {
                                     height: 50,
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    backgroundColor: 'ghostwhite',
+                                    backgroundColor: this.props.screenProps.theme.iconColour,
                                     borderRadius: 45
                                 }}>
-                                    <Text style={[Styles.centeredText, { fontSize: 30, color: Config.theme.primaryColour }]}>
+                                    <Text style={[Styles.centeredText, { 
+                                        fontSize: 30,
+                                        color: this.props.screenProps.theme.primaryColour,
+                                    }]}>
                                         {item.nickname[0].toUpperCase()}
                                     </Text>
                                 </View>
                             }
+                            titleStyle={{
+                                color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                            }}
+                            subtitleStyle={{
+                                color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                            }}
                             onPress={() => {
                                 this.props.navigation.navigate(
                                     'Confirm', {
@@ -412,7 +434,11 @@ class ExistingPayees extends React.Component {
         const noPayeesComponent =
             <View>
                 <Hr/>
-                <Text style={{ color: Config.theme.primaryColour, marginTop: 10, fontSize: 16}}>
+                <Text style={{
+                    color: this.props.screenProps.theme.primaryColour,
+                    marginTop: 10,
+                    fontSize: 16
+                }}>
                     Your address book is empty! Add a new recipient above to populate it.
                 </Text>
             </View>
@@ -422,7 +448,10 @@ class ExistingPayees extends React.Component {
                 flex: 1,
                 width: '90%',
             }}>
-                <Text style={{ color: Config.theme.primaryColour, marginTop: 40 }}>
+                <Text style={{
+                    color: this.props.screenProps.theme.primaryColour,
+                    marginTop: 40
+                }}>
                     Address Book
                 </Text>
 
@@ -548,147 +577,155 @@ export class NewPayeeScreen extends React.Component {
     render() {
         return(
             <View style={{
-                alignItems: 'flex-start',
-                justifyContent: 'flex-start',
+                backgroundColor: this.props.screenProps.theme.backgroundColour,
                 flex: 1,
-                marginTop: 60,
             }}>
-                <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 40, marginLeft: 30 }}>
-                    New Payee
-                </Text>
+                <View style={{
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
+                    flex: 1,
+                    marginTop: 60,
+                }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 40, marginLeft: 30 }}>
+                        New Payee
+                    </Text>
 
-                <Input
-                    containerStyle={{
-                        width: '90%',
-                        marginLeft: 20,
-                        marginBottom: 30,
-                    }}
-                    inputContainerStyle={{
-                        borderColor: 'lightgrey',
-                        borderWidth: 1,
-                        borderRadius: 2,
-                    }}
-                    label={'Name of recipient'}
-                    labelStyle={{
-                        marginBottom: 5,
-                        marginRight: 2,
-                    }}
-                    inputStyle={{
-                        color: Config.theme.primaryColour,
-                        fontSize: 30,
-                        marginLeft: 5
-                    }}
-                    value={this.state.nickname}
-                    onChangeText={(text) => {
-                        this.setState({
-                            nickname: text,
-                        }, () => this.checkErrors());
-                    }}
-                    errorMessage={this.state.nicknameError}
-                />
+                    <Input
+                        containerStyle={{
+                            width: '90%',
+                            marginLeft: 20,
+                            marginBottom: 30,
+                        }}
+                        inputContainerStyle={{
+                            borderColor: this.props.screenProps.theme.notVeryVisibleColour,
+                            borderWidth: 1,
+                            borderRadius: 2,
+                        }}
+                        label={'Name of recipient'}
+                        labelStyle={{
+                            marginBottom: 5,
+                            marginRight: 2,
+                            color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                        }}
+                        inputStyle={{
+                            color: this.props.screenProps.theme.primaryColour,
+                            fontSize: 30,
+                            marginLeft: 5
+                        }}
+                        value={this.state.nickname}
+                        onChangeText={(text) => {
+                            this.setState({
+                                nickname: text,
+                            }, () => this.checkErrors());
+                        }}
+                        errorMessage={this.state.nicknameError}
+                    />
 
-                <Input
-                    containerStyle={{
-                        width: '90%',
-                        marginLeft: 20,
-                    }}
-                    inputContainerStyle={{
-                        borderColor: 'lightgrey',
-                        borderWidth: 1,
-                        borderRadius: 2,
-                    }}
-                    maxLength={Config.integratedAddressLength}
-                    label={'Recipient\'s address'}
-                    labelStyle={{
-                        marginBottom: 5,
-                        marginRight: 2,
-                    }}
-                    inputStyle={{
-                        color: Config.theme.primaryColour,
-                        fontSize: 15,
-                        marginLeft: 5
-                    }}
-                    value={this.state.address}
-                    onChangeText={(text) => {
-                        this.setState({
-                            address: text,
-                        }, () => this.checkErrors());
-                    }}
-                    errorMessage={this.state.addressError}
-                />
+                    <Input
+                        containerStyle={{
+                            width: '90%',
+                            marginLeft: 20,
+                        }}
+                        inputContainerStyle={{
+                            borderColor: this.props.screenProps.theme.notVeryVisibleColour,
+                            borderWidth: 1,
+                            borderRadius: 2,
+                        }}
+                        maxLength={Config.integratedAddressLength}
+                        label={'Recipient\'s address'}
+                        labelStyle={{
+                            marginBottom: 5,
+                            marginRight: 2,
+                            color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                        }}
+                        inputStyle={{
+                            color: this.props.screenProps.theme.primaryColour,
+                            fontSize: 15,
+                            marginLeft: 5
+                        }}
+                        value={this.state.address}
+                        onChangeText={(text) => {
+                            this.setState({
+                                address: text,
+                            }, () => this.checkErrors());
+                        }}
+                        errorMessage={this.state.addressError}
+                    />
 
-                <View style={{ marginLeft: '63%' }}>
-                    <Button
-                        title='Scan QR Code'
+                    <View style={{ marginLeft: '63%' }}>
+                        <Button
+                            title='Scan QR Code'
+                            onPress={() => {
+                                this.props.navigation.navigate('QrScanner', { setAddress: this.setAddressFromQrCode.bind(this) } );
+                            }}
+                            titleStyle={{
+                                color: this.props.screenProps.theme.primaryColour,
+                                textDecorationLine: 'underline',
+                            }}
+                            type="clear"
+                        />
+                    </View>
+
+                    <Input
+                        containerStyle={{
+                            width: '90%',
+                            marginLeft: 20,
+                        }}
+                        inputContainerStyle={{
+                            borderColor: this.props.screenProps.theme.notVeryVisibleColour,
+                            borderWidth: 1,
+                            borderRadius: 2,
+                        }}
+                        maxLength={64}
+                        label={'Recipient\'s Payment ID (optional)'}
+                        labelStyle={{
+                            marginBottom: 5,
+                            marginRight: 2,
+                            color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                        }}
+                        inputStyle={{
+                            color: this.props.screenProps.theme.primaryColour,
+                            fontSize: 15,
+                            marginLeft: this.state.paymentIDEnabled ? 5 : 0,
+                            backgroundColor: this.state.paymentIDEnabled ? this.props.screenProps.theme.backgroundColour : this.props.screenProps.theme.disabledColour,
+                        }}
+                        value={this.state.paymentID}
+                        onChangeText={(text) => {
+                            this.setState({
+                                paymentID: text
+                            }, () => this.checkErrors());
+                        }}
+                        editable={this.state.paymentIDEnabled}
+                        errorMessage={this.state.paymentIDError}
+                    />
+
+                    <BottomButton
+                        title="Continue"
                         onPress={() => {
-                            this.props.navigation.navigate('QrScanner', { setAddress: this.setAddressFromQrCode.bind(this) } );
+                            const payee = {
+                                nickname: this.state.nickname,
+                                address: this.state.address,
+                                paymentID: this.state.paymentID,
+                            };
+
+                            /* Add payee to global payee store */
+                            Globals.payees.push(payee);
+                            
+                            /* Save payee to DB */
+                            savePayeeToDatabase(payee);
+
+                            this.props.navigation.navigate(
+                                'Confirm', {
+                                    payee: this.state.nickname,
+                                    amount: this.props.navigation.state.params.amount,
+                                    choosePayee: this.props.navigation.state.key,
+                                }
+                            );
                         }}
-                        titleStyle={{
-                            color: Config.theme.primaryColour,
-                            textDecorationLine: 'underline',
-                        }}
-                        type="clear"
+                        disabled={!this.state.continueEnabled}
+                        {...this.props}
                     />
                 </View>
-
-                <Input
-                    containerStyle={{
-                        width: '90%',
-                        marginLeft: 20,
-                    }}
-                    inputContainerStyle={{
-                        borderColor: 'lightgrey',
-                        borderWidth: 1,
-                        borderRadius: 2,
-                    }}
-                    maxLength={64}
-                    label={'Recipient\'s Payment ID (optional)'}
-                    labelStyle={{
-                        marginBottom: 5,
-                        marginRight: 2,
-                    }}
-                    inputStyle={{
-                        color: Config.theme.primaryColour,
-                        fontSize: 15,
-                        marginLeft: this.state.paymentIDEnabled ? 5 : 0,
-                        backgroundColor: this.state.paymentIDEnabled ? 'white' : '#F2F2F2',
-                    }}
-                    value={this.state.paymentID}
-                    onChangeText={(text) => {
-                        this.setState({
-                            paymentID: text
-                        }, () => this.checkErrors());
-                    }}
-                    editable={this.state.paymentIDEnabled}
-                    errorMessage={this.state.paymentIDError}
-                />
-
-                <BottomButton
-                    title="Continue"
-                    onPress={() => {
-                        const payee = {
-                            nickname: this.state.nickname,
-                            address: this.state.address,
-                            paymentID: this.state.paymentID,
-                        };
-
-                        /* Add payee to global payee store */
-                        Globals.payees.push(payee);
-                        
-                        /* Save payee to DB */
-                        savePayeeToDatabase(payee);
-
-                        this.props.navigation.navigate(
-                            'Confirm', {
-                                payee: this.state.nickname,
-                                amount: this.props.navigation.state.params.amount,
-                                choosePayee: this.props.navigation.state.key,
-                            }
-                        );
-                    }}
-                    disabled={!this.state.continueEnabled}
-                />
-
             </View>
         );
     }
@@ -716,14 +753,14 @@ export class ConfirmScreen extends React.Component {
 
     render() {
         return(
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, backgroundColor: this.props.screenProps.theme.backgroundColour }}>
                 <View style={{
                     alignItems: 'flex-start',
                     justifyContent: 'flex-start',
                     marginTop: 60,
                     marginHorizontal: 30,
                 }}>
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 25, fontWeight: 'bold' }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 25, fontWeight: 'bold' }}>
                         Review your transfer
                     </Text>
                 </View>
@@ -734,12 +771,12 @@ export class ConfirmScreen extends React.Component {
                     marginHorizontal: 30,
                     paddingBottom: 70,
                 }}>
-                    <Text style={{ fontSize: 13 }}>
-                        <Text style={{ color: Config.theme.primaryColour, fontWeight: 'bold' }}>
+                    <Text style={{ fontSize: 13, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
+                        <Text style={{ color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
                             {prettyPrintAmount(this.state.amount.remainingAtomic)}{' '}
                         </Text>
                         will reach{' '}
-                        <Text style={{ color: Config.theme.primaryColour, fontWeight: 'bold' }}>
+                        <Text style={{ color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
                             {this.state.payee.nickname}'s{' '}
                         </Text>
                         account, in {getArrivalTime()}
@@ -752,7 +789,7 @@ export class ConfirmScreen extends React.Component {
                         width: '100%',
                         justifyContent: 'space-between'
                     }}>
-                        <Text style={{ fontSize: 15, color: Config.theme.primaryColour, fontWeight: 'bold' }}>
+                        <Text style={{ fontSize: 15, color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
                             {this.state.payee.nickname}'s details
                         </Text>
 
@@ -771,7 +808,7 @@ export class ConfirmScreen extends React.Component {
                                 this.props.navigation.goBack(this.props.navigation.state.params.choosePayee || null);
                             }}
                             titleStyle={{
-                                color: Config.theme.primaryColour,
+                                color: this.props.screenProps.theme.primaryColour,
                                 fontSize: 13
                             }}
                             type="clear"
@@ -780,11 +817,11 @@ export class ConfirmScreen extends React.Component {
 
                     <View style={{ borderWidth: 0.5, borderColor: 'lightgrey', width: '100%' }}/>
 
-                    <Text style={{ marginBottom: 5, marginTop: 20 }}>
+                    <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                         Address
                     </Text>
 
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 16 }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
                         {this.state.payee.address}
                     </Text>
 
@@ -794,7 +831,7 @@ export class ConfirmScreen extends React.Component {
                             Payment ID
                         </Text>
 
-                        <Text style={{ color: Config.theme.primaryColour, fontSize: 16 }}>
+                        <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
                             {this.state.payee.paymentID}
                         </Text>
                     </View>}
@@ -806,7 +843,7 @@ export class ConfirmScreen extends React.Component {
                         width: '100%',
                         justifyContent: 'space-between'
                     }}>
-                        <Text style={{ fontSize: 15, color: Config.theme.primaryColour, fontWeight: 'bold' }}>
+                        <Text style={{ fontSize: 15, color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
                             Transfer details
                         </Text>
 
@@ -816,7 +853,7 @@ export class ConfirmScreen extends React.Component {
                                 this.props.navigation.goBack(this.props.navigation.state.params.amountScreen);
                             }}
                             titleStyle={{
-                                color: Config.theme.primaryColour,
+                                color: this.props.screenProps.theme.primaryColour,
                                 fontSize: 13
                             }}
                             type="clear"
@@ -825,59 +862,59 @@ export class ConfirmScreen extends React.Component {
 
                     <View style={{ borderWidth: 0.5, borderColor: 'lightgrey', width: '100%' }}/>
 
-                    <Text style={{ marginBottom: 5, marginTop: 20 }}>
+                    <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                         You're sending
                     </Text>
 
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 16 }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
                         {prettyPrintAmount(this.state.amount.originalAtomic)}
                     </Text>
 
-                    <Text style={{ marginBottom: 5, marginTop: 20 }}>
+                    <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                         {this.state.payee.nickname} gets
                     </Text>
 
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 16 }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
                         {prettyPrintAmount(this.state.amount.remainingAtomic)}
                     </Text>
 
-                    <Text style={{ marginBottom: 5, marginTop: 20 }}>
+                    <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                         Network fee
                     </Text>
 
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 16 }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
                         {prettyPrintAmount(this.state.amount.networkFeeAtomic)}
                     </Text>
 
                     {this.state.amount.devFeeAtomic > 0 &&
                     <View>
-                        <Text style={{ marginBottom: 5, marginTop: 20 }}>
+                        <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                             Developer fee
                         </Text>
 
-                        <Text style={{ color: Config.theme.primaryColour, fontSize: 16 }}>
+                        <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
                             {prettyPrintAmount(this.state.amount.devFeeAtomic)}
                         </Text>
                     </View>}
 
                     {this.state.amount.nodeFeeAtomic > 0 &&
                     <View>
-                        <Text style={{ marginBottom: 5, marginTop: 20 }}>
+                        <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                             Node fee
                         </Text>
 
-                        <Text style={{ color: Config.theme.primaryColour, fontSize: 16 }}>
+                        <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
                             {prettyPrintAmount(this.state.amount.nodeFeeAtomic)}
                         </Text>
                     </View>}
 
                     {this.state.amount.totalFeeAtomic > this.state.amount.networkFeeAtomic &&
                     <View>
-                        <Text style={{ marginBottom: 5, marginTop: 20 }}>
+                        <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                             Total fee
                         </Text>
 
-                        <Text style={{ color: Config.theme.primaryColour, fontSize: 16 }}>
+                        <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
                             {prettyPrintAmount(this.state.amount.totalFeeAtomic)}
                         </Text>
                     </View>}
@@ -898,6 +935,7 @@ export class ConfirmScreen extends React.Component {
                             nickname: this.state.payee.nickname,
                         });
                     }}
+                    {...this.props}
                 />
             </View>
         );
@@ -919,60 +957,65 @@ export class ChoosePayeeScreen extends React.Component {
 
     render() {
         return(
-            <View style={{ 
-                alignItems: 'flex-start',
-                justifyContent: 'flex-start',
+            <View style={{
+                backgroundColor: this.props.screenProps.theme.backgroundColour,
                 flex: 1,
-                marginLeft: 30,
-                marginTop: 60,
-                marginRight: 10,
             }}>
-                <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 40 }}>
-                    Who are you sending to?
-                </Text>
-                
-                <TouchableWithoutFeedback
-                    onPress={() => {
-                        this.props.navigation.navigate(
-                            'NewPayee', {
-                                amount: this.props.navigation.state.params.amount,
-                                amountScreen: this.props.navigation.state.key,
-                            },
-                        );
-                    }}
-                >
-                    <View style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}>
+                <View style={{ 
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
+                    flex: 1,
+                    marginLeft: 30,
+                    marginTop: 60,
+                    marginRight: 10,
+                }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 40 }}>
+                        Who are you sending to?
+                    </Text>
+                    
+                    <TouchableWithoutFeedback
+                        onPress={() => {
+                            this.props.navigation.navigate(
+                                'NewPayee', {
+                                    amount: this.props.navigation.state.params.amount,
+                                    amountScreen: this.props.navigation.state.key,
+                                },
+                            );
+                        }}
+                    >
                         <View style={{
-                            height: 37,
-                            width: 37,
-                            borderWidth: 1,
-                            borderColor: 'lightgrey',
-                            borderRadius: 45,
+                            flexDirection: 'row',
                             alignItems: 'center',
                             justifyContent: 'center',
                         }}>
-                            <AntDesign
-                                name={'adduser'}
-                                size={28}
-                                color={'grey'}
-                                padding={5}
-                            />
+                            <View style={{
+                                height: 37,
+                                width: 37,
+                                borderWidth: 1,
+                                borderColor: this.props.screenProps.theme.notVeryVisibleColour,
+                                borderRadius: 45,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}>
+                                <AntDesign
+                                    name={'adduser'}
+                                    size={28}
+                                    color={this.props.screenProps.theme.slightlyMoreVisibleColour}
+                                    padding={5}
+                                />
+                            </View>
+
+                            <Text style={{ marginLeft: 15, color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
+                                Add a new recipient
+                            </Text>
                         </View>
+                    </TouchableWithoutFeedback>
 
-                        <Text style={{ marginLeft: 15, color: Config.theme.primaryColour, fontSize: 16 }}>
-                            Add a new recipient
-                        </Text>
-                    </View>
-                </TouchableWithoutFeedback>
+                    <Hr/>
 
-                <Hr/>
+                    <ExistingPayees {...this.props}/>
 
-                <ExistingPayees {...this.props}/>
-
+                </View>
             </View>
         );
     }
@@ -1038,7 +1081,7 @@ export class SendTransactionScreen extends React.Component {
         const sending =
             <View>
                 <Text style={{
-                    color: Config.theme.primaryColour,
+                    color: this.props.screenProps.theme.primaryColour,
                     fontSize: 25,
                 }}>
                     Sending transaction, please wait...
@@ -1064,7 +1107,7 @@ export class SendTransactionScreen extends React.Component {
         const success =
             <View>
                 <Text style={{
-                    color: Config.theme.primaryColour,
+                    color: this.props.screenProps.theme.primaryColour,
                     fontSize: 25,
                     marginBottom: 25,
                     fontWeight: 'bold'
@@ -1072,24 +1115,27 @@ export class SendTransactionScreen extends React.Component {
                     Transaction complete
                 </Text>
 
-                <Text style={{ fontSize: 13 }}>
-                    <Text style={{ color: Config.theme.primaryColour, fontWeight: 'bold' }}>
+                <Text style={{ fontSize: 13, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
                         {prettyPrintAmount(this.state.amount.remainingAtomic)}{' '}
                     </Text>
                     was sent to{' '}
-                    <Text style={{ color: Config.theme.primaryColour, fontWeight: 'bold' }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
                         {this.state.nickname}'s{' '}
                     </Text>
                     account.
                 </Text>
 
-                <Text style={{ fontSize: 15, color: Config.theme.primaryColour, fontWeight: 'bold', marginTop: 15 }}>
+                <Text style={{ fontSize: 15, color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold', marginTop: 15 }}>
                     Transaction hash
                 </Text>
 
                 <TextTicker
                     marqueeDelay={1000}
                     duration={220 * 64}
+                    style={{
+                        color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                    }}
                 >
                     {this.state.hash}
                 </TextTicker>
@@ -1106,7 +1152,7 @@ export class SendTransactionScreen extends React.Component {
                         toastPopUp('Transaction hash copied');
                     }}
                     titleStyle={{
-                        color: Config.theme.primaryColour,
+                        color: this.props.screenProps.theme.primaryColour,
                         fontSize: 13
                     }}
                     type="clear"
@@ -1115,7 +1161,7 @@ export class SendTransactionScreen extends React.Component {
             </View>;
 
         return(
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, backgroundColor: this.props.screenProps.theme.backgroundColour }}>
                 <View style={{
                     flex: 1,
                     alignItems: 'flex-start',
@@ -1133,6 +1179,7 @@ export class SendTransactionScreen extends React.Component {
                         this.props.navigation.navigate('Main');
                     }} 
                     disabled={!this.state.homeEnabled}
+                    {...this.props}
                 />
             </View>
         );

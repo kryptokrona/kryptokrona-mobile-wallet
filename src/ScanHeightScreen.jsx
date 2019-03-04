@@ -33,7 +33,7 @@ export class PickMonthScreen extends React.Component {
 
     render() {
         return(
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, backgroundColor: this.props.screenProps.theme.backgroundColour }}>
                 <View style={{
                     justifyContent: 'flex-start',
                     alignItems: 'flex-start',
@@ -41,11 +41,11 @@ export class PickMonthScreen extends React.Component {
                     marginLeft: 30,
                     marginRight: 10,
                 }}>
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 5 }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 5 }}>
                         Which month did you create your wallet?
                     </Text>
 
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 16, marginBottom: 60 }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16, marginBottom: 60 }}>
                         This helps us scan your wallet faster.
                     </Text>
                 </View>
@@ -53,20 +53,20 @@ export class PickMonthScreen extends React.Component {
                 <View style={{ justifyContent: 'center', alignItems: 'stretch' }}>
                     <MonthSelectorCalendar
                         minDate={moment(Config.chainLaunchTimestamp)}
-                        selectedBackgroundColor={Config.theme.primaryColour}
+                        selectedBackgroundColor={this.props.screenProps.theme.primaryColour}
                         monthTextStyle={{
-                            color: Config.theme.secondaryColour,
+                            color: this.props.screenProps.theme.primaryColour,
                         }}
                         monthDisabledStyle={{
-                            color: 'lightgray',
+                            color: this.props.screenProps.theme.notVeryVisibleColour,
                         }}
                         currentMonthTextStyle={{
-                            color: Config.theme.secondaryColour,
+                            color: this.props.screenProps.theme.primaryColour,
                         }}
-                        seperatorColor={Config.theme.primaryColour}
+                        seperatorColor={this.props.screenProps.theme.primaryColour}
                         nextIcon={
                             <Text style={{
-                                color: Config.theme.primaryColour,
+                                color: this.props.screenProps.theme.primaryColour,
                                 fontSize: 16,
                                 marginRight: 10,
                             }}>
@@ -75,7 +75,7 @@ export class PickMonthScreen extends React.Component {
                         }
                         prevIcon={
                             <Text style={{
-                                color: Config.theme.primaryColour,
+                                color: this.props.screenProps.theme.primaryColour,
                                 fontSize: 16,
                                 marginLeft: 10,
                             }}>
@@ -83,17 +83,21 @@ export class PickMonthScreen extends React.Component {
                             </Text>
                         }
                         yearTextStyle={{
-                            color: Config.theme.secondaryColour,
+                            color: this.props.screenProps.theme.primaryColour,
                             fontSize: 18
                         }}
                         selectedDate={this.state.month}
                         onMonthTapped={(date) => this.setState({ month: date})}
+                        containerStyle={{
+                            backgroundColor: this.props.screenProps.theme.backgroundColour,
+                        }}
                     />
                 </View>
 
                 <BottomButton
                     title='Continue'
                     onPress={() => this.props.navigation.navigate('ImportKeysOrSeed', { scanHeight: dateToScanHeight(this.state.month) })}
+                    {...this.props}
                 />
 
             </View>
@@ -150,7 +154,7 @@ export class PickExactBlockHeightScreen extends React.Component {
 
     render() {
         return(
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, backgroundColor: this.props.screenProps.theme.backgroundColour }}>
                 <View style={{
                     justifyContent: 'flex-start',
                     alignItems: 'flex-start',
@@ -158,11 +162,11 @@ export class PickExactBlockHeightScreen extends React.Component {
                     marginLeft: 30,
                     marginRight: 10,
                 }}>
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 5 }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 5 }}>
                         What block did you create your wallet at?
                     </Text>
 
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 16, marginBottom: 60 }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16, marginBottom: 60 }}>
                         This helps us scan your wallet faster.
                     </Text>
                 </View>
@@ -185,7 +189,7 @@ export class PickExactBlockHeightScreen extends React.Component {
                         }}
                         keyboardType={'number-pad'}
                         inputStyle={{
-                            color: Config.theme.primaryColour,
+                            color: this.props.screenProps.theme.primaryColour,
                             fontSize: 30,
                             marginLeft: 5
                         }}
@@ -199,6 +203,7 @@ export class PickExactBlockHeightScreen extends React.Component {
                     title='Continue'
                     onPress={() => this.props.navigation.navigate('ImportKeysOrSeed', { scanHeight: Number(this.state.value) })}
                     disabled={!this.state.valid}
+                    {...this.props}
                 />
             </View>
         );
@@ -241,7 +246,7 @@ export class PickBlockHeightScreen extends React.Component {
 
     render() {
         return(
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, backgroundColor: this.props.screenProps.theme.backgroundColour }}>
                 <View style={{
                     justifyContent: 'flex-start',
                     alignItems: 'flex-start',
@@ -249,11 +254,11 @@ export class PickBlockHeightScreen extends React.Component {
                     marginLeft: 30,
                     marginRight: 10,
                 }}>
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 5 }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 5 }}>
                         Between which block heights did you create your wallet?
                     </Text>
 
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 16, marginBottom: 60 }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16, marginBottom: 60 }}>
                         This helps us scan your wallet faster.
                     </Text>
                 </View>
@@ -275,7 +280,7 @@ export class PickBlockHeightScreen extends React.Component {
                                 <Button
                                     title={startHeight + ' - ' + endHeight}
                                     onPress={() => this.props.navigation.navigate('ImportKeysOrSeed', { scanHeight: startHeight })}
-                                    color={Config.theme.primaryColour}
+                                    color={this.props.screenProps.theme.primaryColour}
                                 />
                             </View>
                         );

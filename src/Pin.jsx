@@ -43,28 +43,31 @@ export class SetPinScreen extends React.Component {
         const subtitle = `to keep your ${Config.coinName} secure`;
 
         return(
-            <View style={{flex: 1}}>
+            <View style={{
+                flex: 1,
+                backgroundColor: this.props.screenProps.theme.backgroundColour
+            }}>
                 <PINCode
                     status={'choose'}
                     finishProcess={(pinCode) => this.continue(pinCode)}
                     subtitleChoose={subtitle}
                     passwordLength={6}
                     touchIDDisabled={true}
-                    colorPassword={Config.theme.primaryColour}
-                    stylePinCodeColorSubtitle={Config.theme.primaryColour}
-                    stylePinCodeColorTitle={Config.theme.primaryColour}
+                    colorPassword={this.props.screenProps.theme.primaryColour}
+                    stylePinCodeColorSubtitle={this.props.screenProps.theme.primaryColour}
+                    stylePinCodeColorTitle={this.props.screenProps.theme.primaryColour}
                     stylePinCodeButtonCircle={{
                         alignItems: 'center',
                         justifyContent: 'center',
                         width: 64,
                         height: 64,
-                        backgroundColor: Config.theme.primaryColourLight,
-                        borderRadius: 32
+                        backgroundColor: this.props.screenProps.theme.pinCodeBackgroundColour,
+                        borderRadius: 32,
                     }}
-                    stylePinCodeButtonNumber={Config.theme.primaryColour}
-                    numbersButtonOverlayColor={Config.theme.secondaryColour}
-                    stylePinCodeDeleteButtonColorShowUnderlay={Config.theme.primaryColour}
-                    stylePinCodeDeleteButtonColorHideUnderlay={Config.theme.primaryColour}
+                    stylePinCodeButtonNumber={this.props.screenProps.theme.pinCodeForegroundColour}
+                    numbersButtonOverlayColor={this.props.screenProps.theme.secondaryColour}
+                    stylePinCodeDeleteButtonColorShowUnderlay={this.props.screenProps.theme.primaryColour}
+                    stylePinCodeDeleteButtonColorHideUnderlay={this.props.screenProps.theme.primaryColour}
                 />
             </View>
         );
@@ -130,30 +133,36 @@ export class RequestPinScreen extends React.Component {
     render() {
         return(
             /* Fade in over 1.5 secs */
-            <FadeView duration={1500} startValue={0.2} style={{flex: 1}}>
+            <View
+                style={{
+                    flex: 1,
+                    backgroundColor: this.props.screenProps.theme.backgroundColour
+                }}
+            >
                 <PINCode
                     status={'enter'}
                     finishProcess={(pinCode) => this.continue(pinCode)}
                     subtitleEnter="to unlock your wallet"
                     passwordLength={6}
                     touchIDDisabled={true}
-                    colorPassword={Config.theme.primaryColour}
-                    stylePinCodeColorSubtitle={Config.theme.primaryColour}
-                    stylePinCodeColorTitle={Config.theme.primaryColour}
+                    colorPassword={this.props.screenProps.theme.primaryColour}
+                    stylePinCodeColorSubtitle={this.props.screenProps.theme.primaryColour}
+                    stylePinCodeColorTitle={this.props.screenProps.theme.primaryColour}
                     stylePinCodeButtonCircle={{
                         alignItems: 'center',
                         justifyContent: 'center',
                         width: 64,
                         height: 64,
-                        backgroundColor: Config.theme.primaryColourLight,
-                        borderRadius: 32
+                        backgroundColor: this.props.screenProps.theme.pinCodeBackgroundColour,
+                        borderRadius: 32,
                     }}
-                    stylePinCodeButtonNumber={Config.theme.primaryColour}
-                    numbersButtonOverlayColor={Config.theme.secondaryColour}
-                    stylePinCodeDeleteButtonColorShowUnderlay={Config.theme.primaryColour}
-                    stylePinCodeDeleteButtonColorHideUnderlay={Config.theme.primaryColour}
+                    stylePinCodeButtonNumber={this.props.screenProps.theme.pinCodeForegroundColour}
+                    numbersButtonOverlayColor={this.props.screenProps.theme.secondaryColour}
+                    stylePinCodeDeleteButtonColorShowUnderlay={this.props.screenProps.theme.primaryColour}
+                    stylePinCodeDeleteButtonColorHideUnderlay={this.props.screenProps.theme.primaryColour}
+
                 />
-            </FadeView>
+            </View>
         );
     }
 }

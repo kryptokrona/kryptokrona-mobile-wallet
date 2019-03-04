@@ -15,12 +15,24 @@ import Config from './Config';
 import { Styles } from './Styles';
 import { toastPopUp } from './Utilities';
 
-export function TextFixedWidth({ children }) {
-    const fontFamily = Platform.OS === 'ios' ? 'Courier' : 'monospace'
+export class TextFixedWidth extends React.Component {
+    constructor(props) {
+        super(props);
+    }
 
-    return (
-        <Text style={{fontFamily, fontSize: 12}}>{ children }</Text>
-    )
+    render() {
+        const fontFamily = Platform.OS === 'ios' ? 'Courier' : 'monospace'
+
+        return (
+            <Text style={{
+                fontFamily,
+                fontSize: 12,
+                color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+            }}>
+                {this.props.children}
+            </Text>
+        );
+    }
 }
 
 /**
@@ -43,15 +55,26 @@ export class SeedComponent extends React.Component {
                     borderColor: this.props.borderColour,
                     padding: 10
                 }}>
-                    <TextFixedWidth>{lines[0].join(' ')}</TextFixedWidth>
-                    <TextFixedWidth>{lines[1].join(' ')}</TextFixedWidth>
-                    <TextFixedWidth>{lines[2].join(' ')}</TextFixedWidth>
-                    <TextFixedWidth>{lines[3].join(' ')}</TextFixedWidth>
-                    <TextFixedWidth>{lines[4].join(' ')}</TextFixedWidth>
+                    <TextFixedWidth {...this.props}>
+                        {lines[0].join(' ')}
+                    </TextFixedWidth>
+                    <TextFixedWidth {...this.props}>
+                        {lines[1].join(' ')}
+                    </TextFixedWidth>
+                    <TextFixedWidth {...this.props}>
+                        {lines[2].join(' ')}
+                    </TextFixedWidth>
+                    <TextFixedWidth {...this.props}>
+                        {lines[3].join(' ')}
+                    </TextFixedWidth>
+                    <TextFixedWidth {...this.props}>
+                        {lines[4].join(' ')}
+                    </TextFixedWidth>
                 </View>
                 <CopyButton
                     data={this.props.seed}
                     name='Seed'
+                    {...this.props}
                 />
             </View>
         );
@@ -78,7 +101,7 @@ export class CopyButton extends React.Component {
                         toastPopUp(this.props.name + ' copied');
                     }}
                     titleStyle={{
-                        color: Config.theme.primaryColour,
+                        color: this.props.screenProps.theme.primaryColour,
                         textDecorationLine: 'underline',
                     }}
                     type='clear'
@@ -100,18 +123,30 @@ export class Hr extends React.Component {
     }
 }
 
-export const BottomButton = props => (
-    <View style={Styles.alignBottom}>
-        <Button
-            buttonStyle={{
-                backgroundColor: Config.theme.primaryColour,
-                height: 50
-            }}
-            {...props}
-            title={props.title.toUpperCase()}
-        />
-    </View>
-);
+export class BottomButton extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return(
+            <View style={Styles.alignBottom}>
+                <Button
+                    buttonStyle={{
+                        backgroundColor: this.props.screenProps.theme.primaryColour,
+                        height: 50,
+                        borderRadius: 0,
+                    }}
+                    disabledStyle={{
+                        backgroundColor: this.props.screenProps.theme.disabledColour,
+                    }}
+                    {...this.props}
+                    title={this.props.title.toUpperCase()}
+                />
+            </View>
+        );
+    }
+}
 
 export class OR extends React.Component {
     constructor(props) {

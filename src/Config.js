@@ -16,6 +16,11 @@ import {
 const Config = {
     theme: {
         /**
+         * Background colour for every component
+         */
+        backgroundColour: 'white',
+
+        /**
          * The primary colour used by the wallet, for TurtleCoin this is green
          */
         primaryColour: '#40C18E',
@@ -32,7 +37,7 @@ const Config = {
          */
         secondaryColour: '#00853D',
     },
-
+    
     /**
      * If you can't figure this one out, I don't have high hopes
      */

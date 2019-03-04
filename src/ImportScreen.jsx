@@ -38,7 +38,7 @@ export class ImportWalletScreen extends React.Component {
 
     render() {
         return(
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, backgroundColor: this.props.screenProps.theme.backgroundColour }}>
                 <View style={{
                     justifyContent: 'flex-start',
                     alignItems: 'flex-start',
@@ -46,11 +46,11 @@ export class ImportWalletScreen extends React.Component {
                     marginLeft: 30,
                     marginRight: 10,
                 }}>
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 5 }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 5 }}>
                         When did you create your wallet?
                     </Text>
 
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 16, marginBottom: 60 }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16, marginBottom: 60 }}>
                         This helps us scan your wallet faster.
                     </Text>
                 </View>
@@ -64,7 +64,7 @@ export class ImportWalletScreen extends React.Component {
                         <Button
                             title="Pick a month"
                             onPress={() => this.props.navigation.navigate('PickMonth')}
-                            color={Config.theme.primaryColour}
+                            color={this.props.screenProps.theme.primaryColour}
                         />
                     </View>
 
@@ -72,7 +72,7 @@ export class ImportWalletScreen extends React.Component {
                         <Button
                             title="Pick an approximate block height"
                             onPress={() => this.props.navigation.navigate('PickBlockHeight')}
-                            color={Config.theme.primaryColour}
+                            color={this.props.screenProps.theme.primaryColour}
                         />
                     </View>
 
@@ -80,7 +80,7 @@ export class ImportWalletScreen extends React.Component {
                         <Button
                             title="Pick an exact block height"
                             onPress={() => this.props.navigation.navigate('PickExactBlockHeight')}
-                            color={Config.theme.primaryColour}
+                            color={this.props.screenProps.theme.primaryColour}
                         />
                     </View>
 
@@ -88,7 +88,7 @@ export class ImportWalletScreen extends React.Component {
                         <Button
                             title="I don't Know"
                             onPress={() => this.props.navigation.navigate('ImportKeysOrSeed', { scanHeight: 0 })}
-                            color={Config.theme.primaryColour}
+                            color={this.props.screenProps.theme.primaryColour}
                         />
                     </View>
                 </View>
@@ -111,7 +111,7 @@ export class ImportKeysOrSeedScreen extends React.Component {
 
     render() {
         return(
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, backgroundColor: this.props.screenProps.theme.backgroundColour }}>
                 <View style={{
                     justifyContent: 'flex-start',
                     alignItems: 'flex-start',
@@ -119,7 +119,7 @@ export class ImportKeysOrSeedScreen extends React.Component {
                     marginLeft: 30,
                     marginRight: 10,
                 }}>
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 60 }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 60 }}>
                         How would you like to import your wallet?
                     </Text>
                 </View>
@@ -129,7 +129,7 @@ export class ImportKeysOrSeedScreen extends React.Component {
                         <Button
                             title="25 Word Mnemonic Seed"
                             onPress={() => this.props.navigation.navigate('ImportSeed', { scanHeight: this.scanHeight })}
-                            color={Config.theme.primaryColour}
+                            color={this.props.screenProps.theme.primaryColour}
                         />
                     </View>
 
@@ -137,7 +137,7 @@ export class ImportKeysOrSeedScreen extends React.Component {
                         <Button
                             title="Private Spend + Private View Key"
                             onPress={() => this.props.navigation.navigate('ImportKeys', { scanHeight: this.scanHeight })}
-                            color={Config.theme.primaryColour}
+                            color={this.props.screenProps.theme.primaryColour}
                         />
                     </View>
                 </View>
@@ -190,7 +190,7 @@ export class ImportSeedScreen extends React.Component {
 
     render() {
         return(
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, backgroundColor: this.props.screenProps.theme.backgroundColour }}>
                 <View style={{
                     justifyContent: 'flex-start',
                     alignItems: 'flex-start',
@@ -198,11 +198,11 @@ export class ImportSeedScreen extends React.Component {
                     marginLeft: 30,
                     marginRight: 10,
                 }}>
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 5 }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 5 }}>
                         Enter your mnemonic seed...
                     </Text>
 
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 16, marginBottom: 60 }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16, marginBottom: 60 }}>
                         This should be 25 english words.
                     </Text>
                 </View>
@@ -212,13 +212,14 @@ export class ImportSeedScreen extends React.Component {
                     extraScrollHeight={200}
                     containerContentStyle={{ flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}
                 >
-                    <InputSeedComponent enableButton={(seed, enable) => this.toggleButton(seed, enable)}/>
+                    <InputSeedComponent enableButton={(seed, enable) => this.toggleButton(seed, enable)} {...this.props}/>
                 </KeyboardAwareScrollView>
 
                 <BottomButton
                     title='Continue'
                     onPress={() => this.importWallet()}
                     disabled={!this.state.seedIsGood}
+                    {...this.props}
                 />
             </View>
         );
@@ -306,7 +307,7 @@ class InputSeedComponent extends React.Component {
                     marginRight: 15, 
                     marginLeft: 15, 
                     borderWidth: 1, 
-                    borderColor: Config.theme.primaryColour, 
+                    borderColor: this.props.screenProps.theme.primaryColour, 
                     height: 350
                 }}>
                     {[1, 2, 3, 4, 5].map((row) => {
@@ -314,7 +315,7 @@ class InputSeedComponent extends React.Component {
                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }} key={row}>
                                 {[1, 2, 3, 4, 5].map((col) => {
                                     return(
-                                        <SeedWord row={row} column={col} key={col} storeWord={(word, index) => this.storeWord(word, index)}/>
+                                        <SeedWord row={row} column={col} key={col} storeWord={(word, index) => this.storeWord(word, index)} {...this.props}/>
                                     );
                                 })}
                             </View>
@@ -362,7 +363,7 @@ class SeedWord extends React.Component {
         return(
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                 <TextInput
-                    style={{ height: 40, width: 70, textAlign: 'center', color: 'gray' }}
+                    style={{ height: 40, width: 70, textAlign: 'center', color: this.props.screenProps.theme.slightlyMoreVisibleColour }}
                     underlineColorAndroid={this.state.badWord ? 'red' : 'lightgray'}
                     borderBottomWidth={Platform.OS === 'ios' ? 1 : 0}
                     borderBottomColor={this.state.badWord ? 'red' : 'lightgray'}
@@ -372,7 +373,7 @@ class SeedWord extends React.Component {
                     onBlur={() => this.checkWord()}
                     onFocus={() => this.setState({ badWord: false }) }
                 />
-                <Text style={{ color: Config.theme.primaryColour }}>
+                <Text style={{ color: this.props.screenProps.theme.primaryColour }}>
                     {this.state.wordNumber}
                 </Text>
             </View>
@@ -457,7 +458,7 @@ export class ImportKeysScreen extends React.Component {
 
     render() {
         return(
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, backgroundColor: this.props.screenProps.theme.backgroundColour }}>
                 <View style={{
                     justifyContent: 'flex-start',
                     alignItems: 'flex-start',
@@ -465,11 +466,11 @@ export class ImportKeysScreen extends React.Component {
                     marginLeft: 30,
                     marginRight: 10,
                 }}>
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 25, marginBottom: 5 }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 5 }}>
                         Enter your private spend and view key...
                     </Text>
 
-                    <Text style={{ color: Config.theme.primaryColour, fontSize: 16, marginBottom: 60 }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16, marginBottom: 60 }}>
                         These are both 64 character, hexadecimal strings.
                     </Text>
                 </View>
@@ -497,7 +498,7 @@ export class ImportKeysScreen extends React.Component {
                             marginRight: 2,
                         }}
                         inputStyle={{
-                            color: Config.theme.primaryColour,
+                            color: this.props.screenProps.theme.primaryColour,
                             fontSize: 15,
                             marginLeft: 5
                         }}
@@ -526,7 +527,7 @@ export class ImportKeysScreen extends React.Component {
                             marginRight: 2,
                         }}
                         inputStyle={{
-                            color: Config.theme.primaryColour,
+                            color: this.props.screenProps.theme.primaryColour,
                             fontSize: 15,
                             marginLeft: 5
                         }}
@@ -545,6 +546,7 @@ export class ImportKeysScreen extends React.Component {
                     title="Continue"
                     onPress={() => this.importWallet()}
                     disabled={!this.state.continueEnabled}
+                    {...this.props}
                 />
             </View>
         );

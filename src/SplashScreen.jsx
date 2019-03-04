@@ -4,6 +4,8 @@
 
 import React from 'react';
 
+import { View } from 'react-native';
+
 import { Spinner } from './Spinner';
 import { FadeView } from './FadeView';
 import { haveWallet } from './Database';
@@ -40,9 +42,24 @@ export class SplashScreen extends React.Component {
     render() {
         return(
             /* Fade in a spinner logo */
-            <FadeView startValue={1} endValue={0} style={{flex: 1, alignItems: 'stretch', justifyContent: 'center'}}>
-                <Spinner></Spinner>
-            </FadeView>
+            <View style={{
+                flex: 1,
+                alignItems: 'stretch',
+                justifyContent: 'center',
+                backgroundColor: this.props.screenProps.theme.backgroundColour
+            }}>
+                <FadeView
+                    startValue={1}
+                    endValue={0}
+                    style={{
+                        flex: 1,
+                        alignItems: 'stretch',
+                        justifyContent: 'center'
+                    }}
+                >
+                    <Spinner/>
+                </FadeView>
+            </View>
         );
     }
 }

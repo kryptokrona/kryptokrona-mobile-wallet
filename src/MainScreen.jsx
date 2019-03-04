@@ -97,9 +97,15 @@ function sendNotification(transaction) {
  * Sync screen, balance
  */
 export class MainScreen extends React.Component {
-    static navigationOptions = {
+    static navigationOptions = ({ navigation, screenProps }) => ({
         title: 'Home',
-    };
+        tabBarOptions: {
+            activeBackgroundColor: screenProps.theme.backgroundColour,
+            inactiveBackgroundColor: screenProps.theme.backgroundColour,
+            activeTintColor: screenProps.theme.primaryColour,
+            inactiveTintColor: screenProps.theme.slightlyMoreVisibleColour,
+        }
+    });
 
     constructor(props) {
         super(props);
@@ -120,7 +126,7 @@ export class MainScreen extends React.Component {
            This is nice if you want someone to scan the QR code, but don't
            want to display your balance. */
         return(
-            <View style={{ flex: 1, justifyContent: 'space-between' }}>
+            <View style={{ flex: 1, justifyContent: 'space-between', backgroundColor: this.props.screenProps.theme.backgroundColour }}>
 
                 <View style={{ 
                     height: '20%', 
@@ -130,15 +136,15 @@ export class MainScreen extends React.Component {
                     borderRadius: 10,
                     opacity: this.state.addressOnly ? 0 : 100,
                 }}>
-                    <BalanceComponent/>
+                    <BalanceComponent {...this.props}/>
                 </View>
 
                 <TouchableOpacity onPress={() => this.setState({ addressOnly: !this.state.addressOnly })}>
-                    <AddressComponent/>
+                    <AddressComponent {...this.props}/>
                 </TouchableOpacity>
 
                 <View style={{ flex: 1, opacity: this.state.addressOnly ? 0 : 100 }}>
-                    <SyncComponent/>
+                    <SyncComponent {...this.props}/>
                 </View>
             </View>
         );
@@ -159,21 +165,24 @@ class AddressComponent extends React.Component {
         return(
             <View style={{ alignItems: 'center' }}>
                 <Text style={[Styles.centeredText, {
-                    color: Config.theme.primaryColour,
+                    color: this.props.screenProps.theme.primaryColour,
                     fontSize: 20,
                     marginBottom: 15,
                 }]}>
                     Your Wallet Address:
                 </Text>
 
-                <QRCode
-                    value={this.state.address}
-                    size={200}
-                    color='gray'
-                />
+                <View style={{ padding: 5, backgroundColor: this.props.screenProps.theme.qrCode.backgroundColour }}>
+                    <QRCode
+                        value={this.state.address}
+                        size={200}
+                        backgroundColor={this.props.screenProps.theme.qrCode.backgroundColour}
+                        color={this.props.screenProps.theme.qrCode.foregroundColour}
+                    />
+                </View>
 
                 <Text style={[Styles.centeredText, {
-                    color: Config.theme.primaryColour,
+                    color: this.props.screenProps.theme.primaryColour,
                     fontSize: 15,
                     marginTop: 10,
                     marginRight: 20,
@@ -185,6 +194,7 @@ class AddressComponent extends React.Component {
                 <CopyButton
                     data={this.state.address}
                     name='Address'
+                    {...this.props}
                 />
             </View>
         );
@@ -250,7 +260,7 @@ class BalanceComponent extends React.Component {
 
     render() {
         const compactBalance = <OneLineText
-                                     style={{ color: this.state.lockedBalance === 0 ? Config.theme.primaryColour : 'orange', fontSize: 35}}
+                                     style={{ color: this.state.lockedBalance === 0 ? this.props.screenProps.theme.primaryColour : 'orange', fontSize: 35}}
                                      onPress={() => this.setState({
                                          expandedBalance: !this.state.expandedBalance
                                      })}
@@ -269,8 +279,8 @@ class BalanceComponent extends React.Component {
                               </View>;
 
         const unlockedBalance = <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                                    <FontAwesome name={'unlock'} size={22} color={Config.theme.primaryColour} style={{marginRight: 7}}/>
-                                    <OneLineText style={{ color: Config.theme.primaryColour, fontSize: 25}}
+                                    <FontAwesome name={'unlock'} size={22} color={this.props.screenProps.theme.primaryColour} style={{marginRight: 7}}/>
+                                    <OneLineText style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25}}
                                           onPress={() => this.setState({
                                              expandedBalance: !this.state.expandedBalance
                                           })}>
@@ -285,13 +295,13 @@ class BalanceComponent extends React.Component {
 
         return(
             <View style={{flex: 1, padding: 20, justifyContent: 'center', alignItems: 'center'}}>
-                    <Text style={{ color: 'lightgray', fontSize: 15 }}>
+                    <Text style={{ color: this.props.screenProps.theme.notVeryVisibleColour, fontSize: 15 }}>
                         TOTAL BALANCE
                     </Text>
 
                     {this.state.expandedBalance ? expandedBalance : compactBalance}
 
-                    <Text style={{ color: 'gray', fontSize: 20 }}>
+                    <Text style={{ color: this.props.screenProps.theme.slightlyMoreVisibleColour, fontSize: 20 }}>
                         {this.state.coinValue}
                     </Text>
             </View>
@@ -362,12 +372,15 @@ class SyncComponent extends React.Component {
     render() {
         return(
             <View style={{ justifyContent: 'flex-end', alignItems: 'center', marginBottom: 20, marginTop: 50 }}>
-                <Text>
+                <Text style={{
+                    color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                }}>
                     {this.state.walletHeight} / {this.state.networkHeight} - {this.state.percent}%
                 </Text>
                 <ProgressBar
                     progress={this.state.progress}
                     style={{justifyContent: 'flex-end', alignItems: 'center', width: 300, marginTop: 10}}
+                    {...this.props}
                 />
             </View>
         );
