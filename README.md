@@ -4,6 +4,8 @@
 
 ## Setup
 
+Note: Make sure you use yarn instead of npm. Since there is no package-lock.json, only a yarn.lock, using npm will get you the wrong packages.
+
 * Clone the repo:
 
 `git clone https://github.com/turtlecoin/turtlecoin-mobile-wallet.git`
