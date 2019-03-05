@@ -228,6 +228,11 @@ const Config = {
     appName: 'TonChan',
 
     /**
+     * Slogan phrase during wallet CreateScreen
+     */
+    sloganCreateScreen: 'Fast. Safe. Easy.',
+
+    /**
      * Displayed in the settings screen
      */
     appVersion: 'v0.0.5',

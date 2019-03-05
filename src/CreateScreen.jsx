@@ -45,7 +45,7 @@ export class WalletOptionScreen extends React.Component {
                         fontSize: 20,
                         color: this.props.screenProps.theme.slightlyMoreVisibleColour,
                     }}>
-                        Fast. Safe. Easy.
+                        {Config.sloganCreateScreen}
                     </Text>
                 </View>
 
