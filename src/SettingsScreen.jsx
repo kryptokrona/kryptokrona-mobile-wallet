@@ -296,6 +296,7 @@ export class SettingsScreen extends React.Component {
         return(
             <View style={{
                 backgroundColor: this.props.screenProps.theme.backgroundColour,
+                flex: 1,
             }}>
                 <List style={{
                     backgroundColor: this.props.screenProps.theme.backgroundColour,
