@@ -83,7 +83,7 @@ const TransferNavigator = createStackNavigator(
         SendTransaction: SendTransactionScreen,
     },
     {
-        initialRouteName: 'Transfer',
+        initialRouteName: 'ChoosePayee',
         headerLayoutPreset: 'center',
         defaultNavigationOptions: {
             headerTitleStyle: {

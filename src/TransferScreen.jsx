@@ -116,7 +116,7 @@ class CrossButton extends React.Component {
                     iconName='close'
                     onPress={() => {
                         /* Reset the stack to be on the first transfer screen */
-                        this.props.navigation.dispatch(navigateWithDisabledBack('Transfer'));
+                        this.props.navigation.dispatch(navigateWithDisabledBack('ChoosePayee'));
 
                         /* And head back to the main screen */
                         this.props.navigation.navigate('Main');
@@ -135,12 +135,6 @@ export class TransferScreen extends React.Component {
     static navigationOptions = ({ navigation, screenProps }) => {
         return {
             title: '',
-            headerLeft: (
-                <HeaderBackButton
-                    tintColor={screenProps.theme.primaryColour}
-                    onPress={() => { navigation.navigate('Main') }}
-                />
-            ),
             headerRight: (
                 <CrossButton navigation={navigation}/>
             ),
@@ -349,8 +343,10 @@ export class TransferScreen extends React.Component {
                         title="Continue"
                         onPress={() => {
                             this.props.navigation.navigate(
-                                'ChoosePayee', {
+                                'Confirm', {
+                                    payee: this.props.navigation.state.params.payee,
                                     amount: this.state.feeInfo,
+                                    choosePayeeScreen: this.props.navigation.state.params.choosePayeeScreen || this.props.navigation.state.key,
                                 }
                             );
                         }} 
@@ -410,10 +406,8 @@ class AddressBook extends React.Component {
                             }}
                             onPress={() => {
                                 this.props.navigation.navigate(
-                                    'Confirm', {
+                                    'Transfer', {
                                         payee: item.nickname,
-                                        amount: this.props.navigation.state.params.amount,
-                                        amountScreen: this.props.navigation.state.key,
                                     }
                                 );
                             }}
@@ -715,10 +709,9 @@ export class NewPayeeScreen extends React.Component {
                             savePayeeToDatabase(payee);
 
                             this.props.navigation.navigate(
-                                'Confirm', {
+                                'Transfer', {
                                     payee: this.state.nickname,
-                                    amount: this.props.navigation.state.params.amount,
-                                    choosePayee: this.props.navigation.state.key,
+                                    choosePayeeScreen: this.props.navigation.state.key,
                                 }
                             );
                         }}
@@ -796,16 +789,7 @@ export class ConfirmScreen extends React.Component {
                         <Button
                             title='Change'
                             onPress={() => {
-                                /* If we went via the 'Add payee' screen, then
-                                   the choose payee route will be defined,
-                                   and we go back from the Add payee screen,
-                                   to the choose payee screen. If it's not,
-                                   then we went directly from choose payee.
-                                   In this case, we go back, from this screen.
-                                   The whole go back thing in react navigation
-                                   is pretty confusing:
-                                   https://stackoverflow.com/a/45497685/8737306 */
-                                this.props.navigation.goBack(this.props.navigation.state.params.choosePayee || null);
+                                this.props.navigation.goBack(this.props.navigation.state.params.choosePayeeScreen);
                             }}
                             titleStyle={{
                                 color: this.props.screenProps.theme.primaryColour,
@@ -850,7 +834,7 @@ export class ConfirmScreen extends React.Component {
                         <Button
                             title='Change'
                             onPress={() => {
-                                this.props.navigation.goBack(this.props.navigation.state.params.amountScreen);
+                                this.props.navigation.goBack(null);
                             }}
                             titleStyle={{
                                 color: this.props.screenProps.theme.primaryColour,
@@ -925,7 +909,7 @@ export class ConfirmScreen extends React.Component {
                     title="Send Transaction"
                     onPress={() => {
                         /* Reset this stack to be on the transfer screen */
-                        this.props.navigation.dispatch(navigateWithDisabledBack('Transfer'));
+                        this.props.navigation.dispatch(navigateWithDisabledBack('ChoosePayee'));
 
                         /* Then send the actual transaction */
                         this.props.navigation.navigate('SendTransaction', {
@@ -947,8 +931,14 @@ export class ChoosePayeeScreen extends React.Component {
         super(props);
     }
 
-    static navigationOptions = ({ navigation }) => {
+    static navigationOptions = ({ navigation, screenProps }) => {
         return {
+            headerLeft: (
+                <HeaderBackButton
+                    tintColor={screenProps.theme.primaryColour}
+                    onPress={() => { navigation.navigate('Main') }}
+                />
+            ),
             headerRight: (
                 <CrossButton navigation={navigation}/>
             ),
@@ -975,12 +965,7 @@ export class ChoosePayeeScreen extends React.Component {
                     
                     <TouchableWithoutFeedback
                         onPress={() => {
-                            this.props.navigation.navigate(
-                                'NewPayee', {
-                                    amount: this.props.navigation.state.params.amount,
-                                    amountScreen: this.props.navigation.state.key,
-                                },
-                            );
+                            this.props.navigation.navigate('NewPayee');
                         }}
                     >
                         <View style={{
@@ -1175,7 +1160,7 @@ export class SendTransactionScreen extends React.Component {
                 <BottomButton
                     title="Home"
                     onPress={() => {
-                        this.props.navigation.dispatch(navigateWithDisabledBack('Transfer'));
+                        this.props.navigation.dispatch(navigateWithDisabledBack('ChoosePayee'));
                         this.props.navigation.navigate('Main');
                     }} 
                     disabled={!this.state.homeEnabled}
