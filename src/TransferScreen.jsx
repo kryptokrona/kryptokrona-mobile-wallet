@@ -439,8 +439,8 @@ class ExistingPayees extends React.Component {
 
         return(
             <View style={{
-                flex: 1,
                 width: '90%',
+                maxHeight: 385,
             }}>
                 <Text style={{
                     color: this.props.screenProps.theme.primaryColour,
@@ -945,6 +945,13 @@ export class ChoosePayeeScreen extends React.Component {
         }
     };
 
+    setAddressFromQrCode(qrData) {
+        if (qrData.startsWith(Config.uriPrefix)) {
+            let decoded = decodeURI(qrData);
+            decoded = decoded.replace(Config.uriPrefix, '');
+        }
+    }
+
     render() {
         return(
             <View style={{
@@ -954,15 +961,41 @@ export class ChoosePayeeScreen extends React.Component {
                 <View style={{ 
                     alignItems: 'flex-start',
                     justifyContent: 'flex-start',
-                    flex: 1,
                     marginLeft: 30,
                     marginTop: 60,
                     marginRight: 10,
                 }}>
-                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 40 }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 30 }}>
                         Who are you sending to?
                     </Text>
-                    
+                </View>
+
+                <View style={{
+                    marginLeft: 22,
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
+                }}>
+                    <Button
+                        title='Scan QR Code'
+                        onPress={() => {
+                            this.props.navigation.navigate('QrScanner', { setAddress: this.setAddressFromQrCode.bind(this) } );
+                        }}
+                        titleStyle={{
+                            color: this.props.screenProps.theme.primaryColour,
+                            textDecorationLine: 'underline',
+                        }}
+                        type="clear"
+                    />
+                </View>
+
+                <View style={{ 
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
+                    marginLeft: 30,
+                    marginRight: 10,
+                }}>
+                    <Hr/>
+
                     <TouchableWithoutFeedback
                         onPress={() => {
                             this.props.navigation.navigate('NewPayee');
@@ -972,6 +1005,7 @@ export class ChoosePayeeScreen extends React.Component {
                             flexDirection: 'row',
                             alignItems: 'center',
                             justifyContent: 'center',
+                            marginTop: 10,
                         }}>
                             <View style={{
                                 height: 37,
@@ -999,9 +1033,8 @@ export class ChoosePayeeScreen extends React.Component {
                     <Hr/>
 
                     <ExistingPayees {...this.props}/>
-
                 </View>
-            </View>
+             </View>
         );
     }
 }
