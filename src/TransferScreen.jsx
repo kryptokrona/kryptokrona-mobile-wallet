@@ -48,8 +48,8 @@ export class QrScannerScreen extends React.Component {
             <View style={{ flex: 1 }}>
                 <QRCodeScanner
                     onRead={(code) => {
-                        this.props.navigation.state.params.setAddress(code.data);
                         this.props.navigation.goBack();
+                        this.props.navigation.state.params.setAddress(code.data);
                     }}
                     cameraProps={{captureAudio: false}}
                 />
@@ -975,8 +975,8 @@ export class ChoosePayeeScreen extends React.Component {
         }
     };
 
-    handleQrCode(qrData) {
-        const error = this.parseQrCodeData(qrData);
+    handleQrCode(qrData, navigation) {
+        const error = this.parseQrCodeData(qrData, navigation);
 
         if (error) {
             Alert.alert(
@@ -989,7 +989,7 @@ export class ChoosePayeeScreen extends React.Component {
         }
     }
 
-    parseQrCodeData(qrData) {
+    parseQrCodeData(qrData, navigation) {
         /* It's a URI, try and get the data from it */
         if (qrData.startsWith(Config.uriPrefix)) {
             /* Remove the turtlecoin:// prefix */
@@ -999,7 +999,7 @@ export class ChoosePayeeScreen extends React.Component {
 
             /* Not valid URI */
             if (index === -1) {
-                return 'QR code is not valid!';
+                index = data.length;
             }
 
             const address = data.substr(0, index);
@@ -1057,11 +1057,11 @@ export class ChoosePayeeScreen extends React.Component {
             
             /* No name, need to pick one.. */
             if (!name) {
-                this.props.navigation.navigate(
+                navigation.navigate(
                     'NewPayee', {
                         paymentID: paymentID || '',
                         address,
-                        amount: amountNonAtomic.toString(),
+                        amount: amountNonAtomic ? amountNonAtomic.toString() : undefined,
                     }
                 );
 
@@ -1081,7 +1081,7 @@ export class ChoosePayeeScreen extends React.Component {
                 /* New payee doesn't match existing payee, get them to enter a new name */
                 if (existingPayee.address !== newPayee.address ||
                     existingPayee.paymentID !== newPayee.paymentID) { 
-                    this.props.navigation.navigate(
+                    navigation.navigate(
                         'NewPayee', {
                             paymentID: paymentID || '',
                             address,
@@ -1103,7 +1103,7 @@ export class ChoosePayeeScreen extends React.Component {
             }
 
             if (!amount) {
-                this.props.navigation.navigate(
+                navigation.navigate(
                     'Transfer', {
                         payee: newPayee,
                     }
@@ -1111,7 +1111,7 @@ export class ChoosePayeeScreen extends React.Component {
 
                 return undefined;
             } else {
-                this.props.navigation.navigate(
+                navigation.navigate(
                     'Confirm', {
                         payee: newPayee,
                         amount: feeInfo,
@@ -1126,7 +1126,7 @@ export class ChoosePayeeScreen extends React.Component {
                 return 'QR code is not valid!';
             }
 
-            this.props.navigation.navigate(
+            navigation.navigate(
                 'NewPayee', {
                     address: qrData,
                 }
@@ -1164,7 +1164,13 @@ export class ChoosePayeeScreen extends React.Component {
                     <Button
                         title='Scan QR Code'
                         onPress={() => {
-                            this.props.navigation.navigate('QrScanner', { setAddress: this.handleQrCode.bind(this) } );
+                            const func = (data) => {
+                                this.handleQrCode(data, this.props.navigation);
+                            };
+
+                            this.props.navigation.navigate('QrScanner', {
+                                setAddress: func
+                            });
                         }}
                         titleStyle={{
                             color: this.props.screenProps.theme.primaryColour,
