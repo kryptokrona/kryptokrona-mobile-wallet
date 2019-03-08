@@ -20,6 +20,11 @@ const Config = {
     coinName: 'TurtleCoin',
 
     /**
+     * Prefix for URI encoded addresses
+     */
+    uriPrefix: 'turtlecoin://',
+
+    /**
      * How often to save the wallet, in milliseconds
      */
     walletSaveFrequency: 60 * 1000,
