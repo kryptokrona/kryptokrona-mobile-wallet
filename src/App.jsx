@@ -56,10 +56,10 @@ const TransactionNavigator = createStackNavigator(
         defaultNavigationOptions: {
             headerTitleStyle: {
                 fontWeight: 'bold',
-                color: Config.theme.primaryColour,
+                color: Themes.darkMode.primaryColour,
             },
             headerTransparent: true,
-            headerTintColor: Config.theme.primaryColour,
+            headerTintColor: Themes.darkMode.primaryColour,
         },
     }
 );
@@ -88,10 +88,10 @@ const TransferNavigator = createStackNavigator(
         defaultNavigationOptions: {
             headerTitleStyle: {
                 fontWeight: 'bold',
-                color: Config.theme.primaryColour,
+                color: Themes.darkMode.primaryColour,
             },
             headerTransparent: true,
-            headerTintColor: Config.theme.primaryColour,
+            headerTintColor: Themes.darkMode.primaryColour,
         },
     }
 );
@@ -113,10 +113,10 @@ const SettingsNavigator = createStackNavigator(
         defaultNavigationOptions: {
             headerTitleStyle: {
                 fontWeight: 'bold',
-                color: Config.theme.primaryColour,
+                color: Themes.darkMode.primaryColour,
             },
             headerTransparent: true,
-            headerTintColor: Config.theme.primaryColour,
+            headerTintColor: Themes.darkMode.primaryColour,
         },
     }
 );
@@ -141,7 +141,7 @@ const HomeNavigator = createBottomTabNavigator(
     {
         initialRouteName: 'Main',
         tabBarOptions: {
-            activeTintColor: Config.theme.primaryColour,
+            activeTintColor: Themes.darkMode.primaryColour,
         },
         defaultNavigationOptions: ({ navigation }) => ({
             tabBarIcon: ({focused, horizontal, tintColor}) => {
@@ -218,10 +218,10 @@ const LoginNavigator = createStackNavigator(
         defaultNavigationOptions: {
             headerTitleStyle: {
                 fontWeight: 'bold',
-                color: Config.theme.primaryColour,
+                color: Themes.darkMode.primaryColour,
             },
             headerTransparent: true,
-            headerTintColor: Config.theme.primaryColour,
+            headerTintColor: Themes.darkMode.primaryColour,
         },
     }
 );
