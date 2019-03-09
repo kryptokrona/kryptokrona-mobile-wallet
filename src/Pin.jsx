@@ -10,7 +10,7 @@ import React from 'react';
 
 import { WalletBackend } from 'turtlecoin-wallet-backend';
 
-import { View } from 'react-native';
+import { View, Alert } from 'react-native';
 
 import Config from './Config';
 
@@ -126,9 +126,7 @@ export class RequestPinScreen extends React.Component {
                 Globals.wallet = wallet;
                 this.props.navigation.navigate('Home');
             }
-        })().catch(err => {
-            this.fail('Error loading from DB: ' + err);
-        });
+        })();
     }
 
     render() {
