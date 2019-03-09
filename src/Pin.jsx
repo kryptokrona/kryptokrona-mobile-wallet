@@ -87,10 +87,13 @@ export class RequestPinScreen extends React.Component {
     async fail(msg) {
         Globals.logger.addLogMessage(msg);
 
-        /* So we don't infinite loop */
-        await setHaveWallet(false);
-
-        this.props.navigation.dispatch(navigateWithDisabledBack('Splash'));
+        Alert.alert(
+            'Failed to open wallet',
+            msg + ' - Please report this error.',
+            [
+                {text: 'OK'},
+            ]
+        );
     }
 
     /**
