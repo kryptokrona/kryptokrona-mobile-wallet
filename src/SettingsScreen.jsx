@@ -12,6 +12,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
@@ -322,8 +323,8 @@ export class SettingsScreen extends React.Component {
                                 onClick: () => { this.props.navigation.navigate('SwapCurrency') },
                             },
                             {
-                                title: this.state.notifsEnabled ? 'Disable Notifications' : 'Enable Notifications',
-                                description: this.state.notifsEnabled ? 'Disable transaction notifications' : 'Get notified when you are sent money',
+                                title: 'Enable Notifications',
+                                description: 'Get notified when you are sent money',
                                 icon: {
                                     iconName: 'ios-notifications',
                                     IconType: Ionicons,
@@ -338,10 +339,12 @@ export class SettingsScreen extends React.Component {
                                     toastPopUp(Globals.preferences.notificationsEnabled ? 'Notifications enabled' : 'Notifications disabled');
                                     savePreferencesToDatabase(Globals.preferences);
                                 },
+                                checkbox: true,
+                                checked: this.state.notifsEnabled,
                             },
                             {
-                                title: this.state.scanCoinbase ? 'Skip Coinbase Transactions' : 'Scan Coinbase Transactions',
-                                description: 'Enable this if you have ever solo mined a block',
+                                title: 'Scan Coinbase Transactions',
+                                description: 'Enable this if you have solo mined',
                                 icon: {
                                     iconName: 'pickaxe',
                                     IconType: MaterialCommunityIcons,
@@ -357,12 +360,14 @@ export class SettingsScreen extends React.Component {
                                     toastPopUp(Globals.preferences.scanCoinbaseTransactions ? 'Scanning Coinbase Transactions enabled' : 'Scanning Coinbase Transactions disabled');
                                     savePreferencesToDatabase(Globals.preferences);
                                 },
+                                checkbox: true,
+                                checked: this.state.scanCoinbase,
                             },
                             {
-                                title: this.state.limitData ? 'Disable data limit' : 'Limit data',
-                                description: this.state.limitData ? 'Sync when using mobile data' : 'Only sync when connected to WiFi',
+                                title: 'Limit data',
+                                description: 'Only sync when connected to WiFi',
                                 icon: {
-                                    iconName: this.state.limitData ? 'signal' : 'signal-off',
+                                    iconName: this.state.limitData ? 'signal-off' : 'signal',
                                     IconType: MaterialCommunityIcons,
                                 },
                                 onClick: async () => {
@@ -383,12 +388,14 @@ export class SettingsScreen extends React.Component {
                                     toastPopUp(Globals.preferences.limitData ? 'Data limiting enabled' : 'Data limiting disabled');
                                     savePreferencesToDatabase(Globals.preferences);
                                 },
+                                checkbox: true,
+                                checked: this.state.limitData,
                             },
                             {
-                                title: this.state.darkMode ? 'Enable light mode' : 'Enable dark mode',
-                                description: this.state.darkMode ? 'Enable light mode if you like eye strain' : 'Pretend you\'re a leet h4xor with dark mode',
+                                title: 'Enable dark mode',
+                                description: 'Swap between light and dark mode',
                                 icon: {
-                                    iconName: this.state.darkMode ? 'light-up' : 'light-down',
+                                    iconName: this.state.darkMode ? 'light-down' : 'light-up',
                                     IconType: Entypo,
                                 },
                                 onClick: () => {
@@ -410,6 +417,8 @@ export class SettingsScreen extends React.Component {
                                     toastPopUp(Globals.preferences.theme === 'darkMode' ? 'Dark mode enabled' : 'Light mode enabled');
                                     savePreferencesToDatabase(Globals.preferences);
                                 },
+                                checkbox: true,
+                                checked: this.state.darkMode,
                             },
                             {
                                 title: `Find ${Config.appName} on Github`,
@@ -467,6 +476,11 @@ export class SettingsScreen extends React.Component {
                                 leftIcon={
                                     <View style={{width: 30, alignItems: 'center', justifyContent: 'center', marginRight: 10}}>
                                         <item.icon.IconType name={item.icon.iconName} size={25} color={this.props.screenProps.theme.primaryColour}/>
+                                    </View>
+                                }
+                                rightIcon={item.checkbox &&
+                                    <View style={{width: 30, alignItems: 'center', justifyContent: 'center', marginRight: 10}}>
+                                        <MaterialIcons name={item.checked ? 'check-box' : 'check-box-outline-blank'} size={25} color={this.props.screenProps.theme.primaryColour}/>
                                     </View>
                                 }
                                 onPress={item.onClick}
