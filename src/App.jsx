@@ -21,9 +21,9 @@ import { Globals } from './Globals';
 import { MainScreen } from './MainScreen';
 import { SplashScreen } from './SplashScreen';
 import { DisclaimerScreen } from './DisclaimerScreen';
-import { SetPinScreen, RequestPinScreen } from './Pin';
 import { loadPreferencesFromDatabase } from './Database';
 import { WalletOptionScreen, CreateWalletScreen } from './CreateScreen';
+import { SetPinScreen, RequestPinScreen, ForgotPinScreen } from './Pin';
 import { TransactionsScreen, TransactionDetailsScreen } from './TransactionsScreen';
 
 import {
@@ -181,6 +181,9 @@ const LoginNavigator = createStackNavigator(
 
         /* Request the pin for an existing wallet */
         RequestPin: RequestPinScreen,
+
+        /* Allow deleting the wallet if pin forgotten */
+        ForgotPin: ForgotPinScreen,
 
         /* Launcing screen */
         Splash: SplashScreen,

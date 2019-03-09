@@ -14,7 +14,9 @@ import App from './src/App';
 import Config from './src/Config';
 
 /* CHANGE THIS IF YOU ARE FORKING! */
-Sentry.config('https://8ecf138e1d1e4d558178be3f2b5e1925@sentry.io/1411753').install();
-Sentry.setVersion(Config.appVersion);
+if (!__DEV__) {
+    Sentry.config('https://8ecf138e1d1e4d558178be3f2b5e1925@sentry.io/1411753').install();
+    Sentry.setVersion(Config.appVersion);
+}
 
 AppRegistry.registerComponent(appName, () => App);

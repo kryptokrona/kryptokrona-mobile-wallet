@@ -10,12 +10,15 @@ import React from 'react';
 
 import { WalletBackend } from 'turtlecoin-wallet-backend';
 
-import { View, Alert } from 'react-native';
+import { View, Alert, Text } from 'react-native';
+
+import { Button } from 'react-native-elements';
 
 import Config from './Config';
 
-import { FadeView } from './FadeView';
 import { Globals } from './Globals';
+import { FadeView } from './FadeView';
+import { BottomButton } from './SharedComponents';
 import { navigateWithDisabledBack } from './Utilities';
 import { loadFromDatabase, setHaveWallet } from './Database';
 
@@ -72,6 +75,63 @@ export class SetPinScreen extends React.Component {
     }
 }
 
+export class ForgotPinScreen extends React.Component {
+    static navigationOptions = {
+        title: '',
+    }
+
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return(
+            <View style={{
+                flex: 1,
+                backgroundColor: this.props.screenProps.theme.backgroundColour,
+            }}>
+                <View style={{
+                    flex: 1,
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
+                    marginTop: 60,
+                    backgroundColor: this.props.screenProps.theme.backgroundColour,
+                }}>
+                    <Text style={{
+                        color: this.props.screenProps.theme.primaryColour,
+                        fontSize: 25,
+                        marginLeft: 30,
+                        marginBottom: 20,
+                    }}>
+                        Your wallet is encrypted with your pin, so unfortunately, if you have forgotten your pin, it cannot be recovered.
+                    </Text>
+                    <Text style={{
+                        color: this.props.screenProps.theme.primaryColour,
+                        fontSize: 25,
+                        marginLeft: 30
+                    }}>
+                        However, you can delete your wallet if you wish to create a new one.
+                    </Text>
+                </View>
+
+                <BottomButton
+                    title='Delete Wallet'
+                    onPress={() => {
+                        setHaveWallet(false);
+                        this.props.navigation.dispatch(navigateWithDisabledBack('WalletOption'));
+                    }}
+                    buttonStyle={{
+                        backgroundColor: 'red',
+                        height: 50,
+                        borderRadius: 0,
+                    }}
+                    {...this.props}
+                />
+            </View>
+        );
+    }
+}
+
 /**
  * Prompt for the stored pin to unlock the wallet
  */
@@ -110,17 +170,18 @@ export class RequestPinScreen extends React.Component {
             }
 
             /* Decrypt wallet data from DB */
-            let walletData = await loadFromDatabase(pinCode);
+            let [walletData, dbError] = await loadFromDatabase(pinCode);
 
-            if (walletData === undefined) {
-                await this.fail('Wallet not found in DB...');
+            if (dbError) {
+                await this.fail(dbError);
+                return;
             }
 
-            const [wallet, error] = WalletBackend.loadWalletFromJSON(
+            const [wallet, walletError] = WalletBackend.loadWalletFromJSON(
                 Config.defaultDaemon, walletData, Config
             );
 
-            if (error) {
+            if (walletError) {
                 await this.fail('Error loading wallet: ' + error);
             } else {
                 Globals.wallet = wallet;
@@ -160,6 +221,19 @@ export class RequestPinScreen extends React.Component {
                     stylePinCodeDeleteButtonColorShowUnderlay={this.props.screenProps.theme.primaryColour}
                     stylePinCodeDeleteButtonColorHideUnderlay={this.props.screenProps.theme.primaryColour}
                     onClickButtonLockedPage={() => RNExitApp.exitApp()}
+                />
+
+                <Button
+                    title='Forgot PIN?'
+                    onPress={() => {
+                        this.props.navigation.navigate('ForgotPin');
+                    }}
+                    titleStyle={{
+                        color: this.props.screenProps.theme.primaryColour,
+                        textDecorationLine: 'underline',
+                        marginBottom: 10,
+                    }}
+                    type='clear'
                 />
             </View>
         );

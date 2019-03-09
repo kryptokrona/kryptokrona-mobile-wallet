@@ -529,13 +529,13 @@ export async function loadFromDatabase(pinCode) {
         });
 
         if (realm.objects('Wallet').length > 0) {
-            return realmToWalletJSON(realm.objects('Wallet')[0]);
+            return [realmToWalletJSON(realm.objects('Wallet')[0]), undefined];
         }
 
-        return undefined;
+        return [undefined, 'Wallet not present in database'];
     } catch(err) {
         Globals.logger.addLogMessage('Error loading database: ' + err);
-        return undefined;
+        return [undefined, err];
     }
 }
 
