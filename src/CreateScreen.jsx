@@ -8,9 +8,7 @@ import {
     View, Text, Button, Image,
 } from 'react-native';
 
-import {
-    BlockchainCacheApi, WalletBackend
-} from 'turtlecoin-wallet-backend';
+import { WalletBackend } from 'turtlecoin-wallet-backend';
 
 import Config from './Config';
 

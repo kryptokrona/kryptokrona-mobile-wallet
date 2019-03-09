@@ -6,9 +6,7 @@ import PINCode from '@haskkor/react-native-pincode';
 
 import React from 'react';
 
-import {
-    BlockchainCacheApi, WalletBackend
-} from 'turtlecoin-wallet-backend';
+import { WalletBackend } from 'turtlecoin-wallet-backend';
 
 import {
     View
