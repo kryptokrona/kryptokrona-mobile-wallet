@@ -4,13 +4,13 @@
 
 import PINCode from '@haskkor/react-native-pincode';
 
+import RNExitApp from 'react-native-exit-app';
+
 import React from 'react';
 
 import { WalletBackend } from 'turtlecoin-wallet-backend';
 
-import {
-    View
-} from 'react-native';
+import { View } from 'react-native';
 
 import Config from './Config';
 
@@ -161,7 +161,7 @@ export class RequestPinScreen extends React.Component {
                     numbersButtonOverlayColor={this.props.screenProps.theme.secondaryColour}
                     stylePinCodeDeleteButtonColorShowUnderlay={this.props.screenProps.theme.primaryColour}
                     stylePinCodeDeleteButtonColorHideUnderlay={this.props.screenProps.theme.primaryColour}
-
+                    onClickButtonLockedPage={() => RNExitApp.exitApp()}
                 />
             </View>
         );
