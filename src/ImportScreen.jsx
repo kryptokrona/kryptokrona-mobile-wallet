@@ -156,22 +156,71 @@ export class ImportSeedScreen extends React.Component {
         super(props);
 
         this.state = {
+            seed: '',
+            seedError: '',
             seedIsGood: false,
         }
 
         this.scanHeight = this.props.navigation.state.params.scanHeight || 0;
     }
 
-    toggleButton(seed, seedIsGood) {
+    checkErrors() {
+        const valid = this.checkSeedIsValid();
+
         this.setState({
-            seedIsGood,
-            seed,
+            seedIsGood: valid,
         });
+    }
+
+    checkSeedIsValid() {
+        const words = this.state.seed.toLowerCase().split(' ');
+
+        const invalidWords = [];
+
+        let emptyCount = 0;
+
+        for (const word of words) {
+            if (word === '' || word === undefined) {
+                emptyCount++;
+            } else if (!isValidMnemonicWord(word)) {
+                invalidWords.push(word);
+            }
+        }
+
+        if (invalidWords.length !== 0) {
+            this.setState({
+                seedError: 'The following words are invalid: ' + invalidWords.join(', '),
+            });
+
+            return false;
+        } else {
+            this.setState({
+                seedError: '',
+            });
+        }
+
+        if (words.length !== 25 || emptyCount !== 0) {
+            return false;
+        }
+
+        const [valid, error] = isValidMnemonic(words.join(' '));
+
+        if (!valid) {
+            this.setState({
+                seedError: error,
+            });
+        } else {
+            this.setState({
+                seedError: '',
+            });
+        }
+
+        return valid;
     }
 
     importWallet() {
         const [wallet, error] = WalletBackend.importWalletFromSeed(
-            Config.defaultDaemon, this.scanHeight, this.state.seed.join(' '), Config
+            Config.defaultDaemon, this.scanHeight, this.state.seed.toLowerCase(), Config
         );
 
         if (error) {
@@ -202,18 +251,47 @@ export class ImportSeedScreen extends React.Component {
                         Enter your mnemonic seed...
                     </Text>
 
-                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16, marginBottom: 60 }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16, marginBottom: 30 }}>
                         This should be 25 english words.
                     </Text>
                 </View>
 
-                <KeyboardAwareScrollView
-                    enableOnAndroid={true}
-                    extraScrollHeight={200}
-                    containerContentStyle={{ flex: 1, justifyContent: 'center', alignItems: 'flex-start'}}
-                >
-                    <InputSeedComponent enableButton={(seed, enable) => this.toggleButton(seed, enable)} {...this.props}/>
-                </KeyboardAwareScrollView>
+                <View style={{
+                    justifyContent: 'flex-start',
+                    alignItems: 'flex-start',
+                    marginLeft: 20,
+                    flex: 1,
+                }}>
+                    <Input
+                        containerStyle={{
+                            width: '90%',
+                            marginBottom: 30,
+                        }}
+                        inputContainerStyle={{
+                            borderColor: 'lightgrey',
+                            borderWidth: 1,
+                            borderRadius: 2,
+                        }}
+                        label={'Mnemonic seed'}
+                        labelStyle={{
+                            marginBottom: 5,
+                            marginRight: 2,
+                        }}
+                        inputStyle={{
+                            color: this.props.screenProps.theme.primaryColour,
+                            fontSize: 15,
+                            marginLeft: 5
+                        }}
+                        value={this.state.seed}
+                        onChangeText={(text) => {
+                            this.setState({
+                                seed: text,
+                            }, () => this.checkErrors());
+                        }}
+                        errorMessage={this.state.seedError}
+                        autoCapitalize={'none'}
+                    />
+                </View>
 
                 <BottomButton
                     title='Continue'
@@ -221,161 +299,6 @@ export class ImportSeedScreen extends React.Component {
                     disabled={!this.state.seedIsGood}
                     {...this.props}
                 />
-            </View>
-        );
-    }
-}
-
-class InputSeedComponent extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            words: [],
-            invalidMessage: ''
-        }
-    }
-
-    checkSeedIsValid(words) {
-        const invalidWords = [];
-
-        let emptyCount = 0;
-
-        for (const word of words) {
-            if (word === '' || word === undefined) {
-                emptyCount++;
-            } else if (!isValidMnemonicWord(word)) {
-                invalidWords.push(word);
-            }
-        }
-
-        if (invalidWords.length !== 0) {
-            this.setState({
-                invalidMessage: 'The following words are invalid: ' + invalidWords.join(', '),
-            });
-
-            return false;
-        } else {
-            this.setState({
-                invalidMessage: '',
-            });
-        }
-
-        if (words.length !== 25 || emptyCount !== 0) {
-            return false;
-        }
-
-        const [valid, error] = isValidMnemonic(words.join(' '));
-
-        if (!valid) {
-            this.setState({
-                invalidMessage: error,
-            });
-        } else {
-            this.setState({
-                invalidMessage: '',
-            });
-        }
-
-        return valid;
-    }
-
-    storeWord(word, index) {
-        let words = this.state.words;
-
-        words[index] = word;
-
-        /* Auto complete often suggests upper case words */
-        words.map(x => x.toLowerCase());
-
-        this.setState({
-            words,
-        });
-
-        const isValid = this.checkSeedIsValid(this.state.words);
-
-        /* Enable continue button if valid seed */
-        this.props.enableButton(this.state.words, isValid);
-    }
-
-    render() {
-        return(
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <View style={{ 
-                    justifyContent: 'center', 
-                    alignItems: 'center', 
-                    marginRight: 15, 
-                    marginLeft: 15, 
-                    borderWidth: 1, 
-                    borderColor: this.props.screenProps.theme.primaryColour, 
-                    height: 350
-                }}>
-                    {[1, 2, 3, 4, 5].map((row) => {
-                        return(
-                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }} key={row}>
-                                {[1, 2, 3, 4, 5].map((col) => {
-                                    return(
-                                        <SeedWord row={row} column={col} key={col} storeWord={(word, index) => this.storeWord(word, index)} {...this.props}/>
-                                    );
-                                })}
-                            </View>
-                        );
-                    })}
-                </View>
-                <Text style={{marginLeft: 10, marginRight: 10, color: 'red', marginTop: 10, alignItems: 'center', justifyContent: 'center'}}>
-                    {this.state.invalidMessage}
-                </Text>
-            </View>
-        );
-    }
-}
-
-/* Jesus christ how horrifying */
-class SeedWord extends React.Component {
-    constructor(props) {
-        super(props);
-
-        let row = this.props.row;
-        let column = this.props.column;
-
-        let wordNumber = ((row - 1) * 5) + column;
-        let wordIndex = wordNumber - 1;
-
-        this.state = {
-            wordNumber,
-            wordIndex,
-            badWord: false,
-            word: '',
-        }
-    }
-
-    checkWord() {
-        this.props.storeWord(this.state.word, this.state.wordIndex);
-
-        if (!isValidMnemonicWord(this.state.word) && this.state.word !== '') {
-            this.setState({
-                badWord: true,
-            });
-        }
-    }
-
-    render() {
-        return(
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <TextInput
-                    style={{ height: 40, width: 70, textAlign: 'center', color: this.props.screenProps.theme.slightlyMoreVisibleColour }}
-                    underlineColorAndroid={this.state.badWord ? 'red' : 'lightgray'}
-                    borderBottomWidth={Platform.OS === 'ios' ? 1 : 0}
-                    borderBottomColor={this.state.badWord ? 'red' : 'lightgray'}
-                    maxLength={20}
-                    autoCapitalize={'none'}
-                    onChangeText={(text) => this.setState({ word: text }) }
-                    onBlur={() => this.checkWord()}
-                    onFocus={() => this.setState({ badWord: false }) }
-                />
-                <Text style={{ color: this.props.screenProps.theme.primaryColour }}>
-                    {this.state.wordNumber}
-                </Text>
             </View>
         );
     }
