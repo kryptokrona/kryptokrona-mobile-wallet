@@ -552,7 +552,7 @@ export class SettingsScreen extends React.Component {
                                 },
                             },
                             {
-                                title: `View app on ${Platform.OS === 'ios' ? 'the App Store' : 'Google Play'}`,
+                                title: `View ${Config.appName} on ${Platform.OS === 'ios' ? 'the App Store' : 'Google Play'}`,
                                 description: 'Leave a rating or send the link to your friends',
                                 icon: {
                                     iconName: Platform.OS === 'ios' ? 'app-store' : 'google-play',
