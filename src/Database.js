@@ -156,6 +156,7 @@ const PreferencesSchema = {
         scanCoinbaseTransactions: 'bool',
         limitData: 'bool',
         theme: 'string',
+        pinConfirmation: 'bool',
     }
 }
 

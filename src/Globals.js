@@ -32,6 +32,7 @@ class globals {
             scanCoinbaseTransactions: false,
             limitData: false,
             theme: 'darkMode',
+            pinConfirmation: false,
         };
 
         /* People in our address book */

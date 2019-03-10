@@ -410,6 +410,7 @@ export class SettingsScreen extends React.Component {
             scanCoinbase: Globals.preferences.scanCoinbaseTransactions,
             limitData: Globals.preferences.limitData,
             darkMode: Globals.preferences.theme === 'darkMode',
+            pinConfirmation: Globals.preferences.pinConfirmation,
         }
     }
 
@@ -539,6 +540,26 @@ export class SettingsScreen extends React.Component {
                                 },
                                 checkbox: true,
                                 checked: this.state.darkMode,
+                            },
+                            {
+                                title: 'Enable PIN confirmation',
+                                description: 'Require PIN for backup keys/sending TX',
+                                icon: {
+                                    iconName: 'security',
+                                    IconType: MaterialCommunityIcons,
+                                },
+                                onClick: () => {
+                                    Globals.preferences.pinConfirmation = !Globals.preferences.pinConfirmation;
+
+                                    this.setState({
+                                        pinConfirmation: Globals.preferences.pinConfirmation,
+                                    });
+
+                                    toastPopUp(Globals.preferences.pinConfirmation ? 'Pin Confirmation Enabled' : 'Pin Confirmation Disabled');
+                                    savePreferencesToDatabase(Globals.preferences);
+                                },
+                                checkbox: true,
+                                checked: this.state.pinConfirmation,
                             },
                             {
                                 title: 'FAQ',
