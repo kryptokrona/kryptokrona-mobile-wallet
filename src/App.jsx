@@ -81,6 +81,7 @@ const TransferNavigator = createStackNavigator(
         Confirm: ConfirmScreen,
         QrScanner: QrScannerScreen,
         SendTransaction: SendTransactionScreen,
+        RequestPin: RequestPinScreen,
     },
     {
         initialRouteName: 'ChoosePayee',
