@@ -183,4 +183,6 @@ Then, copy the line of code `Sentry.config('https://8ecf138e1d1e4d558178be3f2b5e
 
 Your API key will be different, don't just copy the one here.
 
+Finally, replace `Config.coinName === 'TurtleCoin'` with the coin name defined in the config.
+
 Once you've done that, you can test sentry is working by adding something like `throw new Error('Hello, sentry');` in the mainscreen constructor.
