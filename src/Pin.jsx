@@ -8,8 +8,6 @@ import RNExitApp from 'react-native-exit-app';
 
 import React from 'react';
 
-import { WalletBackend } from 'turtlecoin-wallet-backend';
-
 import { View, Alert, Text } from 'react-native';
 
 import { Button } from 'react-native-elements';
@@ -18,9 +16,9 @@ import Config from './Config';
 
 import { Globals } from './Globals';
 import { FadeView } from './FadeView';
+import { setHaveWallet } from './Database';
 import { BottomButton } from './SharedComponents';
 import { navigateWithDisabledBack } from './Utilities';
-import { loadFromDatabase, setHaveWallet } from './Database';
 
 /**
  * Enter a pin for the new wallet
@@ -118,7 +116,12 @@ export class ForgotPinScreen extends React.Component {
                     title='Delete Wallet'
                     onPress={() => {
                         setHaveWallet(false);
-                        this.props.navigation.dispatch(navigateWithDisabledBack('WalletOption'));
+                        this.props.navigation.navigate('Splash');
+                        /* Can't use navigateWithDisabledBack between routes, but don't
+                           want to be able to go back to previous screen...
+                           Navigate to splash, then once on that route, reset the
+                           stack. */
+                        this.props.navigation.dispatch(navigateWithDisabledBack('Splash'));
                     }}
                     buttonStyle={{
                         backgroundColor: 'red',
@@ -144,52 +147,6 @@ export class RequestPinScreen extends React.Component {
         super(props);
     }
 
-    async fail(msg) {
-        Globals.logger.addLogMessage(msg);
-
-        Alert.alert(
-            'Failed to open wallet',
-            msg + ' - Please report this error.',
-            [
-                {text: 'OK'},
-            ]
-        );
-    }
-
-    /**
-     * Called once the pin has been correctly been entered
-     */
-    async continue(pinCode) {
-        (async () => {
-            Globals.pinCode = pinCode;
-
-            /* Wallet already loaded, probably from previous launch, then
-               sending app to background. */
-            if (Globals.wallet !== undefined) {
-                this.props.navigation.navigate('Home');
-            }
-
-            /* Decrypt wallet data from DB */
-            let [walletData, dbError] = await loadFromDatabase(pinCode);
-
-            if (dbError) {
-                await this.fail(dbError);
-                return;
-            }
-
-            const [wallet, walletError] = WalletBackend.loadWalletFromJSON(
-                Config.defaultDaemon, walletData, Config
-            );
-
-            if (walletError) {
-                await this.fail('Error loading wallet: ' + error);
-            } else {
-                Globals.wallet = wallet;
-                this.props.navigation.navigate('Home');
-            }
-        })();
-    }
-
     render() {
         return(
             /* Fade in over 1.5 secs */
@@ -201,8 +158,10 @@ export class RequestPinScreen extends React.Component {
             >
                 <PINCode
                     status={'enter'}
-                    finishProcess={(pinCode) => this.continue(pinCode)}
-                    subtitleEnter="to unlock your wallet"
+                    finishProcess={(pinCode) => {
+                        this.props.navigation.state.params.finishFunction(pinCode, this.props.navigation);
+                    }}
+                    subtitleEnter={this.props.navigation.state.params.subtitle}
                     passwordLength={6}
                     touchIDDisabled={true}
                     colorPassword={this.props.screenProps.theme.primaryColour}

@@ -432,7 +432,19 @@ export class SettingsScreen extends React.Component {
                                     iconName: 'key-change',
                                     IconType: MaterialCommunityIcons,
                                 },
-                                onClick: () => { this.props.navigation.navigate('ExportKeys') },
+                                onClick: () => {
+                                    if (Globals.preferences.pinConfirmation) {
+                                        this.props.navigation.dispatch(navigateWithDisabledBack('RequestPin', {
+                                            subtitle: 'to backup your keys',
+                                            finishFunction: () => {
+                                                this.props.navigation.dispatch(navigateWithDisabledBack('Settings'));
+                                                this.props.navigation.navigate('ExportKeys');
+                                            }
+                                        }));
+                                    } else {
+                                        this.props.navigation.navigate('ExportKeys');
+                                    }
+                                },
                             },
                             {
                                 title: 'Swap Currency',

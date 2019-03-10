@@ -938,16 +938,29 @@ export class ConfirmScreen extends React.Component {
                 <BottomButton
                     title="Send Transaction"
                     onPress={() => {
-                        /* Reset this stack to be on the transfer screen */
-                        this.props.navigation.dispatch(navigateWithDisabledBack('ChoosePayee'));
-
-                        /* Then send the actual transaction */
-                        this.props.navigation.navigate('SendTransaction', {
+                        const params = {
                             amount: this.props.navigation.state.params.amount,
                             address: this.props.navigation.state.params.payee.address,
                             paymentID: this.props.navigation.state.params.payee.paymentID,
                             nickname: this.props.navigation.state.params.payee.nickname,
-                        });
+                        };
+
+                        if (Globals.preferences.pinConfirmation) {
+                            /* Verify they have the correct pin, then send the actual TX */
+                            this.props.navigation.navigate('RequestPin', {
+                                subtitle: 'to confirm the transaction',
+                                finishFunction: () => {
+                                    this.props.navigation.dispatch(navigateWithDisabledBack('ChoosePayee'));
+                                    this.props.navigation.navigate('SendTransaction', {...params});
+                                }
+                            });
+                        } else {
+                            /* Reset this stack to be on the transfer screen */
+                            this.props.navigation.dispatch(navigateWithDisabledBack('ChoosePayee'));
+
+                            /* Then send the actual transaction */
+                            this.props.navigation.navigate('SendTransaction', {...params});
+                        }
                     }}
                     {...this.props}
                 />

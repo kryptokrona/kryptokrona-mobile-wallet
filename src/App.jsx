@@ -107,6 +107,8 @@ const SettingsNavigator = createStackNavigator(
         ExportKeys: ExportKeysScreen,
         Logging: LoggingScreen,
         Faq: FaqScreen,
+        RequestPin: RequestPinScreen,
+        ForgotPin: ForgotPinScreen,
     },
     {
         initialRouteName: 'Settings',
