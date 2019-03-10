@@ -27,7 +27,7 @@ import { SetPinScreen, RequestPinScreen, ForgotPinScreen } from './Pin';
 import { TransactionsScreen, TransactionDetailsScreen } from './TransactionsScreen';
 
 import {
-    SettingsScreen, SwapCurrencyScreen, ExportKeysScreen, LoggingScreen,
+    SettingsScreen, SwapCurrencyScreen, ExportKeysScreen, LoggingScreen, FaqScreen,
 } from './SettingsScreen';
 
 import {
@@ -106,6 +106,7 @@ const SettingsNavigator = createStackNavigator(
         SwapCurrency: SwapCurrencyScreen,
         ExportKeys: ExportKeysScreen,
         Logging: LoggingScreen,
+        Faq: FaqScreen,
     },
     {
         initialRouteName: 'Settings',
