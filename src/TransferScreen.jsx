@@ -226,7 +226,7 @@ export class TransferScreen extends React.Component {
         this.setState({
             recipientGetsAmount: result,
             feeInfo,
-        });
+        }, () => { this.checkErrors(this.state.recipientGetsAmount) });
     }
 
     convertReceivedToSent(amount) {
@@ -247,7 +247,7 @@ export class TransferScreen extends React.Component {
         this.setState({
             youSendAmount: result,
             feeInfo
-        });
+        }, () => { this.checkErrors(this.state.youSendAmount) });
     }
 
     componentDidMount() {

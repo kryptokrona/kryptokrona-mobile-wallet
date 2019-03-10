@@ -140,7 +140,7 @@ export class ForgotPinScreen extends React.Component {
  */
 export class RequestPinScreen extends React.Component {
     static navigationOptions = {
-        header: null,
+        title: '',
     }
 
     constructor(props) {
