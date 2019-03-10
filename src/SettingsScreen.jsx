@@ -552,6 +552,20 @@ export class SettingsScreen extends React.Component {
                                 },
                             },
                             {
+                                title: `View app on ${Platform.OS === 'ios' ? 'the App Store' : 'Google Play'}`,
+                                description: 'Leave a rating or send the link to your friends',
+                                icon: {
+                                    iconName: Platform.OS === 'ios' ? 'app-store' : 'google-play',
+                                    IconType: Platform.OS === 'ios' ? Entypo : FontAwesome,
+                                },
+                                onClick: () => {
+                                    const link = Platform.OS === 'ios' ? Config.appStoreLink : Config.googlePlayLink;
+
+                                    Linking.openURL(link)
+                                           .catch((err) => Globals.logger.addLogMessage('Failed to open url: ' + err));
+                                },
+                            },
+                            {
                                 title: `Find ${Config.appName} on Github`,
                                 description: 'View the source code and give feedback',
                                 icon: {

@@ -221,7 +221,18 @@ const Config = {
     /**
      * Base URL for us to chuck a hash on the end, and find a transaction
      */
-    explorerBaseURL: 'https://explorer.turtlecoin.lol/?search='
+    explorerBaseURL: 'https://explorer.turtlecoin.lol/?search=',
+
+    /**
+     * A link to your app on the Apple app store. Currently blank because we
+     * haven't released for iOS yet...
+     */
+    appStoreLink: '',
+
+    /**
+     * A link to your app on the google play store
+     */
+    googlePlayLink: 'https://play.google.com/store/apps/details?id=com.tonchan',
 };
 
 module.exports = Config;
