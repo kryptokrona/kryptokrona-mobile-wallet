@@ -39,6 +39,8 @@ class globals {
         this.payees = [];
 
         this.logger = new Logger();
+
+        this.updatePayeeFunctions = [];
     }
 
     reset() {
@@ -48,6 +50,17 @@ class globals {
         this.logger = new Logger();
 
         NetInfo.removeEventListener('connectionChange', updateConnection);
+    }
+
+    addPayee(payee) {
+        Globals.payees.push(newPayee);
+        this.updatePayees();
+    }
+
+    updatePayees() {
+        Globals.updatePayeeFunctions.forEach((f) => {
+            f();
+        });
     }
 }
 

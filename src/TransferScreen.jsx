@@ -5,6 +5,7 @@
 import React from 'react';
 
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
 import QRCodeScanner from 'react-native-qrcode-scanner';
 
@@ -14,7 +15,7 @@ import * as Qs from 'query-string';
 
 import HeaderButtons, { HeaderButton, Item } from 'react-navigation-header-buttons';
 
-import { HeaderBackButton } from 'react-navigation';
+import { HeaderBackButton, StackActions } from 'react-navigation';
 
 import {
     validateAddresses, WalletErrorCode, validatePaymentID, prettyPrintAmount,
@@ -117,10 +118,7 @@ class CrossButton extends React.Component {
                     title=''
                     iconName='close'
                     onPress={() => {
-                        /* Reset the stack to be on the first transfer screen */
-                        this.props.navigation.dispatch(navigateWithDisabledBack('ChoosePayee'));
-
-                        /* And head back to the main screen */
+                        this.props.navigation.dispatch(StackActions.popToTop());
                         this.props.navigation.navigate('Main');
                     }}
                     buttonWrapperStyle={{ marginRight: 10 }}
@@ -370,12 +368,12 @@ class AddressBook extends React.Component {
             index: 0,
         };
 
-        Globals.updatePayees = () => {
+        Globals.updatePayeeFunctions.push(() => {
             this.setState(prevState => ({
                 payees: Globals.payees,
                 index: prevState.index + 1,
-            }));
-        };
+            }))
+        });
     }
 
     render() {
@@ -720,32 +718,34 @@ export class NewPayeeScreen extends React.Component {
                             };
 
                             /* Add payee to global payee store */
-                            Globals.payees.push(payee);
-
-                            if (Globals.updatePayees) {
-                                Globals.updatePayees();
-                            }
+                            Globals.addPayee(newPayee);
                             
                             /* Save payee to DB */
                             savePayeeToDatabase(payee);
 
-                            const amount = this.props.navigation.getParam('amount', undefined);
+                            const finishFunction = this.props.navigation.getParam('finishFunction', undefined);
 
-                            /* Already have an amount, don't need to go to transfer screen */
-                            if (amount) {
-                                this.props.navigation.navigate(
-                                    'Confirm', {
-                                        payee,
-                                        amount: addFee(Number(amount)),
-                                    }
-                                );
-
+                            if (finishFunction) {
+                                finishFunction();
                             } else {
-                                this.props.navigation.navigate(
-                                    'Transfer', {
-                                        payee,
-                                    }
-                                );
+                                const amount = this.props.navigation.getParam('amount', undefined);
+
+                                /* Already have an amount, don't need to go to transfer screen */
+                                if (amount) {
+                                    this.props.navigation.navigate(
+                                        'Confirm', {
+                                            payee,
+                                            amount: addFee(Number(amount)),
+                                        }
+                                    );
+
+                                } else {
+                                    this.props.navigation.navigate(
+                                        'Transfer', {
+                                            payee,
+                                        }
+                                    );
+                                }
                             }
                         }}
                         disabled={!this.state.continueEnabled}
@@ -1106,12 +1106,7 @@ export class ChoosePayeeScreen extends React.Component {
                 }
             /* Save payee to database for later use */
             } else {
-                Globals.payees.push(newPayee);
-
-                if (Globals.updatePayees) {
-                    Globals.updatePayees();
-                }
-
+                Globals.addPayee(newPayee);
                 savePayeeToDatabase(newPayee);
             }
 
@@ -1221,9 +1216,9 @@ export class ChoosePayeeScreen extends React.Component {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                             }}>
-                                <AntDesign
-                                    name={'adduser'}
-                                    size={28}
+                                <SimpleLineIcons
+                                    name={'user-follow'}
+                                    size={24}
                                     color={this.props.screenProps.theme.slightlyMoreVisibleColour}
                                     padding={5}
                                 />

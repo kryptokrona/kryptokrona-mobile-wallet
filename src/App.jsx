@@ -4,6 +4,7 @@
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
+import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
 import React from 'react';
 
@@ -22,6 +23,7 @@ import { MainScreen } from './MainScreen';
 import { SplashScreen } from './SplashScreen';
 import { DisclaimerScreen } from './DisclaimerScreen';
 import { loadPreferencesFromDatabase } from './Database';
+import { ModifyPayeeScreen, RecipientsScreen } from './Recipients';
 import { WalletOptionScreen, CreateWalletScreen } from './CreateScreen';
 import { SetPinScreen, RequestPinScreen, ForgotPinScreen } from './Pin';
 import { TransactionsScreen, TransactionDetailsScreen } from './TransactionsScreen';
@@ -134,12 +136,42 @@ SettingsNavigator.navigationOptions = ({ navigation, screenProps }) => ({
     }
 });
 
+const RecipientNavigator = createStackNavigator(
+    {
+        Recipients: RecipientsScreen,
+        ModifyPayee: ModifyPayeeScreen,
+        NewPayee: NewPayeeScreen,
+    },
+    {
+        initialRouteName: '',
+        headerLayoutPreset: 'center',
+        defaultNavigationOptions: {
+            headerTitleStyle: {
+                fontWeight: 'bold',
+                color: Themes.darkMode.primaryColour,
+            },
+            headerTransparent: true,
+            headerTintColor: Themes.darkMode.primaryColour,
+        },
+    }
+);
+
+RecipientNavigator.navigationOptions = ({ navigation, screenProps }) => ({
+    tabBarOptions: {
+        activeBackgroundColor: screenProps.theme.backgroundColour,
+        inactiveBackgroundColor: screenProps.theme.backgroundColour,
+        activeTintColor: screenProps.theme.primaryColour,
+        inactiveTintColor: screenProps.theme.slightlyMoreVisibleColour,
+    }
+});
+
 /* Main screen for a logged in wallet */
 const HomeNavigator = createBottomTabNavigator(
     {
         Main: MainScreen,
         Transfer: TransferNavigator,
         Transactions: TransactionNavigator,
+        Recipients: RecipientNavigator,
         Settings: SettingsNavigator, 
     },
     {
@@ -163,6 +195,9 @@ const HomeNavigator = createBottomTabNavigator(
                 } else if (routeName === 'Transfer') {
                     IconComponent = Ionicons;
                     iconName = 'ios-send';
+                } else if (routeName === 'Recipients') {
+                    IconComponent = SimpleLineIcons;
+                    iconName = 'people';
                 } else if (routeName === 'Settings') {
                     IconComponent = Ionicons;
                     iconName = 'ios-settings';

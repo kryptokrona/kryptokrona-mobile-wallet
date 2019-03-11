@@ -114,11 +114,22 @@ export class CopyButton extends React.Component {
 export class Hr extends React.Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            width: this.props.width || '90%',
+        };
     }
 
     render() {
         return(
-            <View style={{ borderWidth: 0.5, borderColor: 'lightgrey', marginTop: 15, width: '90%' }}/>
+            <View
+                style={{
+                    borderWidth: 0.7,
+                    borderColor: 'lightgrey',
+                    marginTop: 15,
+                    width: this.state.width,
+                }}
+            />
         );
     }
 }
