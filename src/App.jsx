@@ -169,8 +169,8 @@ RecipientNavigator.navigationOptions = ({ navigation, screenProps }) => ({
 const HomeNavigator = createBottomTabNavigator(
     {
         Main: MainScreen,
-        Transfer: TransferNavigator,
         Transactions: TransactionNavigator,
+        Transfer: TransferNavigator,
         Recipients: RecipientNavigator,
         Settings: SettingsNavigator, 
     },
