@@ -466,6 +466,28 @@ export async function savePayeeToDatabase(payee) {
     });
 }
 
+export async function removePayeeFromDatabase(nickname) {
+    await withDB(async () => {
+        try {
+            const realm = await Realm.open({
+                schema: [PayeeSchema],
+                path: 'PayeeData.realm',
+                deleteRealmIfMigrationNeeded: true,
+            });
+
+            const payee = realm.objects('Payee').filtered('nickname = $0', nickname);
+
+            if (payee.length > 0) {
+                await realm.write(() => {
+                    realm.delete(payee);
+                });
+            }
+        } catch (err) {
+            Globals.logger.addLogMessage('Failed to save payee data to DB: ' + err);
+        };
+    });
+}
+
 export async function loadPayeeDataFromDatabase() {
     try {
         let realm = await Realm.open({

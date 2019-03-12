@@ -34,7 +34,6 @@ import List from './ListContainer';
 
 import { Styles } from './Styles';
 import { Globals } from './Globals';
-import { savePayeeToDatabase } from './Database';
 import { Hr, BottomButton } from './SharedComponents';
 import { removeFee, toAtomic, fromAtomic, addFee } from './Fee';
 import { getArrivalTime, navigateWithDisabledBack, delay, toastPopUp } from './Utilities';
@@ -718,11 +717,8 @@ export class NewPayeeScreen extends React.Component {
                             };
 
                             /* Add payee to global payee store */
-                            Globals.addPayee(newPayee);
+                            Globals.addPayee(payee);
                             
-                            /* Save payee to DB */
-                            savePayeeToDatabase(payee);
-
                             const finishFunction = this.props.navigation.getParam('finishFunction', undefined);
 
                             if (finishFunction) {
@@ -1107,7 +1103,6 @@ export class ChoosePayeeScreen extends React.Component {
             /* Save payee to database for later use */
             } else {
                 Globals.addPayee(newPayee);
-                savePayeeToDatabase(newPayee);
             }
 
             if (!amount) {

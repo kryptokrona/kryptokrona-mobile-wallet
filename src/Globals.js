@@ -2,13 +2,16 @@
 //
 // Please see the included LICENSE file for more information.
 
+import * as _ from 'lodash';
+
 import { NetInfo, Alert } from 'react-native';
 
 import { Logger } from './Logger';
 import { getCoinPriceFromAPI } from './Currency';
 
 import {
-    saveToDatabase, loadPreferencesFromDatabase, loadPayeeDataFromDatabase
+    saveToDatabase, loadPreferencesFromDatabase, loadPayeeDataFromDatabase,
+    savePayeeToDatabase, removePayeeFromDatabase,
 } from './Database';
 
 class globals {
@@ -53,7 +56,14 @@ class globals {
     }
 
     addPayee(payee) {
-        Globals.payees.push(newPayee);
+        Globals.payees.push(payee);
+        savePayeetoDatabase(payee);
+        this.updatePayees();
+    }
+
+    removePayee(nickname) {
+        _.remove(Globals.payees, (item) => item.nickname === nickname);
+        removePayeeFromDatabase(nickname);
         this.updatePayees();
     }
 

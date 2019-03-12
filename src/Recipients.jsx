@@ -10,7 +10,7 @@ import {
     View, Text, ScrollView, FlatList, Platform, TouchableWithoutFeedback
 } from 'react-native';
 
-import { Button as RNEButton } from 'react-native';
+import { Button as RNEButton, Alert } from 'react-native';
 
 import { Button } from 'react-native-elements';
 
@@ -39,6 +39,70 @@ export class RecipientsScreen extends React.Component {
     }
 
     render() {
+        const noPayeesComponent =
+            <View>
+                <Hr/>
+                <Text style={{
+                    color: this.props.screenProps.theme.primaryColour,
+                    marginTop: 10,
+                    fontSize: 16
+                }}>
+                    Your address book is empty! Add a new recipient above to populate it.
+                </Text>
+            </View>;
+
+        const addressBookComponent = 
+            <List style={{
+                height: '70%',
+                marginBottom: 20,
+                backgroundColor: this.props.screenProps.theme.backgroundColour
+            }}>
+                <FlatList
+                    extraData={this.state.index}
+                    data={this.state.payees}
+                    keyExtractor={item => item.nickname}
+                    renderItem={({item}) => (
+                        <ListItem
+                            title={item.nickname}
+                            subtitle={item.address.substr(0, 15) + '...'}
+                            subtitleStyle={{
+                                fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace'
+                            }}
+                            leftIcon={
+                                <View style={{
+                                    width: 50,
+                                    height: 50,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    backgroundColor: this.props.screenProps.theme.iconColour,
+                                    borderRadius: 45
+                                }}>
+                                    <Text style={[Styles.centeredText, { 
+                                        fontSize: 30,
+                                        color: this.props.screenProps.theme.primaryColour,
+                                    }]}>
+                                        {item.nickname[0].toUpperCase()}
+                                    </Text>
+                                </View>
+                            }
+                            titleStyle={{
+                                color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                            }}
+                            subtitleStyle={{
+                                color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                            }}
+                            onPress={() => {
+                                this.props.navigation.navigate(
+                                    'ModifyPayee', {
+                                        payee: item,
+                                    }
+                                );
+                            }}
+                        />
+                    )}
+                />
+            </List>;
+
         return(
             <View style={{
                 backgroundColor: this.props.screenProps.theme.backgroundColour,
@@ -114,56 +178,8 @@ export class RecipientsScreen extends React.Component {
                             Modify an existing recipient
                         </Text>
 
-                        <List style={{
-                            height: '70%',
-                            marginBottom: 20,
-                            backgroundColor: this.props.screenProps.theme.backgroundColour
-                        }}>
-                            <FlatList
-                                extraData={this.state.index}
-                                data={this.state.payees}
-                                keyExtractor={item => item.nickname}
-                                renderItem={({item}) => (
-                                    <ListItem
-                                        title={item.nickname}
-                                        subtitle={item.address.substr(0, 15) + '...'}
-                                        subtitleStyle={{
-                                            fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace'
-                                        }}
-                                        leftIcon={
-                                            <View style={{
-                                                width: 50,
-                                                height: 50,
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                backgroundColor: this.props.screenProps.theme.iconColour,
-                                                borderRadius: 45
-                                            }}>
-                                                <Text style={[Styles.centeredText, { 
-                                                    fontSize: 30,
-                                                    color: this.props.screenProps.theme.primaryColour,
-                                                }]}>
-                                                    {item.nickname[0].toUpperCase()}
-                                                </Text>
-                                            </View>
-                                        }
-                                        titleStyle={{
-                                            color: this.props.screenProps.theme.slightlyMoreVisibleColour,
-                                        }}
-                                        subtitleStyle={{
-                                            color: this.props.screenProps.theme.slightlyMoreVisibleColour,
-                                        }}
-                                        onPress={() => {
-                                            this.props.navigation.navigate(
-                                                'ModifyPayee', {
-                                                    payee: item,
-                                                }
-                                            );
-                                        }}
-                                    />
-                                )}
-                            />
-                        </List>
+                        {this.state.payees.length > 0 ? addressBookComponent : noPayeesComponent}
+
                     </View>
                 </ScrollView>
             </View>
@@ -172,6 +188,18 @@ export class RecipientsScreen extends React.Component {
 }
 
 export class ModifyPayeeScreen extends React.Component {
+    constructor(props) {
+        super(props);
+
+        const { address, nickname, paymentID } = this.props.navigation.state.params.payee;
+
+        this.state = {
+            initialAddress: address,
+            initialNickname: nickname,
+            initialPaymentID: paymentID,
+        }
+    }
+
     render() {
         return(
             <View style={{
@@ -244,6 +272,7 @@ export class ModifyPayeeScreen extends React.Component {
                         <Button
                             title='Change'
                             onPress={() => {
+
                             }}
                             titleStyle={{
                                 color: this.props.screenProps.theme.primaryColour,
@@ -307,7 +336,7 @@ export class ModifyPayeeScreen extends React.Component {
                             }}
                             titleStyle={{
                                 color: this.props.screenProps.theme.primaryColour,
-                                fontSize: 13
+                                fontSize: 13,
                             }}
                             type="clear"
                         />
@@ -324,7 +353,7 @@ export class ModifyPayeeScreen extends React.Component {
                         Styles.buttonContainer, {
                             alignItems: 'stretch',
                             width: '100%',
-                            bottom: 20,
+                            bottom: 75,
                             position: 'absolute',
                         }
                     ]}
@@ -336,6 +365,36 @@ export class ModifyPayeeScreen extends React.Component {
                         color={this.props.screenProps.theme.primaryColour}
                     />
                 </View>
+
+                <View
+                    style={[
+                        Styles.buttonContainer, {
+                            alignItems: 'stretch',
+                            width: '100%',
+                            bottom: 20,
+                            position: 'absolute',
+                        }
+                    ]}
+                >
+                    <RNEButton
+                        title='Remove'
+                        onPress={() => {
+                            Alert.alert(
+                                'Delete Recipient?',
+                                'Are you sure you want to delete this recipient?',
+                                [
+                                    { text: 'Delete', onPress: () => {
+                                        Globals.removePayee(this.state.initialNickname);
+                                        this.props.navigation.goBack();
+                                    }},
+                                    { text: 'Cancel', style: 'cancel'},
+                                ],
+                            );
+                        }}
+                        color='red'
+                    />
+                </View>
+
             </View>
         );
     }
