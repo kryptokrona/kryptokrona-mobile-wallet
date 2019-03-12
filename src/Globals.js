@@ -57,7 +57,7 @@ class globals {
 
     addPayee(payee) {
         Globals.payees.push(payee);
-        savePayeetoDatabase(payee);
+        savePayeeToDatabase(payee);
         this.updatePayees();
     }
 
