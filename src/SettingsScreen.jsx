@@ -555,7 +555,7 @@ export class SettingsScreen extends React.Component {
                             },
                             {
                                 title: 'Enable PIN confirmation',
-                                description: 'Require PIN for backup keys/sending TX',
+                                description: 'Require PIN for sensitive operations',
                                 icon: {
                                     iconName: 'security',
                                     IconType: MaterialCommunityIcons,
