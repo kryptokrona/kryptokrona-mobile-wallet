@@ -565,7 +565,7 @@ export class SettingsScreen extends React.Component {
                                     if (Globals.preferences.pinConfirmation) {
                                         this.props.navigation.dispatch(navigateWithDisabledBack('RequestPin', {
                                             subtitle: 'to disable pin confirmation',
-                                            finishFunction: (pinCode, navigation) => {
+                                            finishFunction: () => {
                                                 Globals.preferences.pinConfirmation = !Globals.preferences.pinConfirmation;
 
                                                 this.props.navigation.navigate('Settings');
@@ -642,7 +642,19 @@ export class SettingsScreen extends React.Component {
                                     iconName: 'delete',
                                     IconType: AntDesign,
                                 },
-                                onClick: () => { deleteWallet(this.props.navigation) },
+                                onClick: () => {
+                                    if (Globals.preferences.pinConfirmation) {
+                                        this.props.navigation.dispatch(navigateWithDisabledBack('RequestPin', {
+                                            subtitle: 'to delete your wallet',
+                                            finishFunction: () => {
+                                                this.props.navigation.navigate('Settings');
+                                                deleteWallet(this.props.navigation)
+                                            }
+                                        }));
+                                    } else {
+                                        deleteWallet(this.props.navigation)
+                                    }
+                                },
                             },
                             {
                                 title: Config.appName,
