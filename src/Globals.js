@@ -96,7 +96,7 @@ export async function initGlobals() {
     const netInfo = NetInfo.getConnectionInfo();
 
     /* Start syncing */
-    if ((Globals.preferences.limitData && connection.type === 'cellular')) {
+    if ((Globals.preferences.limitData && netInfo.type === 'cellular')) {
         Alert.alert(
             'Not Syncing',
             'You enabled data limits, and are on a limited connection. Not starting sync.',
