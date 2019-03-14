@@ -561,14 +561,28 @@ export class SettingsScreen extends React.Component {
                                     IconType: MaterialCommunityIcons,
                                 },
                                 onClick: () => {
-                                    Globals.preferences.pinConfirmation = !Globals.preferences.pinConfirmation;
+                                    /* Require pin to disable */
+                                    if (Globals.preferences.pinConfirmation) {
+                                        this.props.navigation.dispatch(navigateWithDisabledBack('RequestPin', {
+                                            subtitle: 'to disable pin confirmation',
+                                            finishFunction: (pinCode, navigation) => {
+                                                Globals.preferences.pinConfirmation = !Globals.preferences.pinConfirmation;
 
-                                    this.setState({
-                                        pinConfirmation: Globals.preferences.pinConfirmation,
-                                    });
+                                                this.props.navigation.navigate('Settings');
 
-                                    toastPopUp(Globals.preferences.pinConfirmation ? 'Pin Confirmation Enabled' : 'Pin Confirmation Disabled');
-                                    savePreferencesToDatabase(Globals.preferences);
+                                                savePreferencesToDatabase(Globals.preferences);
+                                            }
+                                        }));
+                                    } else {
+                                        Globals.preferences.pinConfirmation = !Globals.preferences.pinConfirmation;
+
+                                        this.setState({
+                                            pinConfirmation: Globals.preferences.pinConfirmation,
+                                        });
+
+                                        toastPopUp(Globals.preferences.pinConfirmation ? 'Pin Confirmation Enabled' : 'Pin Confirmation Disabled');
+                                        savePreferencesToDatabase(Globals.preferences);
+                                    }
                                 },
                                 checkbox: true,
                                 checked: this.state.pinConfirmation,
