@@ -2,7 +2,7 @@
 name: Release Testing
 about: Tests to be performed before deploying a release
 title: "[RELEASE CANDIDATE]"
-labels: ''
+labels: release-candidate
 assignees: ''
 
 ---
