@@ -7394,7 +7394,7 @@ turtlecoin-rpc@^0.12.0:
 
 "turtlecoin-wallet-backend@https://github.com/turtlecoin/turtlecoin-wallet-backend-js":
   version "1.0.0"
-  resolved "https://github.com/turtlecoin/turtlecoin-wallet-backend-js#bafa365eeaab79d55b201e0950243a815745135e"
+  resolved "https://github.com/turtlecoin/turtlecoin-wallet-backend-js#553617d8a89b86f919b24df12f3947260a25d5d1"
   dependencies:
     abort-controller "^2.0.2"
     lodash "^4.17.11"
@@ -7807,9 +7807,9 @@ xcode@^1.0.0:
     simple-plist "^0.2.1"
     uuid "^3.3.2"
 
-"xcode@git+https://github.com/apache/cordova-node-xcode.git#e7646f0680d509b590b839e567c217590451505b":
+"xcode@https://github.com/apache/cordova-node-xcode#e7646f0680d509b590b839e567c217590451505b":
   version "1.0.1-dev"
-  resolved "git+https://github.com/apache/cordova-node-xcode.git#e7646f0680d509b590b839e567c217590451505b"
+  resolved "https://github.com/apache/cordova-node-xcode#e7646f0680d509b590b839e567c217590451505b"
   dependencies:
     simple-plist "^0.2.1"
     uuid "3.0.1"

@@ -1,4 +1,4 @@
-// Copyright (C) 2018, Zpalmtree
+// Copyright (C) 2018-2019, Zpalmtree
 //
 // Please see the included LICENSE file for more information.
 
@@ -12,6 +12,8 @@ import Config from './Config';
 import Constants from './Constants';
 
 import { Globals } from './Globals';
+
+import { reportCaughtException } from './Sentry';
 
 function getPriceDataSchema() {
     var obj = {
@@ -380,6 +382,7 @@ export async function savePreferencesToDatabase(preferences) {
                 return realm.create('Preferences', preferences, true);
             });
         } catch (err) {
+            reportCaughtException(err);
             Globals.logger.addLogMessage('Failed to save preferences to DB: ' + err);
         };
     });
@@ -400,6 +403,7 @@ export async function loadPreferencesFromDatabase() {
         return undefined;
 
     } catch (err) {
+        reportCaughtException(err);
         Globals.logger.addLogMessage('Error loading preferences from database: ' + err);
         return undefined;
     }
@@ -420,6 +424,7 @@ export async function savePriceDataToDatabase(priceData) {
                 return realm.create('PriceData', priceData, true);
             });
         } catch (err) {
+            reportCaughtException(err);
             Globals.logger.addLogMessage('Failed to save price data to DB: ' + err);
         };
     });
@@ -440,6 +445,7 @@ export async function loadPriceDataFromDatabase() {
         return undefined;
 
     } catch (err) {
+        reportCaughtException(err);
         Globals.logger.addLogMessage('Error loading database: ' + err);
         return undefined;
     }
@@ -461,6 +467,7 @@ export async function savePayeeToDatabase(payee) {
                 return realm.create('Payee', payee, true);
             });
         } catch (err) {
+            reportCaughtException(err);
             Globals.logger.addLogMessage('Failed to save payee data to DB: ' + err);
         };
     });
@@ -483,6 +490,7 @@ export async function removePayeeFromDatabase(nickname) {
                 });
             }
         } catch (err) {
+            reportCaughtException(err);
             Globals.logger.addLogMessage('Failed to save payee data to DB: ' + err);
         };
     });
@@ -504,6 +512,7 @@ export async function loadPayeeDataFromDatabase() {
         return undefined;
 
     } catch (err) {
+        reportCaughtException(err);
         Globals.logger.addLogMessage('Error loading payee data from database: ' + err);
         return undefined;
     }
@@ -532,6 +541,7 @@ export async function saveToDatabase(wallet, pinCode) {
                 setHaveWallet(true);
             })
         } catch (err) {
+            reportCaughtException(err);
             Globals.logger.addLogMessage('Err saving wallet: ' + err);
         };
     });
@@ -557,6 +567,7 @@ export async function loadFromDatabase(pinCode) {
 
         return [undefined, 'Wallet not present in database'];
     } catch(err) {
+        reportCaughtException(err);
         Globals.logger.addLogMessage('Error loading database: ' + err);
         return [undefined, err];
     }
@@ -572,6 +583,7 @@ export async function haveWallet() {
 
         return false;
     } catch (error) {
+        reportCaughtException(error);
         Globals.logger.addLogMessage('Error determining if we have data: ' + error);
         return false;
     }
@@ -581,6 +593,7 @@ export async function setHaveWallet(haveWallet) {
     try {
         await AsyncStorage.setItem(Config.coinName + 'HaveWallet', haveWallet.toString());
     } catch (error) {
+        reportCaughtException(error);
         Globals.logger.addLogMessage('Failed to save have wallet status: ' + error);
     }
 }

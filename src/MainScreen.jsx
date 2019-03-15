@@ -1,4 +1,4 @@
-// Copyright (C) 2018, Zpalmtree
+// Copyright (C) 2018-2019, Zpalmtree
 //
 // Please see the included LICENSE file for more information.
 
@@ -25,6 +25,7 @@ import { Styles } from './Styles';
 import { ProgressBar } from './ProgressBar';
 import { saveToDatabase } from './Database';
 import { Globals, initGlobals } from './Globals';
+import { reportCaughtException } from './Sentry';
 import { processBlockOutputs } from './NativeCode';
 import { initBackgroundSync } from './BackgroundSync';
 import { CopyButton, OneLineText } from './SharedComponents';
@@ -397,6 +398,7 @@ function backgroundSave() {
         saveToDatabase(Globals.wallet, Globals.pinCode);
         Globals.logger.addLogMessage('Save complete.');
     } catch (err) {
+        reportCaughtException(err);
         Globals.logger.addLogMessage('Failed to background save: ' + err);
     }
 }
