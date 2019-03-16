@@ -45,7 +45,7 @@ export class QrScannerScreen extends React.Component {
 
     render() {
         return(
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, backgroundColor: this.props.screenProps.theme.backgroundColour }}>
                 <QRCodeScanner
                     onRead={(code) => {
                         this.props.navigation.goBack();
