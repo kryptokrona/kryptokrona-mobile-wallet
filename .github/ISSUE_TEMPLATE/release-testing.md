@@ -23,7 +23,7 @@ assignees: ''
 - [ ] Wallet can sync
 - [ ] Wallet can receive a transaction
 - [ ] Coin price is loaded from API
-- [ ] Notifications are recieved when transactions is received in background
+- [ ] Notifications are received when transactions is received in background
 - [ ] Background sync works
 - [ ] Wallet sync process is saved
 
