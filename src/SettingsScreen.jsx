@@ -227,14 +227,13 @@ export class ExportKeysScreen extends React.Component {
 
     render() {
         const noSeedComponent =
-            <Text style={[Styles.centeredText, {
+            <Text style={{
                 color: this.props.screenProps.theme.primaryColour,
-                marginLeft: 10,
-                marginRight: 10,
+                marginRight: 20,
                 marginTop: 10,
                 marginBottom: 20,
                 fontSize: 16,
-            }]}>
+            }}>
                 Your wallet isn't a mnemonic seed capable wallet. Not to worry though, your
                 private keys will work just as well for restoring your wallet.
             </Text>;
