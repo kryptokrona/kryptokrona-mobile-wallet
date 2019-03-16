@@ -167,6 +167,10 @@ Run `react-native-rename your-new-project-name` from this directory. (Obviously,
 
 This might confuse the build system. You probably should do this before installing.
 
+#### Building an APK
+
+You will need to set up your signing key, and keystore file. See https://facebook.github.io/react-native/docs/signed-apk-android.html#generating-a-signing-key
+
 #### Config
 
 Edit `src/Config.js`. The fields should be self explanatory. Make sure to recompile.
