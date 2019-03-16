@@ -564,7 +564,7 @@ export class SettingsScreen extends React.Component {
                                 onClick: () => {
                                     /* Require pin to disable */
                                     if (Globals.preferences.pinConfirmation) {
-                                        this.props.navigation.dispatch(navigateWithDisabledBack('RequestPin', {
+                                        this.props.navigation.navigate('RequestPin', {
                                             subtitle: 'to disable pin confirmation',
                                             finishFunction: () => {
                                                 Globals.preferences.pinConfirmation = !Globals.preferences.pinConfirmation;
@@ -573,7 +573,7 @@ export class SettingsScreen extends React.Component {
 
                                                 savePreferencesToDatabase(Globals.preferences);
                                             }
-                                        }));
+                                        });
                                     } else {
                                         Globals.preferences.pinConfirmation = !Globals.preferences.pinConfirmation;
 
@@ -645,13 +645,13 @@ export class SettingsScreen extends React.Component {
                                 },
                                 onClick: () => {
                                     if (Globals.preferences.pinConfirmation) {
-                                        this.props.navigation.dispatch(navigateWithDisabledBack('RequestPin', {
+                                        this.props.navigation.navigate('RequestPin', {
                                             subtitle: 'to delete your wallet',
                                             finishFunction: () => {
                                                 this.props.navigation.navigate('Settings');
                                                 deleteWallet(this.props.navigation)
                                             }
-                                        }));
+                                        });
                                     } else {
                                         deleteWallet(this.props.navigation)
                                     }
