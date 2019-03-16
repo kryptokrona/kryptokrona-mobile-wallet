@@ -545,6 +545,7 @@ export class SettingsScreen extends React.Component {
                                        our components */
                                     if (Globals.updateTheme) {
                                         Globals.updateTheme();
+                                        Globals.updatePayees();
                                     }
 
                                     toastPopUp(Globals.preferences.theme === 'darkMode' ? 'Dark mode enabled' : 'Light mode enabled');
