@@ -1,6 +1,6 @@
 # TonChan - A mobile, native TurtleCoin wallet
 
-![Screenshot](https://i.imgur.com/MbZxkdu.png)
+![Screenshot](https://i.imgur.com/F5LMYKl.png)
 
 ## Setup
 
