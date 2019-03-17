@@ -433,13 +433,13 @@ export class SettingsScreen extends React.Component {
                                 },
                                 onClick: () => {
                                     if (Globals.preferences.pinConfirmation) {
-                                        this.props.navigation.dispatch(navigateWithDisabledBack('RequestPin', {
+                                        this.props.navigation.navigate('RequestPin', {
                                             subtitle: 'to backup your keys',
                                             finishFunction: () => {
                                                 this.props.navigation.dispatch(navigateWithDisabledBack('Settings'));
                                                 this.props.navigation.navigate('ExportKeys');
                                             }
-                                        }));
+                                        });
                                     } else {
                                         this.props.navigation.navigate('ExportKeys');
                                     }
