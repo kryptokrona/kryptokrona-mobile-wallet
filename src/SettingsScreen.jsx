@@ -246,89 +246,95 @@ export class ExportKeysScreen extends React.Component {
             />;
 
         return(
-            <View style={{ justifyContent: 'flex-start', flex: 1, backgroundColor: this.props.screenProps.theme.backgroundColour }}>
-
-                <View style={{
-                    alignItems: 'flex-start',
-                    justifyContent: 'flex-start',
-                    marginTop: 60,
-                    marginLeft: 30,
+            <View style={{
+                justifyContent: 'flex-start',
+                flex: 1,
+                backgroundColor: this.props.screenProps.theme.backgroundColour
+            }}>
+                <ScrollView style={{
+                    flex: 1,
                 }}>
-                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 10 }}>
-                        Mnemonic Seed:
-                    </Text>
-
-                    {this.state.mnemonicSeed === undefined ? noSeedComponent : seedComponent}
-                </View>
-
-                <View style={{
-                    alignItems: 'flex-start',
-                    justifyContent: 'flex-start',
-                    marginTop: 10,
-                    marginLeft: 30,
-                }}>
-                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 10 }}>
-                        Private Spend Key:
-                    </Text>
                     <View style={{
-                        marginTop: 10,
-                        marginRight: 30,
-                        borderWidth: 1,
-                        borderColor: this.props.screenProps.theme.primaryColour,
-                        padding: 10,
+                        alignItems: 'flex-start',
+                        justifyContent: 'flex-start',
+                        marginTop: 60,
+                        marginLeft: 30,
                     }}>
-                        <Text style={{
-                            fontSize: 12,
-                            color: this.props.screenProps.theme.slightlyMoreVisibleColour,
-                        }}>
-                            {this.state.privateSpendKey}
+                        <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 10 }}>
+                            Mnemonic Seed:
                         </Text>
+
+                        {this.state.mnemonicSeed === undefined ? noSeedComponent : seedComponent}
+                    </View>
+
+                    <View style={{
+                        alignItems: 'flex-start',
+                        justifyContent: 'flex-start',
+                        marginTop: 10,
+                        marginLeft: 30,
+                    }}>
+                        <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 10 }}>
+                            Private Spend Key:
+                        </Text>
+                        <View style={{
+                            marginTop: 10,
+                            marginRight: 30,
+                            borderWidth: 1,
+                            borderColor: this.props.screenProps.theme.primaryColour,
+                            padding: 10,
+                        }}>
+                            <Text style={{
+                                fontSize: 12,
+                                color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                            }}>
+                                {this.state.privateSpendKey}
+                            </Text>
+
+                        </View>
+
+                        <CopyButton
+                            data={this.state.privateSpendKey}
+                            name='Private Spend Key'
+                            style={{ marginLeft: 0 }}
+                            {...this.props}
+                        />
 
                     </View>
 
-                    <CopyButton
-                        data={this.state.privateSpendKey}
-                        name='Private Spend Key'
-                        style={{ marginLeft: 0 }}
-                        {...this.props}
-                    />
-
-                </View>
-
-                <View style={{
-                    alignItems: 'flex-start',
-                    justifyContent: 'flex-start',
-                    marginTop: 10,
-                    marginLeft: 30,
-                }}>
-                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 10 }}>
-                        Private View Key:
-                    </Text>
                     <View style={{
+                        alignItems: 'flex-start',
+                        justifyContent: 'flex-start',
                         marginTop: 10,
-                        marginRight: 30,
-                        borderWidth: 1,
-                        borderColor: this.props.screenProps.theme.primaryColour,
-                        padding: 10,
+                        marginLeft: 30,
                     }}>
-                        <Text style={{
-                            fontSize: 12,
-                            color: this.props.screenProps.theme.slightlyMoreVisibleColour,
-                        }}>
-                            {this.state.privateViewKey}
+                        <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 10 }}>
+                            Private View Key:
                         </Text>
+                        <View style={{
+                            marginTop: 10,
+                            marginRight: 30,
+                            borderWidth: 1,
+                            borderColor: this.props.screenProps.theme.primaryColour,
+                            padding: 10,
+                        }}>
+                            <Text style={{
+                                fontSize: 12,
+                                color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                            }}>
+                                {this.state.privateViewKey}
+                            </Text>
+
+                        </View>
+
+                        <CopyButton
+                            data={this.state.privateViewKey}
+                            name='Private View Key'
+                            style={{ marginLeft: 0 }}
+                            {...this.props}
+                        />
 
                     </View>
-
-                    <CopyButton
-                        data={this.state.privateViewKey}
-                        name='Private View Key'
-                        style={{ marginLeft: 0 }}
-                        {...this.props}
-                    />
-
-                </View>
-
+                </ScrollView>
             </View>
         );
     }
