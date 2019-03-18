@@ -16,12 +16,12 @@ import { FadeView } from './FadeView';
 import { haveWallet, loadFromDatabase } from './Database';
 import { delay, navigateWithDisabledBack } from './Utilities';
 
-async function fail(msg) {
+function fail(msg) {
     Globals.logger.addLogMessage(msg);
 
     Alert.alert(
         'Failed to open wallet',
-        msg + ' - Please report this error.',
+        msg,
         [
             {text: 'OK'},
         ]
@@ -39,13 +39,14 @@ async function tryLoadWallet(pinCode, navigation) {
            sending app to background. */
         if (Globals.wallet !== undefined) {
             navigation.navigate('Home');
+            return;
         }
 
         /* Decrypt wallet data from DB */
         let [walletData, dbError] = await loadFromDatabase(pinCode);
 
         if (dbError) {
-            await this.fail(dbError);
+            await fail(dbError);
             return;
         }
 
@@ -54,7 +55,7 @@ async function tryLoadWallet(pinCode, navigation) {
         );
 
         if (walletError) {
-            await this.fail('Error loading wallet: ' + error);
+            await fail('Error loading wallet: ' + error);
         } else {
             Globals.wallet = wallet;
             navigation.navigate('Home');
