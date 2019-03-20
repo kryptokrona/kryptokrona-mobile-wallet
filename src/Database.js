@@ -172,6 +172,17 @@ const PayeeSchema = {
     }
 }
 
+const TransactionDetailsSchema = {
+    name: 'TransactionDetails',
+    privateKey: 'hash',
+    properties: {
+        hash: 'string',
+        memo: 'string',
+        address: 'string',
+        payee: 'string',
+    }
+}
+
 function transactionInputToRealm(json, realm) {
     return realm.create('TransactionInput', json);
 }
@@ -489,7 +500,7 @@ export async function removePayeeFromDatabase(nickname) {
         }
     } catch (err) {
         reportCaughtException(err);
-        Globals.logger.addLogMessage('Failed to save payee data to DB: ' + err);
+        Globals.logger.addLogMessage('Failed to delete payee from DB: ' + err);
     };
 }
 
@@ -604,3 +615,79 @@ export async function setHaveWallet(haveWallet) {
         Globals.logger.addLogMessage('Failed to save have wallet status: ' + error);
     }
 }
+
+/**
+ * Note - saves a single transactiondetails to the DB, which contains many payees
+ */
+export async function saveTransactionDetailsToDatabase(details) {
+    try {
+        const realm = await Realm.open({
+            schema: [TransactionDetailsSchema],
+            path: 'TransactionDetailsData.realm',
+            deleteRealmIfMigrationNeeded: true,
+        });
+
+        try {
+            await realm.write(() => {
+                return realm.create('TransactionDetails', details, true);
+            });
+        } finally {
+            realm.close();
+        }
+    } catch (err) {
+        reportCaughtException(err);
+        Globals.logger.addLogMessage('Failed to save transaction details to DB: ' + err);
+    };
+}
+
+export async function removeTransactionDetailsFromDatabase(hash) {
+    try {
+        const realm = await Realm.open({
+            schema: [TransactionDetailsSchema],
+            path: 'TransactionDetailsData.realm',
+            deleteRealmIfMigrationNeeded: true,
+        });
+
+        try {
+            const details = realm.objects('TransactionDetails').filtered('hash = $0', hash);
+
+            if (details.length > 0) {
+                await realm.write(() => {
+                    realm.delete(details);
+                });
+            }
+        } finally {
+            realm.close();
+        }
+    } catch (err) {
+        reportCaughtException(err);
+        Globals.logger.addLogMessage('Failed to remove transaction details from DB: ' + err);
+    };
+}
+
+export async function loadTransactionDetailsFromDatabase() {
+    try {
+        let realm = await Realm.open({
+            schema: [TransactionDetailsSchema],
+            path: 'TransactionDetailsData.realm',
+            deleteRealmIfMigrationNeeded: true,
+        });
+
+        try {
+            if (realm.objects('TransactionDetails').length > 0) {
+                /* Has science gone too far? */
+                return realm.objects('TransactionDetails').map((x) => JSON.parse(JSON.stringify((x))));
+            }
+        } finally {
+            realm.close();
+        }
+
+        return undefined;
+
+    } catch (err) {
+        reportCaughtException(err);
+        Globals.logger.addLogMessage('Error loading transaction details from database: ' + err);
+        return undefined;
+    }
+}
+

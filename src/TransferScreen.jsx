@@ -753,6 +753,39 @@ export class NewPayeeScreen extends React.Component {
     }
 }
 
+class ModifyMemo extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return(
+            <Input
+                containerStyle={{
+                    width: '100%',
+                }}
+                inputContainerStyle={{
+                    borderColor: this.props.screenProps.theme.notVeryVisibleColour,
+                    borderWidth: 1,
+                    borderRadius: 2,
+                    width: '100%',
+                    height: 30,
+                }}
+                inputStyle={{
+                    color: this.props.screenProps.theme.primaryColour,
+                    fontSize: 14,
+                }}
+                value={this.props.memo}
+                onChangeText={(text) => {
+                    if (this.props.onChange) {
+                        this.props.onChange(text);
+                    }
+                }}
+            />
+        );
+    }
+}
+
 export class ConfirmScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
         return {
@@ -764,6 +797,11 @@ export class ConfirmScreen extends React.Component {
 
     constructor(props) {
         super(props);
+
+        this.state = {
+            memo: '',
+            modifyMemo: false,
+        }
     }
 
     render() {
@@ -781,154 +819,222 @@ export class ConfirmScreen extends React.Component {
                 </View>
 
                 <ScrollView contentContainerStyle={{
-                    alignItems: 'flex-start',
-                    justifyContent: 'flex-start',
-                    marginHorizontal: 30,
                     paddingBottom: 70,
                 }}>
-                    <Text style={{ fontSize: 13, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
-                        <Text style={{ color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
-                            {prettyPrintAmount(this.props.navigation.state.params.amount.remainingAtomic)}{' '}
-                        </Text>
-                        will reach{' '}
-                        <Text style={{ color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
-                            {this.props.navigation.state.params.payee.nickname}'s{' '}
-                        </Text>
-                        account, in {getArrivalTime()}
-                    </Text>
-
                     <View style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        marginTop: 15,
-                        width: '100%',
-                        justifyContent: 'space-between'
+                        marginHorizontal: 30,
+                        alignItems: 'flex-start',
+                        justifyContent: 'flex-start',
                     }}>
-                        <Text style={{ fontSize: 15, color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
-                            {this.props.navigation.state.params.payee.nickname}'s details
+                        <Text style={{ fontSize: 13, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
+                            <Text style={{ color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
+                                {prettyPrintAmount(this.props.navigation.state.params.amount.remainingAtomic)}{' '}
+                            </Text>
+                            will reach{' '}
+                            <Text style={{ color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
+                                {this.props.navigation.state.params.payee.nickname}'s{' '}
+                            </Text>
+                            account, in {getArrivalTime()}
                         </Text>
 
-                        <Button
-                            title='Change'
-                            onPress={() => {
-                                this.props.navigation.navigate('ChoosePayee');
-                            }}
-                            titleStyle={{
-                                color: this.props.screenProps.theme.primaryColour,
-                                fontSize: 13
-                            }}
-                            type="clear"
-                        />
+                        <View style={{
+                            alignItems: 'flex-start',
+                            justifyContent: 'flex-start',
+                        }}>
+                            <View style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                marginTop: 15,
+                                width: '100%',
+                                justifyContent: 'space-between'
+                            }}>
+                                <Text style={{
+                                    color: this.props.screenProps.theme.primaryColour,
+                                    fontWeight: 'bold',
+                                }}>
+                                    Notes
+                                </Text>
+
+                                <Button
+                                    title='Change'
+                                    onPress={() => {
+                                        this.setState({
+                                            modifyMemo: !this.state.modifyMemo,
+                                        });
+                                    }}
+                                    titleStyle={{
+                                        color: this.props.screenProps.theme.primaryColour,
+                                        fontSize: 13
+                                    }}
+                                    type="clear"
+                                />
+                            </View>
+                        </View>
+
+                        <View style={{ borderWidth: 0.7, borderColor: 'lightgrey', width: '100%' }}/>
                     </View>
 
-                    <View style={{ borderWidth: 0.5, borderColor: 'lightgrey', width: '100%' }}/>
-
-                    <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
-                        Address
-                    </Text>
-
-                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                        {this.props.navigation.state.params.payee.address}
-                    </Text>
-
-                    {this.props.navigation.state.params.payee.paymentID !== '' &&
-                    <View>
-                        <Text style={{ marginBottom: 5, marginTop: 20 }}>
-                            Payment ID
-                        </Text>
-
-                        <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                            {this.props.navigation.state.params.payee.paymentID}
-                        </Text>
-                    </View>}
-
                     <View style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        marginTop: 15,
-                        width: '100%',
-                        justifyContent: 'space-between'
+                        alignItems: 'flex-start',
+                        justifyContent: 'flex-start',
+                        marginHorizontal: this.state.modifyMemo ? 20 : 30,
+                        marginTop: 20,
                     }}>
-                        <Text style={{ fontSize: 15, color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
-                            Transfer details
-                        </Text>
-
-                        <Button
-                            title='Change'
-                            onPress={() => {
-                                this.props.navigation.navigate(
-                                    'Transfer', {
-                                        payee: this.props.navigation.state.params.payee,
-                                    }
-                                );
-                            }}
-                            titleStyle={{
-                                color: this.props.screenProps.theme.primaryColour,
-                                fontSize: 13
-                            }}
-                            type="clear"
-                        />
+                        {this.state.modifyMemo ? 
+                            <ModifyMemo
+                                memo={this.state.memo}
+                                onChange={(text) => {
+                                    this.setState({
+                                        memo: text,
+                                    })
+                                }}
+                                {...this.props}
+                            />
+                            : 
+                            <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
+                                {this.state.memo === '' ? 'None' : this.state.memo}
+                            </Text>
+                        }
                     </View>
 
-                    <View style={{ borderWidth: 0.5, borderColor: 'lightgrey', width: '100%' }}/>
+                    <View style={{
+                        marginHorizontal: 30,
+                        alignItems: 'flex-start',
+                        justifyContent: 'flex-start',
+                    }}>
+                        <View style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            marginTop: 15,
+                            width: '100%',
+                            justifyContent: 'space-between'
+                        }}>
+                            <Text style={{ fontSize: 15, color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
+                                {this.props.navigation.state.params.payee.nickname}'s details
+                            </Text>
 
-                    <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
-                        You're sending
-                    </Text>
+                            <Button
+                                title='Change'
+                                onPress={() => {
+                                    this.props.navigation.navigate('ChoosePayee');
+                                }}
+                                titleStyle={{
+                                    color: this.props.screenProps.theme.primaryColour,
+                                    fontSize: 13
+                                }}
+                                type="clear"
+                            />
+                        </View>
 
-                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                        {prettyPrintAmount(this.props.navigation.state.params.amount.originalAtomic)}
-                    </Text>
+                        <View style={{ borderWidth: 0.7, borderColor: 'lightgrey', width: '100%' }}/>
 
-                    <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
-                        {this.props.navigation.state.params.payee.nickname} gets
-                    </Text>
-
-                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                        {prettyPrintAmount(this.props.navigation.state.params.amount.remainingAtomic)}
-                    </Text>
-
-                    <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
-                        Network fee
-                    </Text>
-
-                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                        {prettyPrintAmount(this.props.navigation.state.params.amount.networkFeeAtomic)}
-                    </Text>
-
-                    {this.props.navigation.state.params.amount.devFeeAtomic > 0 &&
-                    <View>
                         <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
-                            Developer fee
+                            Address
                         </Text>
 
                         <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                            {prettyPrintAmount(this.props.navigation.state.params.amount.devFeeAtomic)}
+                            {this.props.navigation.state.params.payee.address}
                         </Text>
-                    </View>}
 
-                    {this.props.navigation.state.params.amount.nodeFeeAtomic > 0 &&
-                    <View>
+                        {this.props.navigation.state.params.payee.paymentID !== '' &&
+                        <View>
+                            <Text style={{ marginBottom: 5, marginTop: 20 }}>
+                                Payment ID
+                            </Text>
+
+                            <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
+                                {this.props.navigation.state.params.payee.paymentID}
+                            </Text>
+                        </View>}
+
+                        <View style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            marginTop: 15,
+                            width: '100%',
+                            justifyContent: 'space-between'
+                        }}>
+                            <Text style={{ fontSize: 15, color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
+                                Transfer details
+                            </Text>
+
+                            <Button
+                                title='Change'
+                                onPress={() => {
+                                    this.props.navigation.navigate(
+                                        'Transfer', {
+                                            payee: this.props.navigation.state.params.payee,
+                                        }
+                                    );
+                                }}
+                                titleStyle={{
+                                    color: this.props.screenProps.theme.primaryColour,
+                                    fontSize: 13
+                                }}
+                                type="clear"
+                            />
+                        </View>
+
+                        <View style={{ borderWidth: 0.7, borderColor: 'lightgrey', width: '100%' }}/>
+
                         <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
-                            Node fee
+                            You're sending
                         </Text>
 
                         <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                            {prettyPrintAmount(this.props.navigation.state.params.amount.nodeFeeAtomic)}
+                            {prettyPrintAmount(this.props.navigation.state.params.amount.originalAtomic)}
                         </Text>
-                    </View>}
 
-                    {this.props.navigation.state.params.amount.totalFeeAtomic > this.props.navigation.state.params.amount.networkFeeAtomic &&
-                    <View>
                         <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
-                            Total fee
+                            {this.props.navigation.state.params.payee.nickname} gets
                         </Text>
 
                         <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                            {prettyPrintAmount(this.props.navigation.state.params.amount.totalFeeAtomic)}
+                            {prettyPrintAmount(this.props.navigation.state.params.amount.remainingAtomic)}
                         </Text>
-                    </View>}
 
+                        <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
+                            Network fee
+                        </Text>
+
+                        <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
+                            {prettyPrintAmount(this.props.navigation.state.params.amount.networkFeeAtomic)}
+                        </Text>
+
+                        {this.props.navigation.state.params.amount.devFeeAtomic > 0 &&
+                        <View>
+                            <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
+                                Developer fee
+                            </Text>
+
+                            <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
+                                {prettyPrintAmount(this.props.navigation.state.params.amount.devFeeAtomic)}
+                            </Text>
+                        </View>}
+
+                        {this.props.navigation.state.params.amount.nodeFeeAtomic > 0 &&
+                        <View>
+                            <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
+                                Node fee
+                            </Text>
+
+                            <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
+                                {prettyPrintAmount(this.props.navigation.state.params.amount.nodeFeeAtomic)}
+                            </Text>
+                        </View>}
+
+                        {this.props.navigation.state.params.amount.totalFeeAtomic > this.props.navigation.state.params.amount.networkFeeAtomic &&
+                        <View>
+                            <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
+                                Total fee
+                            </Text>
+
+                            <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
+                                {prettyPrintAmount(this.props.navigation.state.params.amount.totalFeeAtomic)}
+                            </Text>
+                        </View>}
+
+                    </View>
                 </ScrollView>
 
                 <BottomButton
@@ -939,6 +1045,7 @@ export class ConfirmScreen extends React.Component {
                             address: this.props.navigation.state.params.payee.address,
                             paymentID: this.props.navigation.state.params.payee.paymentID,
                             nickname: this.props.navigation.state.params.payee.nickname,
+                            memo: this.state.memo,
                         };
 
                         if (Globals.preferences.pinConfirmation) {
@@ -1250,6 +1357,7 @@ export class SendTransactionScreen extends React.Component {
             address: this.props.navigation.state.params.address,
             paymentID: this.props.navigation.state.params.paymentID,
             nickname: this.props.navigation.state.params.nickname,
+            memo: this.props.navigation.state.params.memo,
             homeEnabled: false,
         }
 
@@ -1286,6 +1394,13 @@ export class SendTransactionScreen extends React.Component {
             this.setState({
                 hash,
                 homeEnabled: true,
+            });
+
+            Globals.addTransactionDetails({
+                hash: hash,
+                memo: this.state.memo,
+                address: this.state.address,
+                payee: this.state.nickname,
             });
         }
     }

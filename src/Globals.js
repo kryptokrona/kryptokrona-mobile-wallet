@@ -12,6 +12,7 @@ import { getCoinPriceFromAPI } from './Currency';
 import {
     saveToDatabase, loadPreferencesFromDatabase, loadPayeeDataFromDatabase,
     savePayeeToDatabase, removePayeeFromDatabase,
+    loadTransactionDetailsFromDatabase, saveTransactionDetailsToDatabase,
 } from './Database';
 
 class globals {
@@ -44,6 +45,9 @@ class globals {
         this.logger = new Logger();
 
         this.updatePayeeFunctions = [];
+
+        /* Mapping of tx hash to address sent, payee name, memo */
+        this.transactionDetails = [];
     }
 
     reset() {
@@ -55,19 +59,24 @@ class globals {
         NetInfo.removeEventListener('connectionChange', updateConnection);
     }
 
+    addTransactionDetails(txDetails) {
+        Globals.transactionDetails.push(txDetails);
+        saveTransactionDetailsToDatabase(txDetails);
+    }
+
     addPayee(payee) {
         Globals.payees.push(payee);
         savePayeeToDatabase(payee);
-        this.updatePayees();
+        this.update();
     }
 
     removePayee(nickname) {
         _.remove(Globals.payees, (item) => item.nickname === nickname);
         removePayeeFromDatabase(nickname);
-        this.updatePayees();
+        this.update();
     }
 
-    updatePayees() {
+    update() {
         Globals.updatePayeeFunctions.forEach((f) => {
             f();
         });
@@ -91,6 +100,12 @@ export async function initGlobals() {
 
     if (payees !== undefined) {
         Globals.payees = payees;
+    }
+
+    const transactionDetails = await loadTransactionDetailsFromDatabase();
+
+    if (transactionDetails !== undefined) {
+        Globals.transactionDetails = transactionDetails;
     }
     
     const netInfo = NetInfo.getConnectionInfo();

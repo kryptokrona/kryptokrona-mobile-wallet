@@ -62,11 +62,20 @@ export class TransactionDetailsScreen extends React.Component {
 
         const tx = props.navigation.state.params.transaction;
 
+        const txDetails = Globals.transactionDetails.find((x) => x.hash === tx.hash);
+
+        if (txDetails && txDetails.memo === '') {
+            txDetails.memo = undefined;
+        }
+
         this.state = {
             transaction: tx,
             amount: Math.abs(tx.totalAmount()) - (tx.totalAmount() > 0 ? 0 : tx.fee),
             complete: tx.timestamp !== 0,
             coinValue: '0',
+            address: txDetails ? txDetails.address : undefined,
+            payee: txDetails ? txDetails.payee : undefined,
+            memo: txDetails ? txDetails.memo : undefined,
         };
 
         (async () => {
@@ -110,6 +119,12 @@ export class TransactionDetailsScreen extends React.Component {
                             {...this.props}
                         />
 
+                        {this.state.payee && <ItemDescription
+                            title='Recipient'
+                            item={this.state.payee}
+                            {...this.props}
+                        />}
+
                         <ItemDescription
                             title='Amount'
                             item={prettyPrintAmount(this.state.amount)}
@@ -127,6 +142,18 @@ export class TransactionDetailsScreen extends React.Component {
                             item={this.state.coinValue}
                             {...this.props}
                         />
+
+                        {this.state.memo && this.state.memo !== '' && <ItemDescription
+                            title='Notes'
+                            item={this.state.memo}
+                            {...this.props}
+                        />}
+
+                        {this.state.address && <ItemDescription
+                            title='Address'
+                            item={this.state.address}
+                            {...this.props}
+                        />}
 
                         <ItemDescription
                             title='State'
