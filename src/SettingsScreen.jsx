@@ -642,6 +642,26 @@ export class SettingsScreen extends React.Component {
                                 },
                             },
                             {
+                                title: 'Resync Wallet',
+                                description: 'Resync wallet from scratch',
+                                icon: {
+                                    iconName: 'ios-refresh',
+                                    IconType: Ionicons,
+                                },
+                                onClick: () => {
+                                    if (Globals.preferences.pinConfirmation) {
+                                        this.props.navigation.navigate('RequestPin', {
+                                            subtitle: 'to resync your wallet',
+                                            finishFunction: () => {
+                                                resetWallet();
+                                            }
+                                        });
+                                    } else {
+                                        resetWallet();
+                                    }
+                                },
+                            },
+                            {
                                 title: 'Delete Wallet',
                                 description: 'Delete your wallet',
                                 icon: {
@@ -732,5 +752,19 @@ function deleteWallet(navigation) {
             }},
             {text: 'Cancel', style: 'cancel'},
         ],
-    )
+    );
+}
+
+function resetWallet() {
+    Alert.alert(
+        'Resync Wallet?',
+        'Are you sure you want to resync your wallet? This may take a long time.',
+        [
+            {text: 'Resync', onPress: () => {
+                Globals.wallet.rescan();
+                toastPopUp('Wallet resync initiated');
+            }},
+            {text: 'Cancel', style: 'cancel'},
+        ],
+    );
 }
