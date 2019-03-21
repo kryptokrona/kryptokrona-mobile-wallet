@@ -6,7 +6,7 @@ import React from 'react';
 
 import { WalletBackend } from 'turtlecoin-wallet-backend';
 
-import { View } from 'react-native';
+import { View, Alert } from 'react-native';
 
 import Config from './Config';
 
