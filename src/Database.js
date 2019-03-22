@@ -361,133 +361,79 @@ function realmToWalletJSON(realmObj) {
 export async function savePreferencesToDatabase(preferences) {
     preferences['primaryKey'] = 1;
 
-    try {
-        const realm = await Realm.open({
-            schema: [PreferencesSchema],
-            path: 'Preferences.realm',
-            deleteRealmIfMigrationNeeded: true,
-        });
-
-        try {
+    withDB(
+        [PreferencesSchema],
+        'Preferences.realm',
+        async (realm) => {
             await realm.write(() => {
                 return realm.create('Preferences', preferences, true);
             });
-        } finally {
-            realm.close();
         }
-    } catch (err) {
-        reportCaughtException(err);
-        Globals.logger.addLogMessage('Failed to save preferences to DB: ' + err);
-    };
+    );
 }
 
 export async function loadPreferencesFromDatabase() {
-    try {
-
-        let realm = await Realm.open({
-            schema: [PreferencesSchema],
-            path: 'Preferences.realm',
-            deleteRealmIfMigrationNeeded: true,
-        });
-
-        try {
+    return withDB(
+        [PreferencesSchema],
+        'Preferences.realm',
+        (realm) => {
             if (realm.objects('Preferences').length > 0) {
                 return JSON.parse(JSON.stringify(realm.objects('Preferences')[0]));
             }
-        } finally {
-            realm.close();
+
+            return undefined;
         }
-
-        return undefined;
-
-    } catch (err) {
-        reportCaughtException(err);
-        Globals.logger.addLogMessage('Error loading preferences from database: ' + err);
-        return undefined;
-    }
+    );
 }
 
 export async function savePriceDataToDatabase(priceData) {
     priceData['primaryKey'] = 1;
 
-    try {
-        const realm = await Realm.open({
-            schema: [getPriceDataSchema()],
-            path: 'PriceData.realm',
-            deleteRealmIfMigrationNeeded: true,
-        });
-
-        try {
+    withDB(
+        [getPriceDataSchema()],
+        'PriceData.realm',
+        async (realm) => {
             await realm.write(() => {
                 return realm.create('PriceData', priceData, true);
             });
-        } finally {
-            realm.close();
         }
-    } catch (err) {
-        reportCaughtException(err);
-        Globals.logger.addLogMessage('Failed to save price data to DB: ' + err);
-    };
+    );
 }
 
 export async function loadPriceDataFromDatabase() {
-    try {
-        let realm = await Realm.open({
-            schema: [getPriceDataSchema()],
-            path: 'PriceData.realm',
-            deleteRealmIfMigrationNeeded: true,
-        });
-
-        try {
+    return withDB(
+        [getPriceDataSchema()],
+        'PriceData.realm',
+        (realm) => {
             if (realm.objects('PriceData').length > 0) {
                 return JSON.parse(JSON.stringify(realm.objects('PriceData')[0]));
             }
-        } finally {
-            realm.close();
+
+            return undefined;
         }
-
-        return undefined;
-
-    } catch (err) {
-        reportCaughtException(err);
-        Globals.logger.addLogMessage('Error loading database: ' + err);
-        return undefined;
-    }
+    );
 }
 
 /**
  * Note - saves a single payee to the DB, which contains many payees
  */
 export async function savePayeeToDatabase(payee) {
-    try {
-        const realm = await Realm.open({
-            schema: [PayeeSchema],
-            path: 'PayeeData.realm',
-            deleteRealmIfMigrationNeeded: true,
-        });
-
-        try {
+    withDB(
+        [PayeeSchema],
+        'PayeeData.realm',
+        async (realm) => {
             await realm.write(() => {
                 return realm.create('Payee', payee, true);
             });
-        } finally {
-            realm.close();
         }
-    } catch (err) {
-        reportCaughtException(err);
-        Globals.logger.addLogMessage('Failed to save payee data to DB: ' + err);
-    };
+    );
 }
 
 export async function removePayeeFromDatabase(nickname) {
-    try {
-        const realm = await Realm.open({
-            schema: [PayeeSchema],
-            path: 'PayeeData.realm',
-            deleteRealmIfMigrationNeeded: true,
-        });
-
-        try {
+    withDB(
+        [PayeeSchema],
+        'PayeeData.realm',
+        async (realm) => {
             const payee = realm.objects('Payee').filtered('nickname = $0', nickname);
 
             if (payee.length > 0) {
@@ -495,39 +441,23 @@ export async function removePayeeFromDatabase(nickname) {
                     realm.delete(payee);
                 });
             }
-        } finally {
-            realm.close();
         }
-    } catch (err) {
-        reportCaughtException(err);
-        Globals.logger.addLogMessage('Failed to delete payee from DB: ' + err);
-    };
+    );
 }
 
 export async function loadPayeeDataFromDatabase() {
-    try {
-        let realm = await Realm.open({
-            schema: [PayeeSchema],
-            path: 'PayeeData.realm',
-            deleteRealmIfMigrationNeeded: true,
-        });
-
-        try {
+    return withDB(
+        [PayeeSchema],
+        'PayeeData.realm',
+        (realm) => {
             if (realm.objects('Payee').length > 0) {
                 /* Has science gone too far? */
                 return realm.objects('Payee').map((x) => JSON.parse(JSON.stringify((x))));
             }
-        } finally {
-            realm.close();
+
+            return undefined;
         }
-
-        return undefined;
-
-    } catch (err) {
-        reportCaughtException(err);
-        Globals.logger.addLogMessage('Error loading payee data from database: ' + err);
-        return undefined;
-    }
+    );
 }
 
 export async function saveToDatabase(wallet, pinCode) {
@@ -563,6 +493,8 @@ export async function saveToDatabase(wallet, pinCode) {
 
 export async function loadFromDatabase(pinCode) {
     var key = sha512.arrayBuffer(pinCode.toString());
+
+    compactDBs(key);
 
     try {
         let realm = await Realm.open({
@@ -620,35 +552,22 @@ export async function setHaveWallet(haveWallet) {
  * Note - saves a single transactiondetails to the DB, which contains many payees
  */
 export async function saveTransactionDetailsToDatabase(details) {
-    try {
-        const realm = await Realm.open({
-            schema: [TransactionDetailsSchema],
-            path: 'TransactionDetailsData.realm',
-            deleteRealmIfMigrationNeeded: true,
-        });
-
-        try {
+    withDB(
+        [TransactionDetailsSchema],
+        'TransactionDetailsData.realm',
+        async (realm) => {
             await realm.write(() => {
                 return realm.create('TransactionDetails', details, true);
             });
-        } finally {
-            realm.close();
         }
-    } catch (err) {
-        reportCaughtException(err);
-        Globals.logger.addLogMessage('Failed to save transaction details to DB: ' + err);
-    };
+    );
 }
 
 export async function removeTransactionDetailsFromDatabase(hash) {
-    try {
-        const realm = await Realm.open({
-            schema: [TransactionDetailsSchema],
-            path: 'TransactionDetailsData.realm',
-            deleteRealmIfMigrationNeeded: true,
-        });
-
-        try {
+    withDB(
+        [TransactionDetailsSchema],
+        'TransactionDetailsData.realm',
+        async (realm) => {
             const details = realm.objects('TransactionDetails').filtered('hash = $0', hash);
 
             if (details.length > 0) {
@@ -656,38 +575,95 @@ export async function removeTransactionDetailsFromDatabase(hash) {
                     realm.delete(details);
                 });
             }
-        } finally {
-            realm.close();
         }
-    } catch (err) {
-        reportCaughtException(err);
-        Globals.logger.addLogMessage('Failed to remove transaction details from DB: ' + err);
-    };
+    );
 }
 
-export async function loadTransactionDetailsFromDatabase() {
-    try {
-        let realm = await Realm.open({
-            schema: [TransactionDetailsSchema],
-            path: 'TransactionDetailsData.realm',
-            deleteRealmIfMigrationNeeded: true,
-        });
-
-        try {
+export function loadTransactionDetailsFromDatabase() {
+    return withDB(
+        [TransactionDetailsSchema],
+        'TransactionDetailsData.realm',
+        (realm) => {
             if (realm.objects('TransactionDetails').length > 0) {
                 /* Has science gone too far? */
                 return realm.objects('TransactionDetails').map((x) => JSON.parse(JSON.stringify((x))));
             }
+
+            return undefined;
+        }
+    );
+}
+
+async function withDB(schema, path, func, deleteIfMigrationNeeded) {
+    try {
+        let realm = await Realm.open({
+            schema: schema,
+            path: path,
+            deleteRealmIfMigrationNeeded: deleteIfMigrationNeeded === undefined ? true : deleteIfMigrationNeeded,
+        });
+
+        try {
+            return await func(realm);
         } finally {
             realm.close();
         }
-
-        return undefined;
-
     } catch (err) {
         reportCaughtException(err);
-        Globals.logger.addLogMessage('Error loading transaction details from database: ' + err);
+        Globals.logger.addLogMessage('Error interacting with DB: ' + err);
         return undefined;
     }
 }
 
+function compactDBs(key) {
+    try {
+        await withDB(
+            [TransactionDetailsSchema],
+            'TransactionDetailsData.realm',
+            (realm) => {
+                realm.compact();
+            }
+        );
+
+        await withDB(
+            [PayeeSchema],
+            'PayeeData.realm',
+            (realm) => {
+                realm.compact();
+            }
+        );
+
+        await withDB(
+            [getPriceDataSchema()],
+            'PriceData.realm',
+            (realm) => {
+                realm.compact();
+            }
+        );
+
+        await withDB(
+            [PreferencesSchema],
+            'Preferences.realm',
+            (realm) => {
+                realm.compact();
+            }
+        );
+
+        let realm = await Realm.open({
+            schema: [
+                WalletSchema, WalletSynchronizerSchema, SubWalletSchema,
+                TransactionSchema, SubWalletsSchema, TxPrivateKeysSchema,
+                TransfersSchema, TransactionInputSchema, UnconfirmedInputSchema,
+                SynchronizationStatusSchema
+            ],
+            encryptionKey: key,
+        });
+
+        try {
+            realm.compact();
+        } finally {
+            realm.close();
+        }
+    } catch (err) {
+        console.log('Failed to compact DBs: ' + err);
+    }
+}

@@ -391,11 +391,11 @@ class SyncComponent extends React.Component {
 /**
  * Save wallet in background
  */
-function backgroundSave() {
+async function backgroundSave() {
     Globals.logger.addLogMessage('Saving wallet...');
 
     try {
-        saveToDatabase(Globals.wallet, Globals.pinCode);
+        await saveToDatabase(Globals.wallet, Globals.pinCode);
         Globals.logger.addLogMessage('Save complete.');
     } catch (err) {
         reportCaughtException(err);
