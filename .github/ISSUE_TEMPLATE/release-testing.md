@@ -36,6 +36,9 @@ assignees: ''
 - [ ] Dev fee is correctly displayed
 - [ ] Receiver receives transaction
 - [ ] Dev wallet receives transaction
+- [ ] Address of outgoing transaction is saved, and remains after reload
+- [ ] Payee name of outgoing transaction is saved, and remains after reload
+- [ ] Can save a memo for outgoing transaction
 
 ## Payees
 
@@ -69,3 +72,6 @@ assignees: ''
 - [ ] Github link works correctly
 - [ ] Logging screen displays correctly
 - [ ] Deleting wallet works correctly
+- [ ] Reset from timestamp created wallet works
+- [ ] Reset from scan height created wallet works
+- [ ] Reset from scan height of zero works
