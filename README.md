@@ -145,6 +145,8 @@ Note that you need to close the emulator to get the `yarn deploy-android` to ins
 
 ## Forking
 
+Start by cloning the latest tagged release. If it's not in a release, it has not been fully tested, and may have bugs.
+
 #### Modifying icon
 
 Replace `assets/img/icon.png` with your icon image. Make sure it is 1024x1024.
