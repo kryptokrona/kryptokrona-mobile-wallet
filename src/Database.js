@@ -494,7 +494,7 @@ export async function saveToDatabase(wallet, pinCode) {
 export async function loadFromDatabase(pinCode) {
     var key = sha512.arrayBuffer(pinCode.toString());
 
-    compactDBs(key);
+    await compactDBs(key);
 
     try {
         let realm = await Realm.open({
@@ -614,7 +614,7 @@ async function withDB(schema, path, func, deleteIfMigrationNeeded) {
     }
 }
 
-function compactDBs(key) {
+async function compactDBs(key) {
     try {
         await withDB(
             [TransactionDetailsSchema],
