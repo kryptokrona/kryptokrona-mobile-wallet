@@ -7394,7 +7394,7 @@ turtlecoin-rpc@^0.12.0:
 
 "turtlecoin-wallet-backend@https://github.com/turtlecoin/turtlecoin-wallet-backend-js":
   version "1.0.0"
-  resolved "https://github.com/turtlecoin/turtlecoin-wallet-backend-js#3b4f17070baa7dd4adc41fb165cbe394941aeca0"
+  resolved "https://github.com/turtlecoin/turtlecoin-wallet-backend-js#434c2ff540250968613f7ce3b7271813762a982e"
   dependencies:
     abort-controller "^2.0.2"
     lodash "^4.17.11"
