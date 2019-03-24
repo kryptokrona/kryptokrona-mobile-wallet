@@ -577,6 +577,10 @@ export class SettingsScreen extends React.Component {
                                                 this.props.navigation.navigate('Settings');
 
                                                 savePreferencesToDatabase(Globals.preferences);
+
+                                                this.setState({
+                                                    pinConfirmation: Globals.preferences.pinConfirmation,
+                                                });
                                             }
                                         });
                                     } else {
