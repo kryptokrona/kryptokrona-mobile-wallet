@@ -103,8 +103,8 @@ android {
         applicationId "com.tonchan"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 7
-        versionName "v0.0.7"
+        versionCode 8
+        versionName "v0.0.8"
         ndk {
             abiFilters "armeabi-v7a", "x86"
             moduleName "TurtleCoin_jni"
