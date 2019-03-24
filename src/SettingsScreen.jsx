@@ -657,11 +657,12 @@ export class SettingsScreen extends React.Component {
                                         this.props.navigation.navigate('RequestPin', {
                                             subtitle: 'to resync your wallet',
                                             finishFunction: () => {
-                                                resetWallet();
+                                                this.props.navigation.navigate('Settings');
+                                                resetWallet(this.props.navigation);
                                             }
                                         });
                                     } else {
-                                        resetWallet();
+                                        resetWallet(this.props.navigation);
                                     }
                                 },
                             },
@@ -759,7 +760,7 @@ function deleteWallet(navigation) {
     );
 }
 
-function resetWallet() {
+function resetWallet(navigation) {
     Alert.alert(
         'Resync Wallet?',
         'Are you sure you want to resync your wallet? This may take a long time.',
@@ -767,6 +768,7 @@ function resetWallet() {
             {text: 'Resync', onPress: () => {
                 Globals.wallet.rescan();
                 toastPopUp('Wallet resync initiated');
+                navigation.navigate('Main');
             }},
             {text: 'Cancel', style: 'cancel'},
         ],
