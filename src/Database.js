@@ -183,6 +183,15 @@ const TransactionDetailsSchema = {
     }
 }
 
+const CompactSchema = {
+    name: 'CompactionInfo',
+    primaryKey: 'primaryKey',
+    properties: {
+        primaryKey: 'int',
+        lastUpdated: 'date',
+    }
+}
+
 function transactionInputToRealm(json, realm) {
     return realm.create('TransactionInput', json);
 }
@@ -592,6 +601,37 @@ export function loadTransactionDetailsFromDatabase() {
     );
 }
 
+export function saveLastUpdatedToDatabase(date) {
+    const data = {
+        lastUpdated: date,
+        primaryKey: 0,
+    }
+
+    withDB(
+        [CompactSchema],
+        'CompactionInfo.realm',
+        async (realm) => {
+            await realm.write(() => {
+                return realm.create('CompactionInfo', data, true);
+            });
+        }
+    );
+}
+
+export function loadLastUpdatedFromDatabase() {
+    return withDB(
+        [CompactSchema],
+        'CompactionInfo.realm',
+        (realm) => {
+            if (realm.objects('CompactionInfo').length > 0) {
+                return new Date(realm.objects('CompactionInfo')[0].lastUpdated);
+            }
+
+            return new Date(0);
+        }
+    ) || new Date(0);
+}
+
 async function withDB(schema, path, func, deleteIfMigrationNeeded) {
     try {
         let realm = await Realm.open({
@@ -612,7 +652,11 @@ async function withDB(schema, path, func, deleteIfMigrationNeeded) {
     }
 }
 
-async function compactDBs(key) {
+export async function compactDBs(pinCode) {
+    Globals.logger.addLogMessage('Attempting to compact DB...');
+
+    var key = sha512.arrayBuffer(pinCode.toString());
+
     try {
         await withDB(
             [TransactionDetailsSchema],
@@ -663,5 +707,8 @@ async function compactDBs(key) {
         }
     } catch (err) {
         console.log('Failed to compact DBs: ' + err);
+        return false;
     }
+
+    return true;
 }

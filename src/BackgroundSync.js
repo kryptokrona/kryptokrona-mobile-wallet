@@ -9,7 +9,11 @@ import { AppState, Platform, NetInfo } from 'react-native';
 import Config from './Config';
 
 import { Globals } from './Globals';
-import { saveToDatabase } from './Database';
+
+import {
+    saveToDatabase, compactDBs, loadLastUpdatedFromDatabase,
+    saveLastUpdatedToDatabase
+} from './Database';
 
 /* Note: headless/start on boot not enabled, since we don't have the pin
    to decrypt the users wallet, when fetching from DB */
@@ -105,6 +109,24 @@ export async function backgroundSync() {
     let allowedRunTime = Platform.OS === 'ios' ? 25 : (60 * 14);
 
     let secsRunning = 0;
+
+    const lastCompacted = await loadLastUpdatedFromDatabase();
+
+    const now = new Date();
+
+    const dayDifference = Math.floor(
+        (now.getTime() - lastCompacted.getTime()) / (1000 * 3600 * 24)
+    );
+
+    /* More than 24 hours have passed since last compaction */
+    if (dayDifference > 1) {
+        const success = await compactDBs(Globals.pinCode);
+
+        if (success) {
+            saveLastUpdatedToDatabase(now);
+            Globals.logger.addLogMessage('[Background Sync] Compaction completed successfully');
+        }
+    }
 
     /* Run for 25 seconds or until the app comes back to the foreground */
     while (!State.shouldStop && secsRunning < allowedRunTime) {
