@@ -712,3 +712,15 @@ export async function compactDBs(pinCode) {
 
     return true;
 }
+
+export async function shouldCompactDB(requiredDayDifference) {
+    const lastCompacted = await loadLastUpdatedFromDatabase();
+
+    const now = new Date();
+
+    const actualDayDifference = Math.floor(
+        (now.getTime() - lastCompacted.getTime()) / (1000 * 3600 * 24)
+    );
+
+    return actualDayDifference > requiredDayDifference;
+}

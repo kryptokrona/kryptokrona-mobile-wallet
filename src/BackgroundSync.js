@@ -11,8 +11,7 @@ import Config from './Config';
 import { Globals } from './Globals';
 
 import {
-    saveToDatabase, compactDBs, loadLastUpdatedFromDatabase,
-    saveLastUpdatedToDatabase
+    saveToDatabase, compactDBs, shouldCompactDB, saveLastUpdatedToDatabase
 } from './Database';
 
 /* Note: headless/start on boot not enabled, since we don't have the pin
@@ -110,20 +109,12 @@ export async function backgroundSync() {
 
     let secsRunning = 0;
 
-    const lastCompacted = await loadLastUpdatedFromDatabase();
-
-    const now = new Date();
-
-    const dayDifference = Math.floor(
-        (now.getTime() - lastCompacted.getTime()) / (1000 * 3600 * 24)
-    );
-
     /* More than 24 hours have passed since last compaction */
-    if (dayDifference > 1) {
+    if (await shouldCompactDB(1)) {
         const success = await compactDBs(Globals.pinCode);
 
         if (success) {
-            saveLastUpdatedToDatabase(now);
+            saveLastUpdatedToDatabase(new Date());
             Globals.logger.addLogMessage('[Background Sync] Compaction completed successfully');
         }
     }

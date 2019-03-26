@@ -23,7 +23,6 @@ import Config from './Config';
 
 import { Styles } from './Styles';
 import { ProgressBar } from './ProgressBar';
-import { saveToDatabase } from './Database';
 import { Globals, initGlobals } from './Globals';
 import { reportCaughtException } from './Sentry';
 import { processBlockOutputs } from './NativeCode';
@@ -31,7 +30,11 @@ import { initBackgroundSync } from './BackgroundSync';
 import { CopyButton, OneLineText } from './SharedComponents';
 import { coinsToFiat, getCoinPriceFromAPI } from './Currency';
 
-function init() {
+import {
+    saveToDatabase, saveLastUpdatedToDatabase, compactDBs, shouldCompactDB
+} from './Database';
+
+async function init() {
     Globals.wallet.scanCoinbaseTransactions(Globals.preferences.scanCoinbaseTransactions);
 
     Globals.wallet.on('incomingtx', (transaction) => {
@@ -70,6 +73,20 @@ function init() {
 
         requestPermissions: true,
     });
+
+    /* More than 48 hours have passed since last compaction */
+    if (await shouldCompactDB(2)) {
+        /* Perform the operation in 2 minutes... hopefully they won't be bothered
+           by the interruption then. */
+        setTimeout(async () => {
+            const success = await compactDBs(Globals.pinCode);
+
+            if (success) {
+                saveLastUpdatedToDatabase(new Date());
+                Globals.logger.addLogMessage('Compaction completed successfully');
+            }
+        }, 1000 * 60 * 2);
+    }
 }
 
 function handleNotification(notification) {
