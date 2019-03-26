@@ -36,7 +36,10 @@ import { Styles } from './Styles';
 import { Globals } from './Globals';
 import { Hr, BottomButton } from './SharedComponents';
 import { removeFee, toAtomic, fromAtomic, addFee } from './Fee';
-import { getArrivalTime, navigateWithDisabledBack, delay, toastPopUp } from './Utilities';
+
+import {
+    getArrivalTime, navigateWithDisabledBack, delay, toastPopUp, parseQRCode,
+} from './Utilities';
 
 export class QrScannerScreen extends React.Component {
     constructor(props) {
@@ -1092,160 +1095,19 @@ export class ChoosePayeeScreen extends React.Component {
     };
 
     handleQrCode(qrData, navigation) {
-        const error = this.parseQrCodeData(qrData, navigation);
+        const qrResult = parseQRCode(qrData);
 
-        if (error) {
+        if (!qrResult.valid) {
             Alert.alert(
                 'Cannot send transaction',
-                error,
+                qrResult.error,
                 [
                     {text: 'OK'},
                 ]
             );
-        }
-    }
-
-    parseQrCodeData(qrData, navigation) {
-        /* It's a URI, try and get the data from it */
-        if (qrData.startsWith(Config.uriPrefix)) {
-            /* Remove the turtlecoin:// prefix */
-            let data = qrData.replace(Config.uriPrefix, '');
-
-            const index = data.indexOf('?');
-
-            /* Not valid URI */
-            if (index === -1) {
-                index = data.length;
-            }
-
-            const address = data.substr(0, index);
-            const params = Qs.parse(data.substr(index));
-
-            const amount = params.amount;
-            const name = params.name;
-            let paymentID = params.paymentid;
-
-            if (paymentID) {
-                const pidError = validatePaymentID(paymentID);
-
-                /* Payment ID isn't valid. */
-                if (pidError.errorCode !== WalletErrorCode.SUCCESS) {
-                    return 'QR code is not valid!';
-                }
-
-                /* Both integrated address and payment ID given */
-                if (address.length === Config.integratedAddressLength && paymentID.length !== 0) {
-                    return 'QR code is not valid!';
-                }
-            }
-
-            const addressError = validateAddresses([address], true);
-
-            /* Address isn't valid */
-            if (addressError.errorCode !== WalletErrorCode.SUCCESS) {
-                return 'QR code is not valid!';
-            }
-
-            const amountAtomic = Number(amount);
-            let feeInfo = undefined;
-            let amountNonAtomic = undefined;
-
-            if (!isNaN(amountAtomic)) {
-                amountNonAtomic = amountAtomic / (10 ** Config.decimalPlaces);
-
-                /* Got an amount, can go straight to confirmation, if we have enough balance */
-                const [unlockedBalance, lockedBalance] = Globals.wallet.getBalance();
-
-                feeInfo = addFee(amountNonAtomic);
-
-                let [valid, error] = validAmount(feeInfo.original, unlockedBalance);
-
-                if (feeInfo.originalAtomic > unlockedBalance) {
-                    error = 'Not enough funds available! Needed (including fees): ' +
-                            `${prettyPrintAmount(feeInfo.originalAtomic)}, Available: ` +
-                            prettyPrintAmount(unlockedBalance);
-                }
-
-                if (!valid) {
-                    return error;
-                }
-            }
-            
-            /* No name, need to pick one.. */
-            if (!name) {
-                navigation.navigate(
-                    'NewPayee', {
-                        paymentID: paymentID || '',
-                        address,
-                        amount: amountNonAtomic ? amountNonAtomic.toString() : undefined,
-                    }
-                );
-
-                return undefined;
-            }
-
-            const newPayee = {
-                nickname: name,
-                address: address,
-                paymentID: paymentID || '',
-            }
-
-            const existingPayee = Globals.payees.find((p) => p.nickname === name);
-            
-            /* Payee exists already */
-            if (existingPayee) {
-                /* New payee doesn't match existing payee, get them to enter a new name */
-                if (existingPayee.address !== newPayee.address ||
-                    existingPayee.paymentID !== newPayee.paymentID) { 
-                    navigation.navigate(
-                        'NewPayee', {
-                            paymentID: paymentID || '',
-                            address,
-                            amount: amountNonAtomic.toString(),
-                        }
-                    );
-
-                    return undefined;
-                }
-            /* Save payee to database for later use */
-            } else {
-                Globals.addPayee(newPayee);
-            }
-
-            if (!amount) {
-                navigation.navigate(
-                    'Transfer', {
-                        payee: newPayee,
-                    }
-                );
-
-                return undefined;
-            } else {
-                navigation.navigate(
-                    'Confirm', {
-                        payee: newPayee,
-                        amount: feeInfo,
-                    }
-                );
-            }
-        /* It's a standard address, try and parse it (or something else) */
         } else {
-            const addressError = validateAddresses([qrData], true);
-
-            if (addressError.errorCode !== WalletErrorCode.SUCCESS) {
-                return 'QR code is not valid!';
-            }
-
-            navigation.navigate(
-                'NewPayee', {
-                    address: qrData,
-                }
-            );
-
-            return undefined;
+            navigation.navigate(qrResult.suggestedAction, {...qrResult});
         }
-
-        return undefined;
     }
 
     render() {

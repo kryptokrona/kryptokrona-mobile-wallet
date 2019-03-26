@@ -95,3 +95,153 @@ export function getArrivalTime() {
         return Config.blockTargetTime + ' seconds!';
     }
 }
+
+export function parseQRCode(qrData) {
+    /* It's a URI, try and get the data from it */
+    if (qrData.startsWith(Config.uriPrefix)) {
+        /* Remove the turtlecoin:// prefix */
+        let data = qrData.replace(Config.uriPrefix, '');
+
+        const index = data.indexOf('?');
+
+        /* Not valid URI */
+        if (index === -1) {
+            index = data.length;
+        }
+
+        const address = data.substr(0, index);
+        const params = Qs.parse(data.substr(index));
+
+        const amount = params.amount;
+        const name = params.name;
+        let paymentID = params.paymentid;
+
+        if (paymentID) {
+            const pidError = validatePaymentID(paymentID);
+
+            /* Payment ID isn't valid. */
+            if (pidError.errorCode !== WalletErrorCode.SUCCESS) {
+                return {
+                    valid: false,
+                    error: 'QR Code is invalid',
+                };
+            }
+
+            /* Both integrated address and payment ID given */
+            if (address.length === Config.integratedAddressLength && paymentID.length !== 0) {
+                return {
+                    valid: false,
+                    error: 'QR Code is invalid',
+                };
+            }
+        }
+
+        const addressError = validateAddresses([address], true);
+
+        /* Address isn't valid */
+        if (addressError.errorCode !== WalletErrorCode.SUCCESS) {
+            return {
+                valid: false,
+                error: 'QR Code is invalid',
+            };
+        }
+
+        const amountAtomic = Number(amount);
+        let feeInfo = undefined;
+        let amountNonAtomic = undefined;
+
+        if (!isNaN(amountAtomic)) {
+            amountNonAtomic = amountAtomic / (10 ** Config.decimalPlaces);
+
+            /* Got an amount, can go straight to confirmation, if we have enough balance */
+            const [unlockedBalance, lockedBalance] = Globals.wallet.getBalance();
+
+            feeInfo = addFee(amountNonAtomic);
+
+            let [valid, error] = validAmount(feeInfo.original, unlockedBalance);
+
+            if (feeInfo.originalAtomic > unlockedBalance) {
+                error = 'Not enough funds available! Needed (including fees): ' +
+                        `${prettyPrintAmount(feeInfo.originalAtomic)}, Available: ` +
+                        prettyPrintAmount(unlockedBalance);
+            }
+
+            if (!valid) {
+                return {
+                    valid: false,
+                    error,
+                };
+            }
+        }
+        
+        /* No name, need to pick one.. */
+        if (!name) {
+            return {
+                paymentID: paymentID || '',
+                address,
+                amount: amountNonAtomic ? amountNonAtomic.toString() : undefined,
+                suggestedAction: 'NewPayee',
+                valid: true,
+            }
+
+            return undefined;
+        }
+
+        const newPayee = {
+            nickname: name,
+            address: address,
+            paymentID: paymentID || '',
+        }
+
+        const existingPayee = Globals.payees.find((p) => p.nickname === name);
+        
+        /* Payee exists already */
+        if (existingPayee) {
+            /* New payee doesn't match existing payee, get them to enter a new name */
+            if (existingPayee.address !== newPayee.address ||
+                existingPayee.paymentID !== newPayee.paymentID) { 
+                return {
+                    paymentID: paymentID || '',
+                    address,
+                    amount: amountNonAtomic.toString(),
+                    suggestedAction: 'NewPayee',
+                    valid: true,
+                };
+            }
+        /* Save payee to database for later use */
+        } else {
+            Globals.addPayee(newPayee);
+        }
+
+        if (!amount) {
+            return {
+                payee: newPayee,
+                suggestedAction: 'Transfer',
+                valid: true,
+            };
+        } else {
+            return {
+                payee: newPayee,
+                amount: feeInfo,
+                suggestedAction: 'Confirm',
+                valid: true,
+            };
+        }
+    /* It's a standard address, try and parse it (or something else) */
+    } else {
+        const addressError = validateAddresses([qrData], true);
+
+        if (addressError.errorCode !== WalletErrorCode.SUCCESS) {
+            return {
+                valid: false,
+                error: 'QR code is invalid',
+            };
+        }
+
+        return {
+            valid: true,
+            address: qrData,
+            suggestedAction: 'NewPayee',
+        }
+    }
+}
