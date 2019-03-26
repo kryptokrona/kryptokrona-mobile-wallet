@@ -494,8 +494,6 @@ export async function saveToDatabase(wallet, pinCode) {
 export async function loadFromDatabase(pinCode) {
     var key = sha512.arrayBuffer(pinCode.toString());
 
-    await compactDBs(key);
-
     try {
         let realm = await Realm.open({
             schema: [
