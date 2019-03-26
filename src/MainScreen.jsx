@@ -14,7 +14,7 @@ import { NavigationActions } from 'react-navigation';
 
 import {
     Text, View, Image, TouchableOpacity, PushNotificationIOS,
-    AppState, Platform,
+    AppState, Platform, Linking,
 } from 'react-native';
 
 import { prettyPrintAmount, LogLevel } from 'turtlecoin-wallet-backend';
@@ -22,6 +22,7 @@ import { prettyPrintAmount, LogLevel } from 'turtlecoin-wallet-backend';
 import Config from './Config';
 
 import { Styles } from './Styles';
+import { handleURI } from './Utilities';
 import { ProgressBar } from './ProgressBar';
 import { Globals, initGlobals } from './Globals';
 import { reportCaughtException } from './Sentry';
@@ -73,6 +74,12 @@ async function init() {
 
         requestPermissions: true,
     });
+
+    const url = await Linking.getInitialURL();
+
+    if (url) {
+        handleURI(url, this.props.navigation);
+    }
 
     /* More than 48 hours have passed since last compaction */
     if (await shouldCompactDB(2)) {
@@ -132,11 +139,22 @@ export class MainScreen extends React.Component {
             addressOnly: false,
         }
 
+        this.handleURI = this.handleURI.bind(this);
+
         init();
     }
 
+    handleURI(url) {
+        handleURI(url, this.props.navigation);
+    }
+
     componentDidMount() {
+        Linking.addEventListener('url', this.handleURI);
         initBackgroundSync();
+    }
+
+    componentWillUnmount() {
+        Linking.removeEventListener('url', this.handleURI);
     }
 
     render() {

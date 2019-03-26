@@ -11,8 +11,6 @@ import QRCodeScanner from 'react-native-qrcode-scanner';
 
 import TextTicker from 'react-native-text-ticker';
 
-import * as Qs from 'query-string';
-
 import HeaderButtons, { HeaderButton, Item } from 'react-navigation-header-buttons';
 
 import { HeaderBackButton, StackActions } from 'react-navigation';
@@ -38,7 +36,7 @@ import { Hr, BottomButton } from './SharedComponents';
 import { removeFee, toAtomic, fromAtomic, addFee } from './Fee';
 
 import {
-    getArrivalTime, navigateWithDisabledBack, delay, toastPopUp, parseQRCode,
+    getArrivalTime, navigateWithDisabledBack, delay, toastPopUp, handleURI,
 } from './Utilities';
 
 export class QrScannerScreen extends React.Component {
@@ -1137,7 +1135,7 @@ export class ChoosePayeeScreen extends React.Component {
                         title='Scan QR Code'
                         onPress={() => {
                             const func = (data) => {
-                                this.handleQrCode(data, this.props.navigation);
+                                this.handleURI(data, this.props.navigation);
                             };
 
                             this.props.navigation.navigate('QrScanner', {

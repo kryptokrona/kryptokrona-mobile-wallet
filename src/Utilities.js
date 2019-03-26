@@ -10,7 +10,15 @@ import { Text, Platform, ToastAndroid } from 'react-native';
 
 import { StackActions, NavigationActions } from 'react-navigation';
 
+import {
+    validateAddresses, WalletErrorCode, validatePaymentID, prettyPrintAmount,
+} from 'turtlecoin-wallet-backend';
+
+import * as Qs from 'query-string';
+
 import Config from './Config';
+
+import { Globals } from './Globals';
 
 export function delay(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -96,7 +104,23 @@ export function getArrivalTime() {
     }
 }
 
-export function parseQRCode(qrData) {
+export function handleURI(data, navigation) {
+    const result = parseURI(data);
+
+    if (!result.valid) {
+        Alert.alert(
+            'Cannot send transaction',
+            result.error,
+            [
+                {text: 'OK'},
+            ]
+        );
+    } else {
+        navigation.navigate(result.suggestedAction, {...result});
+    }
+}
+
+export function parseURI(qrData) {
     /* It's a URI, try and get the data from it */
     if (qrData.startsWith(Config.uriPrefix)) {
         /* Remove the turtlecoin:// prefix */
