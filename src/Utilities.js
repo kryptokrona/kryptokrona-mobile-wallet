@@ -6,7 +6,7 @@ import React from 'react';
 
 import moment from 'moment';
 
-import { Text, Platform, ToastAndroid } from 'react-native';
+import { Text, Platform, ToastAndroid, Alert } from 'react-native';
 
 import { StackActions, NavigationActions } from 'react-navigation';
 
@@ -19,6 +19,8 @@ import * as Qs from 'query-string';
 import Config from './Config';
 
 import { Globals } from './Globals';
+
+import { addFee, toAtomic } from './Fee';
 
 export function delay(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -116,11 +118,15 @@ export function handleURI(data, navigation) {
             ]
         );
     } else {
+        /* Hop into the transfer stack */
+        navigation.navigate('Transfer');
+        /* Then navigate to the nested route, if needed */
         navigation.navigate(result.suggestedAction, {...result});
     }
 }
 
 export function parseURI(qrData) {
+    console.log(qrData);
     /* It's a URI, try and get the data from it */
     if (qrData.startsWith(Config.uriPrefix)) {
         /* Remove the turtlecoin:// prefix */
@@ -207,8 +213,6 @@ export function parseURI(qrData) {
                 suggestedAction: 'NewPayee',
                 valid: true,
             }
-
-            return undefined;
         }
 
         const newPayee = {
@@ -268,4 +272,33 @@ export function parseURI(qrData) {
             suggestedAction: 'NewPayee',
         }
     }
+}
+
+export function validAmount(amount, unlockedBalance) {
+    if (amount === '' || amount === undefined || amount === null) {
+        return [false, ''];
+    }
+
+    /* Remove commas in input */
+    amount = amount.replace(/,/g, '');
+
+    let numAmount = Number(amount);
+
+    if (isNaN(numAmount)) {
+        return [false, 'Amount is not a number!'];
+    }
+
+    /* Remove fractional component and convert to atomic */
+    numAmount = Math.floor(toAtomic(numAmount));
+
+    /* Must be above min send */
+    if (numAmount < 1) {
+        return [false, 'Amount is below minimum send!'];
+    }
+
+    if (numAmount > unlockedBalance) {
+        return [false, 'Not enough funds available!'];
+    }
+
+    return [true, ''];
 }

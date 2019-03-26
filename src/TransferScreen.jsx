@@ -37,6 +37,7 @@ import { removeFee, toAtomic, fromAtomic, addFee } from './Fee';
 
 import {
     getArrivalTime, navigateWithDisabledBack, delay, toastPopUp, handleURI,
+    validAmount,
 } from './Utilities';
 
 export class QrScannerScreen extends React.Component {
@@ -126,35 +127,6 @@ class CrossButton extends React.Component {
             </HeaderButtons>
         );
     }
-}
-
-function validAmount(amount, unlockedBalance) {
-    if (amount === '' || amount === undefined || amount === null) {
-        return [false, ''];
-    }
-
-    /* Remove commas in input */
-    amount = amount.replace(/,/g, '');
-
-    let numAmount = Number(amount);
-
-    if (isNaN(numAmount)) {
-        return [false, 'Amount is not a number!'];
-    }
-
-    /* Remove fractional component and convert to atomic */
-    numAmount = Math.floor(toAtomic(numAmount));
-
-    /* Must be above min send */
-    if (numAmount < 1) {
-        return [false, 'Amount is below minimum send!'];
-    }
-
-    if (numAmount > unlockedBalance) {
-        return [false, 'Not enough funds available!'];
-    }
-
-    return [true, ''];
 }
 
 /**

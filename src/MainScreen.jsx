@@ -35,7 +35,7 @@ import {
     saveToDatabase, saveLastUpdatedToDatabase, compactDBs, shouldCompactDB
 } from './Database';
 
-async function init() {
+async function init(navigation) {
     Globals.wallet.scanCoinbaseTransactions(Globals.preferences.scanCoinbaseTransactions);
 
     Globals.wallet.on('incomingtx', (transaction) => {
@@ -78,7 +78,7 @@ async function init() {
     const url = await Linking.getInitialURL();
 
     if (url) {
-        handleURI(url, this.props.navigation);
+        handleURI(url, navigation);
     }
 
     /* More than 48 hours have passed since last compaction */
@@ -141,7 +141,7 @@ export class MainScreen extends React.Component {
 
         this.handleURI = this.handleURI.bind(this);
 
-        init();
+        init(this.props.navigation);
     }
 
     handleURI(url) {
