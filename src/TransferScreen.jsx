@@ -1064,22 +1064,6 @@ export class ChoosePayeeScreen extends React.Component {
         }
     };
 
-    handleQrCode(qrData, navigation) {
-        const qrResult = parseQRCode(qrData);
-
-        if (!qrResult.valid) {
-            Alert.alert(
-                'Cannot send transaction',
-                qrResult.error,
-                [
-                    {text: 'OK'},
-                ]
-            );
-        } else {
-            navigation.navigate(qrResult.suggestedAction, {...qrResult});
-        }
-    }
-
     render() {
         return(
             <View style={{
@@ -1107,7 +1091,7 @@ export class ChoosePayeeScreen extends React.Component {
                         title='Scan QR Code'
                         onPress={() => {
                             const func = (data) => {
-                                this.handleURI(data, this.props.navigation);
+                                handleURI(data, this.props.navigation);
                             };
 
                             this.props.navigation.navigate('QrScanner', {
