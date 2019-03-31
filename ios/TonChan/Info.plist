@@ -75,14 +75,14 @@
 	<array>
 		<string>fetch</string>
 	</array>
-    <key>URL types</key>
-    <array>
-        <dict>
-            <key>URL Schemes</key>
-            <array>
-                <string>turtlecoin</string>
-            </array>
-        </dict>
-    </array>
+	<key>URL types</key>
+	<array>
+		<dict>
+			<key>URL Schemes</key>
+			<array>
+				<string>turtlecoin</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

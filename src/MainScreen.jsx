@@ -137,6 +137,7 @@ export class MainScreen extends React.Component {
 
         this.refresh = this.refresh.bind(this);
         this.handleURI = this.handleURI.bind(this);
+        this.handleAppStateChange = this.handleAppStateChange.bind(this);
 
         const [unlockedBalance, lockedBalance] = Globals.wallet.getBalance();
 
@@ -183,12 +184,21 @@ export class MainScreen extends React.Component {
         handleURI(url, this.props.navigation);
     }
 
+    /* Update coin price on coming to foreground */
+    handleAppStateChange(appState) {
+        if (appState === 'active') {
+            this.updateBalance();
+        }
+    }
+
     componentDidMount() {
+        AppState.addEventListener('change', this.handleAppStateChange);
         Linking.addEventListener('url', this.handleURI);
         initBackgroundSync();
     }
 
     componentWillUnmount() {
+        AppState.removeEventListener('change', this.handleAppStateChange);
         Linking.removeEventListener('url', this.handleURI);
     }
 
@@ -214,6 +224,7 @@ export class MainScreen extends React.Component {
                     <RefreshControl
                         refreshing={this.state.refreshing}
                         onRefresh={this.refresh}
+                        title='Updating coin price...'
                     />
                 }
                 style={{
