@@ -126,7 +126,6 @@ export function handleURI(data, navigation) {
 }
 
 export function parseURI(qrData) {
-    console.log(qrData);
     /* It's a URI, try and get the data from it */
     if (qrData.startsWith(Config.uriPrefix)) {
         /* Remove the turtlecoin:// prefix */

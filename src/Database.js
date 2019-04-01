@@ -706,7 +706,7 @@ export async function compactDBs(pinCode) {
             realm.close();
         }
     } catch (err) {
-        console.log('Failed to compact DBs: ' + err);
+        Globals.logger.addLogMessage('Failed to compact DBs: ' + err);
         return false;
     }
 
