@@ -143,7 +143,11 @@ export async function backgroundSync() {
                 break;
             }
 
-            await Globals.wallet.internal().sync(false);
+            const syncedBlocks = await Globals.wallet.internal().sync(false);
+
+            if (!syncedBlocks) {
+                break;
+            }
         }
 
         Globals.logger.addLogMessage('[Background Sync] Saving wallet in background.');
