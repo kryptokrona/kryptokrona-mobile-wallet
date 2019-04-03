@@ -39,6 +39,7 @@
     "react-native-qrcode-svg": "^5.1.2",
     "react-native-randombytes": "^3.5.1",
     "react-native-sentry": "^0.42.0",
+    "react-native-sqlite-storage": "^3.3.10",
     "react-native-svg": "^9.2.3",
     "react-native-tcp": "^3.3.0",
     "react-native-text-ticker": "^0.13.0",

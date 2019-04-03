@@ -37,6 +37,8 @@ import io.realm.react.RealmReactPackage;
 import java.util.Arrays;
 import java.util.List;
 
+import org.pgsqlite.SQLitePluginPackage;
+
 import org.reactnative.camera.RNCameraPackage;
 
 public class MainApplication extends Application implements ReactApplication {
@@ -64,6 +66,7 @@ public class MainApplication extends Application implements ReactApplication {
             new UdpSocketsModule(),
             new RandomBytesPackage(),
             new RNGestureHandlerPackage(),
+            new SQLitePluginPackage(),
             new TurtleCoinPackage()
       );
     }
