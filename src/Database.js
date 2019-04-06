@@ -172,22 +172,6 @@ export async function openDB() {
     }
 }
 
-function getPriceDataSchema() {
-    var obj = {
-        name: 'PriceData',
-        primaryKey: 'primaryKey',
-        properties: {
-            primaryKey: 'int',
-        }
-    }
-
-    for (const currency of Constants.currencies) {
-        obj.properties[currency.ticker] = 'double';
-    }
-
-    return obj;
-}
-
 const WalletSchema = {
     name: 'Wallet',
     /* Designate the 'primaryKey' property as the primary key. We can use
@@ -476,34 +460,6 @@ export async function loadPreferencesFromDatabase() {
     return undefined;
 }
 
-export async function savePriceDataToDatabase(priceData) {
-    priceData['primaryKey'] = 1;
-
-    withDB(
-        [getPriceDataSchema()],
-        'PriceData.realm',
-        async (realm) => {
-            await realm.write(() => {
-                return realm.create('PriceData', priceData, true);
-            });
-        }
-    );
-}
-
-export async function loadPriceDataFromDatabase() {
-    return withDB(
-        [getPriceDataSchema()],
-        'PriceData.realm',
-        (realm) => {
-            if (realm.objects('PriceData').length > 0) {
-                return JSON.parse(JSON.stringify(realm.objects('PriceData')[0]));
-            }
-
-            return undefined;
-        }
-    );
-}
-
 /**
  * Note - saves a single payee to the DB, which contains many payees
  */
@@ -553,7 +509,7 @@ export async function loadPayeeDataFromDatabase() {
 export async function saveToDatabase(wallet, pinCode) {
     try {
         await saveWallet(wallet);
-        setHaveWallet(true);
+        await setHaveWallet(true);
     } catch (err) {
         reportCaughtException(err);
         Globals.logger.addLogMessage('Err saving wallet: ' + err);

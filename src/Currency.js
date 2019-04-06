@@ -9,22 +9,6 @@ import Config from './Config';
 import Constants from './Constants';
 
 import { Globals } from './Globals';
-import { loadPriceDataFromDatabase, savePriceDataToDatabase } from './Database';
-
-export async function getCoinPrice() {
-    if (Globals.coinPrice !== undefined) {
-        return Globals.coinPrice;
-    }
-
-    /* Fetch from DB */
-    Globals.coinPrice = await loadPriceDataFromDatabase();
-
-    if (Globals.coinPrice !== undefined) {
-        return Globals.coinPrice;
-    }
-
-    return {};
-}
 
 export async function getCoinPriceFromAPI() {
     /* Note: Coingecko has to support your coin for this to work */
@@ -39,8 +23,6 @@ export async function getCoinPriceFromAPI() {
         });
 
         const coinData = data[Config.coinName.toLowerCase()];
-
-        savePriceDataToDatabase(coinData);
 
         Globals.logger.addLogMessage('Updated coin price from API');
 
@@ -59,7 +41,7 @@ export async function coinsToFiat(amount, currencyTicker) {
     /* Coingecko returns price with decimal places, not atomic */
     let nonAtomic = amount / (10 ** Config.decimalPlaces);
 
-    let prices = await getCoinPrice();
+    let prices = Globals.coinPrice || {};
 
     for (const currency of Constants.currencies) {
         if (currencyTicker === currency.ticker) {
