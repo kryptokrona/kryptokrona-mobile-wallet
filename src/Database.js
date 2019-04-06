@@ -20,57 +20,108 @@ import SQLite from 'react-native-sqlite-storage';
 SQLite.DEBUG(true);
 SQLite.enablePromise(true);
 
+let database;
+
+async function deleteDB() {
+    await SQLite.deleteDatabase({
+        name: 'data.DB',
+        location: 'default',
+    });
+}
+
+async function saveWallet(wallet) {
+    await database.transaction((tx) => {
+        tx.executeSql(
+            `UPDATE
+                wallet
+            SET
+                json = ?
+            WHERE
+                id = 0`,
+            [wallet.toJSONString()]
+        );
+    });
+}
+
+async function loadWallet() {
+    const [data] = await database.executeSql(
+        `SELECT
+            json
+        FROM
+            wallet
+        WHERE
+            id = 0`,
+    );
+
+    if (data && data.rows && data.rows.length >= 1) {
+        return data.rows.item(0).json;
+    }
+
+    return undefined;
+}
+
+/* Create the tables if we haven't made them already */
 async function createTables(DB) {
     await DB.transaction((tx) => {
         /* We get JSON out from our wallet backend, and load JSON in from our
            wallet backend - it's a little ugly, but it's faster to just read/write
            json to the DB rather than structuring it. */
         tx.executeSql(
-            'CREATE TABLE IF NOT EXISTS wallet (' +
-                'json TEXT' +
-            ')'
+            `CREATE TABLE IF NOT EXISTS wallet (
+                id INTEGER PRIMARY KEY,
+                json TEXT
+            )`
         );
 
         tx.executeSql(
-            'CREATE TABLE IF NOT EXISTS preferences (' +
-                'currency TEXT,' +
-                'notificationsenabled BOOLEAN,' + 
-                'scancoinbasetransactions BOOLEAN,' +
-                'limitdata BOOLEAN,' +
-                'theme TEXT,' +
-                'pinconfirmation BOOLEAN' +
-            ')'
+            `CREATE TABLE IF NOT EXISTS preferences (
+                currency TEXT,
+                notificationsenabled BOOLEAN,
+                scancoinbasetransactions BOOLEAN,
+                limitdata BOOLEAN,
+                theme TEXT,
+                pinconfirmation BOOLEAN
+            )`
         );
 
         tx.executeSql(
-            'CREATE TABLE IF NOT EXISTS payees (' +
-                'nickname TEXT,' +
-                'address TEXT,' +
-                'paymentid TEXT' +
-            ')'
+            `CREATE TABLE IF NOT EXISTS payees (
+                nickname TEXT,
+                address TEXT,
+                paymentid TEXT
+            )`
         );
 
         tx.executeSql(
-            'CREATE TABLE IF NOT EXISTS transactiondetails (' +
-                'hash TEXT,' +
-                'memo TEXT,' +
-                'address TEXT,' +
-                'payee TEXT' +
-            ')'
+            `CREATE TABLE IF NOT EXISTS transactiondetails (
+                hash TEXT,
+                memo TEXT,
+                address TEXT,
+                payee TEXT
+            )`
+        );
+
+        /* Enter initial wallet value that we're going to overwrite later via
+           primary key, provided it doesn't already exist */
+        tx.executeSql(
+            `INSERT OR IGNORE INTO wallet
+                (id, json)
+            VALUES
+                (0, '')`
         );
     });
 }
 
 async function openDB() {
     try {
-        const DB = await SQLite.openDatabase({
+        database = await SQLite.openDatabase({
             name: 'data.DB',
             location: 'default',
         });
 
-        await createTables(DB);
+        await createTables(database);
     } catch (err) {
-        console.log('Failed to open DB: ' + err);
+        Globals.logger.addLogMessage('Failed to open DB: ' + err);
     }
 }
 
@@ -529,6 +580,8 @@ export async function loadPayeeDataFromDatabase() {
 }
 
 export async function saveToDatabase(wallet, pinCode) {
+    await saveWallet(wallet);
+
     /* Get encryption key from pin code */
     var key = sha512.arrayBuffer(pinCode.toString());
 
@@ -562,6 +615,15 @@ export async function saveToDatabase(wallet, pinCode) {
 export async function loadFromDatabase(pinCode) {
     await openDB();
 
+    /* Great, got the data from SQLite, return it */
+    const wallet = await loadWallet();
+
+    if (wallet) {
+        return [wallet, undefined];
+    }
+
+    /* Looks like we haven't converted from realm DB yet, lets try opening from
+       there */
     var key = sha512.arrayBuffer(pinCode.toString());
 
     try {
@@ -577,7 +639,12 @@ export async function loadFromDatabase(pinCode) {
 
         try {
             if (realm.objects('Wallet').length > 0) {
-                return [realmToWalletJSON(realm.objects('Wallet')[0]), undefined];
+                const data = realmToWalletJSON(realm.objects('Wallet')[0]);
+
+                /* Got the wallet from realm - store it in SQLite for future. */
+                saveWallet(data);
+
+                return [data, undefined];
             }
         } finally {
             realm.close();

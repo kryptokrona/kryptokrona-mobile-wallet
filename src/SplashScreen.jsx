@@ -55,7 +55,7 @@ async function tryLoadWallet(pinCode, navigation) {
         );
 
         if (walletError) {
-            await fail('Error loading wallet: ' + error);
+            await fail('Error loading wallet: ' + walletError);
         } else {
             Globals.wallet = wallet;
             navigation.navigate('Home');
