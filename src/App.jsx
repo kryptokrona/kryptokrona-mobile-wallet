@@ -22,7 +22,7 @@ import { Globals } from './Globals';
 import { MainScreen } from './MainScreen';
 import { SplashScreen } from './SplashScreen';
 import { DisclaimerScreen } from './DisclaimerScreen';
-import { loadPreferencesFromDatabase } from './Database';
+import { loadPreferencesFromDatabase, openDB } from './Database';
 import { ModifyPayeeScreen, RecipientsScreen } from './Recipients';
 import { WalletOptionScreen, CreateWalletScreen } from './CreateScreen';
 import { SetPinScreen, RequestPinScreen, ForgotPinScreen } from './Pin';
@@ -298,6 +298,8 @@ export default class App extends React.Component {
     }
 
     async init() {
+        await openDB();
+
         const prefs = await loadPreferencesFromDatabase();
 
         if (prefs !== undefined) {

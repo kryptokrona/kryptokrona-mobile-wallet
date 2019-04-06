@@ -17,10 +17,29 @@ import { reportCaughtException } from './Sentry';
 
 import SQLite from 'react-native-sqlite-storage';
 
+/* TODO: Remove */
 SQLite.DEBUG(true);
 SQLite.enablePromise(true);
 
 let database;
+
+/* Perform conversion from realm to SQL, and delete old realm stuff */
+async function realmToSql(pinCode) {
+    const [wallet, error] = await loadWalletFromRealm(pinCode);
+
+    await Realm.deleteFile();
+    await Realm.deleteFile('Preferences.realm');
+    await Realm.deleteFile('PriceData.realm');
+    await Realm.deleteFile('PayeeData.realm');
+    await Realm.deleteFile('TransactionDetailsData.realm');
+
+    /* Got the wallet from realm - store it in SQLite for future */
+    if (wallet) {
+        saveWallet(wallet);
+    }
+
+    return [wallet, error];
+}
 
 async function deleteDB() {
     await SQLite.deleteDatabase({
@@ -112,7 +131,7 @@ async function createTables(DB) {
     });
 }
 
-async function openDB() {
+export async function openDB() {
     try {
         database = await SQLite.openDatabase({
             name: 'data.DB',
@@ -120,6 +139,8 @@ async function openDB() {
         });
 
         await createTables(database);
+
+        await realmToSql();
     } catch (err) {
         Globals.logger.addLogMessage('Failed to open DB: ' + err);
     }
@@ -590,15 +611,16 @@ export async function saveToDatabase(wallet, pinCode) {
 }
 
 export async function loadFromDatabase(pinCode) {
-    await openDB();
-
-    /* Great, got the data from SQLite, return it */
     const wallet = await loadWallet();
 
     if (wallet) {
         return [wallet, undefined];
     }
 
+    return realmToSql(pinCode);
+}
+
+export async function loadWalletFromRealm(pinCode) {
     /* Looks like we haven't converted from realm DB yet, lets try opening from
        there */
     var key = sha512.arrayBuffer(pinCode.toString());
@@ -616,12 +638,7 @@ export async function loadFromDatabase(pinCode) {
 
         try {
             if (realm.objects('Wallet').length > 0) {
-                const data = realmToWalletJSON(realm.objects('Wallet')[0]);
-
-                /* Got the wallet from realm - store it in SQLite for future. */
-                saveWallet(data);
-
-                return [data, undefined];
+                return [realmToWalletJSON(realm.objects('Wallet')[0]), undefined];
             }
         } finally {
             realm.close();
