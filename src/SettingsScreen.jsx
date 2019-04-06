@@ -4,8 +4,6 @@
 
 import React from 'react';
 
-import Realm from 'realm';
-
 import TextTicker from 'react-native-text-ticker';
 
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -30,7 +28,7 @@ import Constants from './Constants';
 import { Styles } from './Styles';
 import { Globals } from './Globals';
 import { SeedComponent, CopyButton } from './SharedComponents';
-import { setHaveWallet, savePreferencesToDatabase } from './Database';
+import { savePreferencesToDatabase, deleteDB } from './Database';
 import { navigateWithDisabledBack, toastPopUp, getArrivalTime } from './Utilities';
 
 export class FaqScreen extends React.Component {
@@ -737,23 +735,22 @@ function deleteWallet(navigation) {
         'Are you sure you want to delete your wallet? If your seed is not backed up, your funds will be lost!',
         [
             {text: 'Delete', onPress: () => {
-                /* Disabling saving */
-                clearInterval(Globals.backgroundSaveTimer);
+                (async () => {
+                    /* Disabling saving */
+                    clearInterval(Globals.backgroundSaveTimer);
 
-                /* Delete pin code */
-                deleteUserPinCode();
+                    /* Delete pin code */
+                    deleteUserPinCode();
 
-                /* Delete old wallet */
-                Realm.deleteFile({});
+                    await deleteDB();
 
-                setHaveWallet(false);
+                    Globals.wallet.stop();
 
-                Globals.wallet.stop();
+                    Globals.reset();
 
-                Globals.reset();
-
-                /* And head back to the wallet choose screen */
-                navigation.navigate('Login');
+                    /* And head back to the wallet choose screen */
+                    navigation.navigate('Login');
+                })();
             }},
             {text: 'Cancel', style: 'cancel'},
         ],
