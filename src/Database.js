@@ -289,16 +289,6 @@ const SynchronizationStatusSchema = {
     }
 }
 
-const PayeeSchema = {
-    name: 'Payee',
-    primaryKey: 'nickname',
-    properties: {
-        nickname: 'string',
-        address: 'string',
-        paymentID: 'string',
-    }
-}
-
 const TransactionDetailsSchema = {
     name: 'TransactionDetails',
     privateKey: 'hash',
@@ -460,50 +450,60 @@ export async function loadPreferencesFromDatabase() {
     return undefined;
 }
 
-/**
- * Note - saves a single payee to the DB, which contains many payees
- */
 export async function savePayeeToDatabase(payee) {
-    withDB(
-        [PayeeSchema],
-        'PayeeData.realm',
-        async (realm) => {
-            await realm.write(() => {
-                return realm.create('Payee', payee, true);
-            });
-        }
-    );
+    await database.transaction((tx) => {
+        tx.executeSql(
+            `INSERT INTO payees
+                (nickname, address, paymentid)
+            VALUES
+                (?, ?, ?)`,
+            [
+                payee.nickname,
+                payee.address,
+                payee.paymentID,
+            ]
+        );
+    });
 }
 
 export async function removePayeeFromDatabase(nickname) {
-    withDB(
-        [PayeeSchema],
-        'PayeeData.realm',
-        async (realm) => {
-            const payee = realm.objects('Payee').filtered('nickname = $0', nickname);
-
-            if (payee.length > 0) {
-                await realm.write(() => {
-                    realm.delete(payee);
-                });
-            }
-        }
-    );
+    await database.transaction((tx) => {
+        tx.executeSql(
+            `DELETE FROM
+                payees
+            WHERE
+                nickname = ?`,
+            [ nickname ]
+        );
+    });
 }
 
 export async function loadPayeeDataFromDatabase() {
-    return withDB(
-        [PayeeSchema],
-        'PayeeData.realm',
-        (realm) => {
-            if (realm.objects('Payee').length > 0) {
-                /* Has science gone too far? */
-                return realm.objects('Payee').map((x) => JSON.parse(JSON.stringify((x))));
-            }
-
-            return undefined;
-        }
+    const [data] = await database.executeSql(
+        `SELECT
+            nickname,
+            address,
+            paymentid
+        FROM
+            payees`
     );
+
+    if (data && data.rows && data.rows.length) {
+        const res = [];
+
+        for (let i = 0; i < data.rows.length; i++) {
+            const item = data.rows.item(i);
+            res.push({
+                nickname: item.nickname,
+                address: item.address,
+                paymentID: item.paymentid,
+            });
+        }
+
+        return res;
+    }
+
+    return undefined;
 }
 
 export async function saveToDatabase(wallet, pinCode) {
