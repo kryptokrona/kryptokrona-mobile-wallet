@@ -15,6 +15,65 @@ import { Globals } from './Globals';
 
 import { reportCaughtException } from './Sentry';
 
+import SQLite from 'react-native-sqlite-storage';
+
+SQLite.DEBUG(true);
+SQLite.enablePromise(true);
+
+async function createTables(DB) {
+    await DB.transaction((tx) => {
+        /* We get JSON out from our wallet backend, and load JSON in from our
+           wallet backend - it's a little ugly, but it's faster to just read/write
+           json to the DB rather than structuring it. */
+        tx.executeSql(
+            'CREATE TABLE IF NOT EXISTS wallet (' +
+                'json TEXT' +
+            ')'
+        );
+
+        tx.executeSql(
+            'CREATE TABLE IF NOT EXISTS preferences (' +
+                'currency TEXT,' +
+                'notificationsenabled BOOLEAN,' + 
+                'scancoinbasetransactions BOOLEAN,' +
+                'limitdata BOOLEAN,' +
+                'theme TEXT,' +
+                'pinconfirmation BOOLEAN' +
+            ')'
+        );
+
+        tx.executeSql(
+            'CREATE TABLE IF NOT EXISTS payees (' +
+                'nickname TEXT,' +
+                'address TEXT,' +
+                'paymentid TEXT' +
+            ')'
+        );
+
+        tx.executeSql(
+            'CREATE TABLE IF NOT EXISTS transactiondetails (' +
+                'hash TEXT,' +
+                'memo TEXT,' +
+                'address TEXT,' +
+                'payee TEXT' +
+            ')'
+        );
+    });
+}
+
+async function openDB() {
+    try {
+        const DB = await SQLite.openDatabase({
+            name: 'data.DB',
+            location: 'default',
+        });
+
+        await createTables(DB);
+    } catch (err) {
+        console.log('Failed to open DB: ' + err);
+    }
+}
+
 function getPriceDataSchema() {
     var obj = {
         name: 'PriceData',
@@ -501,6 +560,8 @@ export async function saveToDatabase(wallet, pinCode) {
 }
 
 export async function loadFromDatabase(pinCode) {
+    await openDB();
+
     var key = sha512.arrayBuffer(pinCode.toString());
 
     try {
