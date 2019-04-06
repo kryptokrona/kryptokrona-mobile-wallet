@@ -2,7 +2,7 @@
 //
 // Please see the included LICENSE file for more information.
 
-import BackgroundFetch from "react-native-background-fetch";
+import BackgroundFetch from 'react-native-background-fetch';
 
 import { AppState, Platform, NetInfo } from 'react-native';
 
@@ -10,9 +10,7 @@ import Config from './Config';
 
 import { Globals } from './Globals';
 
-import {
-    saveToDatabase, compactDBs, shouldCompactDB, saveLastUpdatedToDatabase
-} from './Database';
+import { saveToDatabase } from './Database';
 
 /* Note: headless/start on boot not enabled, since we don't have the pin
    to decrypt the users wallet, when fetching from DB */
@@ -108,16 +106,6 @@ export async function backgroundSync() {
     let allowedRunTime = Platform.OS === 'ios' ? 25 : (60 * 14);
 
     let secsRunning = 0;
-
-    /* More than 24 hours have passed since last compaction */
-    if (await shouldCompactDB(1)) {
-        const success = await compactDBs(Globals.pinCode);
-
-        if (success) {
-            saveLastUpdatedToDatabase(new Date());
-            Globals.logger.addLogMessage('[Background Sync] Compaction completed successfully');
-        }
-    }
 
     /* Run for 25 seconds or until the app comes back to the foreground */
     while (!State.shouldStop && secsRunning < allowedRunTime) {

@@ -580,32 +580,9 @@ export async function loadPayeeDataFromDatabase() {
 }
 
 export async function saveToDatabase(wallet, pinCode) {
-    await saveWallet(wallet);
-
-    /* Get encryption key from pin code */
-    var key = sha512.arrayBuffer(pinCode.toString());
-
     try {
-        /* Open the DB */
-        const realm = await Realm.open({
-            schema: [
-                WalletSchema, WalletSynchronizerSchema, SubWalletSchema,
-                TransactionSchema, SubWalletsSchema, TxPrivateKeysSchema,
-                TransfersSchema, TransactionInputSchema, UnconfirmedInputSchema,
-                SynchronizationStatusSchema
-            ],
-            encryptionKey: key,
-        });
-
-        try {
-            /* Write the wallet to the DB, overwriting old wallet */
-            await realm.write(() => {
-                walletToRealm(wallet, realm)
-                setHaveWallet(true);
-            })
-        } finally {
-            realm.close();
-        }
+        await saveWallet(wallet);
+        setHaveWallet(true);
     } catch (err) {
         reportCaughtException(err);
         Globals.logger.addLogMessage('Err saving wallet: ' + err);
@@ -729,37 +706,6 @@ export function loadTransactionDetailsFromDatabase() {
     );
 }
 
-export function saveLastUpdatedToDatabase(date) {
-    const data = {
-        lastUpdated: date,
-        primaryKey: 0,
-    }
-
-    withDB(
-        [CompactSchema],
-        'CompactionInfo.realm',
-        async (realm) => {
-            await realm.write(() => {
-                return realm.create('CompactionInfo', data, true);
-            });
-        }
-    );
-}
-
-export function loadLastUpdatedFromDatabase() {
-    return withDB(
-        [CompactSchema],
-        'CompactionInfo.realm',
-        (realm) => {
-            if (realm.objects('CompactionInfo').length > 0) {
-                return new Date(realm.objects('CompactionInfo')[0].lastUpdated);
-            }
-
-            return new Date(0);
-        }
-    ) || new Date(0);
-}
-
 async function withDB(schema, path, func, deleteIfMigrationNeeded) {
     try {
         let realm = await Realm.open({
@@ -778,77 +724,4 @@ async function withDB(schema, path, func, deleteIfMigrationNeeded) {
         Globals.logger.addLogMessage('Error interacting with DB: ' + err);
         return undefined;
     }
-}
-
-export async function compactDBs(pinCode) {
-    Globals.logger.addLogMessage('Attempting to compact DB...');
-
-    var key = sha512.arrayBuffer(pinCode.toString());
-
-    try {
-        await withDB(
-            [TransactionDetailsSchema],
-            'TransactionDetailsData.realm',
-            (realm) => {
-                realm.compact();
-            }
-        );
-
-        await withDB(
-            [PayeeSchema],
-            'PayeeData.realm',
-            (realm) => {
-                realm.compact();
-            }
-        );
-
-        await withDB(
-            [getPriceDataSchema()],
-            'PriceData.realm',
-            (realm) => {
-                realm.compact();
-            }
-        );
-
-        await withDB(
-            [PreferencesSchema],
-            'Preferences.realm',
-            (realm) => {
-                realm.compact();
-            }
-        );
-
-        let realm = await Realm.open({
-            schema: [
-                WalletSchema, WalletSynchronizerSchema, SubWalletSchema,
-                TransactionSchema, SubWalletsSchema, TxPrivateKeysSchema,
-                TransfersSchema, TransactionInputSchema, UnconfirmedInputSchema,
-                SynchronizationStatusSchema
-            ],
-            encryptionKey: key,
-        });
-
-        try {
-            realm.compact();
-        } finally {
-            realm.close();
-        }
-    } catch (err) {
-        Globals.logger.addLogMessage('Failed to compact DBs: ' + err);
-        return false;
-    }
-
-    return true;
-}
-
-export async function shouldCompactDB(requiredDayDifference) {
-    const lastCompacted = await loadLastUpdatedFromDatabase();
-
-    const now = new Date();
-
-    const actualDayDifference = Math.floor(
-        (now.getTime() - lastCompacted.getTime()) / (1000 * 3600 * 24)
-    );
-
-    return actualDayDifference > requiredDayDifference;
 }
