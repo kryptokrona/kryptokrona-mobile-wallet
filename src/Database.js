@@ -27,11 +27,24 @@ let database;
 async function realmToSql(pinCode) {
     const [wallet, error] = await loadWalletFromRealm(pinCode);
 
-    await Realm.deleteFile();
-    await Realm.deleteFile('Preferences.realm');
-    await Realm.deleteFile('PriceData.realm');
-    await Realm.deleteFile('PayeeData.realm');
-    await Realm.deleteFile('TransactionDetailsData.realm');
+    await Realm.deleteFile({
+    });
+
+    await Realm.deleteFile({
+        path: 'Preferences.realm'
+    });
+
+    await Realm.deleteFile({
+        path: 'PriceData.realm'
+    });
+
+    await Realm.deleteFile({
+        path: 'PayeeData.realm'
+    });
+
+    await Realm.deleteFile({
+        path: 'TransactionDetailsData.realm'
+    });
 
     /* Got the wallet from realm - store it in SQLite for future */
     if (wallet) {
@@ -41,11 +54,17 @@ async function realmToSql(pinCode) {
     return [wallet, error];
 }
 
-async function deleteDB() {
-    await SQLite.deleteDatabase({
-        name: 'data.DB',
-        location: 'default',
-    });
+export async function deleteDB() {
+    try {
+        await setHaveWallet(false);
+
+        await SQLite.deleteDatabase({
+            name: 'data.DB',
+            location: 'default',
+        });
+    } catch (err) {
+        Globals.logger.addLogMessage(err);
+    }
 }
 
 async function saveWallet(wallet) {
@@ -94,6 +113,7 @@ async function createTables(DB) {
 
         tx.executeSql(
             `CREATE TABLE IF NOT EXISTS preferences (
+                id INTEGER PRIMARY KEY,
                 currency TEXT,
                 notificationsenabled BOOLEAN,
                 scancoinbasetransactions BOOLEAN,
@@ -128,6 +148,14 @@ async function createTables(DB) {
             VALUES
                 (0, '')`
         );
+
+        /* Setup default preference values */
+        tx.executeSql(
+            `INSERT OR IGNORE INTO preferences
+                (id, currency, notificationsenabled, scancoinbasetransactions, limitdata, theme, pinconfirmation)
+            VALUES
+                (0, 'usd', 1, 0, 0, 'darkMode', 0)`
+        );
     });
 }
 
@@ -139,8 +167,6 @@ export async function openDB() {
         });
 
         await createTables(database);
-
-        await realmToSql();
     } catch (err) {
         Globals.logger.addLogMessage('Failed to open DB: ' + err);
     }
@@ -279,20 +305,6 @@ const SynchronizationStatusSchema = {
     }
 }
 
-const PreferencesSchema = {
-    name: 'Preferences',
-    primaryKey: 'primaryKey',
-    properties: {
-        primaryKey: 'int',
-        currency: 'string',
-        notificationsEnabled: 'bool',
-        scanCoinbaseTransactions: 'bool',
-        limitData: 'bool',
-        theme: 'string',
-        pinConfirmation: 'bool',
-    }
-}
-
 const PayeeSchema = {
     name: 'Payee',
     primaryKey: 'nickname',
@@ -408,31 +420,60 @@ function realmToWalletJSON(realmObj) {
 }
 
 export async function savePreferencesToDatabase(preferences) {
-    preferences['primaryKey'] = 1;
-
-    withDB(
-        [PreferencesSchema],
-        'Preferences.realm',
-        async (realm) => {
-            await realm.write(() => {
-                return realm.create('Preferences', preferences, true);
-            });
-        }
-    );
+    await database.transaction((tx) => {
+        tx.executeSql(
+            `UPDATE
+                preferences
+            SET
+                currency = ?,
+                notificationsenabled = ?,
+                scancoinbasetransactions = ?,
+                limitdata = ?,
+                theme = ?,
+                pinconfirmation = ?
+            WHERE
+                id = 0`,
+            [
+                preferences.currency,
+                preferences.notificationsEnabled ? 1 : 0,
+                preferences.scanCoinbaseTransactions ? 1 : 0,
+                preferences.limitData ? 1 : 0,
+                preferences.theme,
+                preferences.pinConfirmation ? 1 : 0,
+            ]
+        );
+    });
 }
 
 export async function loadPreferencesFromDatabase() {
-    return withDB(
-        [PreferencesSchema],
-        'Preferences.realm',
-        (realm) => {
-            if (realm.objects('Preferences').length > 0) {
-                return JSON.parse(JSON.stringify(realm.objects('Preferences')[0]));
-            }
-
-            return undefined;
-        }
+    const [data] = await database.executeSql(
+        `SELECT
+            currency,
+            notificationsenabled,
+            scancoinbasetransactions,
+            limitdata,
+            theme,
+            pinconfirmation
+        FROM
+            preferences
+        WHERE
+            id = 0`,
     );
+
+    if (data && data.rows && data.rows.length >= 1) {
+        const item = data.rows.item(0);
+
+        return {
+            currency: item.currency,
+            notificationsEnabled: item.notificationsenabled === 1,
+            scanCoinbaseTransactions: item.scancoinbasetransactions === 1,
+            limitData: item.limitdata === 1,
+            theme: item.theme,
+            pinConfirmation: item.pinconfirmation === 1,
+        }
+    }
+
+    return undefined;
 }
 
 export async function savePriceDataToDatabase(priceData) {
