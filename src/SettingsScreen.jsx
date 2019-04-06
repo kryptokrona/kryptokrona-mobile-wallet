@@ -28,7 +28,7 @@ import Constants from './Constants';
 import { Styles } from './Styles';
 import { Globals } from './Globals';
 import { SeedComponent, CopyButton } from './SharedComponents';
-import { savePreferencesToDatabase, deleteDB } from './Database';
+import { savePreferencesToDatabase, setHaveWallet } from './Database';
 import { navigateWithDisabledBack, toastPopUp, getArrivalTime } from './Utilities';
 
 export class FaqScreen extends React.Component {
@@ -742,7 +742,7 @@ function deleteWallet(navigation) {
                     /* Delete pin code */
                     deleteUserPinCode();
 
-                    await deleteDB();
+                    await setHaveWallet(false);
 
                     Globals.wallet.stop();
 
