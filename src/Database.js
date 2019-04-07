@@ -4,6 +4,8 @@
 
 import Realm from 'realm';
 
+import SQLite from 'react-native-sqlite-storage';
+
 import { AsyncStorage } from 'react-native';
 
 import { sha512 } from 'js-sha512';
@@ -15,10 +17,7 @@ import { Globals } from './Globals';
 
 import { reportCaughtException } from './Sentry';
 
-import SQLite from 'react-native-sqlite-storage';
-
-/* TODO: Remove */
-SQLite.DEBUG(true);
+/* Use promise based API instead of callback based */
 SQLite.enablePromise(true);
 
 let database;
@@ -286,17 +285,6 @@ const SynchronizationStatusSchema = {
         blockHashCheckpoints: 'string[]',
         lastKnownBlockHashes: 'string[]',
         lastKnownBlockHeight: 'int',
-    }
-}
-
-const TransactionDetailsSchema = {
-    name: 'TransactionDetails',
-    privateKey: 'hash',
-    properties: {
-        hash: 'string',
-        memo: 'string',
-        address: 'string',
-        payee: 'string',
     }
 }
 
@@ -583,68 +571,49 @@ export async function setHaveWallet(haveWallet) {
     }
 }
 
-/**
- * Note - saves a single transactiondetails to the DB, which contains many payees
- */
-export async function saveTransactionDetailsToDatabase(details) {
-    withDB(
-        [TransactionDetailsSchema],
-        'TransactionDetailsData.realm',
-        async (realm) => {
-            await realm.write(() => {
-                return realm.create('TransactionDetails', details, true);
+export async function saveTransactionDetailsToDatabase(txDetails) {
+    await database.transaction((tx) => {
+        tx.executeSql(
+            `INSERT INTO transactiondetails
+                (hash, memo, address, payee)
+            VALUES
+                (?, ?, ?, ?)`,
+            [
+                txDetails.hash,
+                txDetails.memo,
+                txDetails.address,
+                txDetails.payee
+            ]
+        );
+    });
+}
+
+export async function loadTransactionDetailsFromDatabase() {
+    const [data] = await database.executeSql(
+        `SELECT
+            hash,
+            memo,
+            address,
+            payee
+        FROM
+            transactiondetails`
+    );
+
+    if (data && data.rows && data.rows.length) {
+        const res = [];
+
+        for (let i = 0; i < data.rows.length; i++) {
+            const item = data.rows.item(i);
+            res.push({
+                hash: item.hash,
+                memo: item.memo,
+                address: item.address,
+                payee: item.payee,
             });
         }
-    );
-}
 
-export async function removeTransactionDetailsFromDatabase(hash) {
-    withDB(
-        [TransactionDetailsSchema],
-        'TransactionDetailsData.realm',
-        async (realm) => {
-            const details = realm.objects('TransactionDetails').filtered('hash = $0', hash);
-
-            if (details.length > 0) {
-                await realm.write(() => {
-                    realm.delete(details);
-                });
-            }
-        }
-    );
-}
-
-export function loadTransactionDetailsFromDatabase() {
-    return withDB(
-        [TransactionDetailsSchema],
-        'TransactionDetailsData.realm',
-        (realm) => {
-            if (realm.objects('TransactionDetails').length > 0) {
-                /* Has science gone too far? */
-                return realm.objects('TransactionDetails').map((x) => JSON.parse(JSON.stringify((x))));
-            }
-
-            return undefined;
-        }
-    );
-}
-
-async function withDB(schema, path, func, deleteIfMigrationNeeded) {
-    try {
-        let realm = await Realm.open({
-            schema: schema,
-            path: path,
-            deleteRealmIfMigrationNeeded: deleteIfMigrationNeeded === undefined ? true : deleteIfMigrationNeeded,
-        });
-
-        try {
-            return await func(realm);
-        } finally {
-            realm.close();
-        }
-    } catch (err) {
-        reportCaughtException(err);
-        Globals.logger.addLogMessage('Error interacting with DB: ' + err);
-        return undefined;
+        return res;
     }
+
+    return undefined;
 }
