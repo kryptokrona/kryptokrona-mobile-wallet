@@ -75,7 +75,7 @@ async function saveWallet(wallet) {
                 json = ?
             WHERE
                 id = 0`,
-            [wallet.toJSONString()]
+            [wallet]
         );
     });
 }
@@ -496,7 +496,7 @@ export async function loadPayeeDataFromDatabase() {
 
 export async function saveToDatabase(wallet, pinCode) {
     try {
-        await saveWallet(wallet);
+        await saveWallet(wallet.toJSONString());
         await setHaveWallet(true);
     } catch (err) {
         reportCaughtException(err);
