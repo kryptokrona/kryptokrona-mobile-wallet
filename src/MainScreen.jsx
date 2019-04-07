@@ -14,7 +14,7 @@ import { NavigationActions } from 'react-navigation';
 
 import {
     Text, View, Image, TouchableOpacity, PushNotificationIOS,
-    AppState, Platform, Linking, ScrollView, RefreshControl,
+    AppState, Platform, Linking, ScrollView, RefreshControl, Dimensions,
 } from 'react-native';
 
 import { prettyPrintAmount, LogLevel } from 'turtlecoin-wallet-backend';
@@ -211,35 +211,39 @@ export class MainScreen extends React.Component {
                     />
                 }
                 style={{
-                    backgroundColor: this.props.screenProps.theme.backgroundColour
+                    backgroundColor: this.props.screenProps.theme.backgroundColour,
                 }}
                 contentContainerstyle={{
                     flex: 1,
-                    justifyContent: 'space-between',
                 }}
             >
-                <View style={{ 
-                    height: '20%', 
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    margin: 10,
-                    borderRadius: 10,
-                    opacity: this.state.addressOnly ? 0 : 100,
+                <View style={{
+                    justifyContent: 'space-around',
+                    height: Dimensions.get('window').height - 73,
                 }}>
-                    <BalanceComponent
-                        unlockedBalance={this.state.unlockedBalance}
-                        lockedBalance={this.state.lockedBalance}
-                        coinValue={this.state.coinValue}
-                        {...this.props}
-                    />
-                </View>
+                    <View style={{ 
+                        height: '20%', 
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        margin: 10,
+                        borderRadius: 10,
+                        opacity: this.state.addressOnly ? 0 : 100,
+                    }}>
+                        <BalanceComponent
+                            unlockedBalance={this.state.unlockedBalance}
+                            lockedBalance={this.state.lockedBalance}
+                            coinValue={this.state.coinValue}
+                            {...this.props}
+                        />
+                    </View>
 
-                <TouchableOpacity onPress={() => this.setState({ addressOnly: !this.state.addressOnly })}>
-                    <AddressComponent {...this.props}/>
-                </TouchableOpacity>
+                    <TouchableOpacity onPress={() => this.setState({ addressOnly: !this.state.addressOnly })}>
+                        <AddressComponent {...this.props}/>
+                    </TouchableOpacity>
 
-                <View style={{ flex: 1, opacity: this.state.addressOnly ? 0 : 100 }}>
-                    <SyncComponent {...this.props}/>
+                    <View style={{ opacity: this.state.addressOnly ? 0 : 100, flex: 1 }}>
+                        <SyncComponent {...this.props}/>
+                    </View>
                 </View>
             </ScrollView>
         );
@@ -421,7 +425,7 @@ class SyncComponent extends React.Component {
 
     render() {
         return(
-            <View style={{ justifyContent: 'flex-end', alignItems: 'center', marginBottom: 20, marginTop: 50 }}>
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', bottom: 20, position: 'absolute', left: 0, right: 0 }}>
                 <Text style={{
                     color: this.props.screenProps.theme.slightlyMoreVisibleColour,
                 }}>
