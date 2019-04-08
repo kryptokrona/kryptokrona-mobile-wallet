@@ -4,6 +4,7 @@
 
 export default Constants = {
     walletFileFormatVersion: 0,
+
     /* Note: It falls back to USD, so I suggest not removing that */
     currencies: [
         {
@@ -103,4 +104,6 @@ export default Constants = {
             symbolLocation: 'prefix',
         },
     ],
+
+    numTransactionsPerPage: 20,
 };

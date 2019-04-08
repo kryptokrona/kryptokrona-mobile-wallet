@@ -8,12 +8,14 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import TextTicker from 'react-native-text-ticker';
 
+import { Header } from 'react-native-elements';
 import { View, Text, FlatList, Button, Linking, ScrollView } from 'react-native';
 import { prettyPrintAmount } from 'turtlecoin-wallet-backend';
 
 import Config from './Config';
 import ListItem from './ListItem';
 import List from './ListContainer';
+import Constants from './Constants';
 
 import { Styles } from './Styles';
 import { Globals } from './Globals';
@@ -211,13 +213,14 @@ export class TransactionsScreen extends React.Component {
         const [walletHeight, localHeight, networkHeight] = Globals.wallet.getSyncStatus();
 
         /* Don't display fusions, and display newest first */
-        const transactions = Globals.wallet.getTransactions().filter((x) => x.totalAmount() !== 0);
+        const transactions = Globals.wallet.getTransactions(0, Constants.numTransactionsPerPage, false);
 
         this.state = {
-            numTransactions: transactions.length,
+            numTransactions: Globals.wallet.getNumTransactions(),
             transactions,
             walletHeight,
             networkHeight,
+            pageNum: 0,
         };
 
         /* Only update transactions list when transaction is sent/received.
@@ -233,14 +236,20 @@ export class TransactionsScreen extends React.Component {
         Globals.wallet.on('createdtx', () => {
             this.updateTransactions();
         });
+
+        this.changePage = this.changePage.bind(this);
     }
 
     updateTransactions() {
         /* Don't display fusions */
-        const transactions = Globals.wallet.getTransactions().filter((x) => x.totalAmount() !== 0);
+        const transactions = Globals.wallet.getTransactions(
+            this.state.pageNum * Constants.numTransactionsPerPage,
+            Constants.numTransactionsPerPage,
+            false
+        );
 
         this.setState({
-            numTransactions: transactions.length,
+            numTransactions: Globals.wallet.getNumTransactions(),
             transactions,
         });
     }
@@ -267,9 +276,18 @@ export class TransactionsScreen extends React.Component {
     componentWillUnmount() {
         clearInterval(this.interval);
     }
+
+    changePage(pageNum) {
+        if (pageNum < 0 || pageNum >= Math.ceil(this.state.numTransactions / Constants.numTransactionsPerPage) + 1) {
+            return
+        }
+
+        this.setState({
+            pageNum,
+        }, this.updateTransactions);
+    }
     
     render() {
-
         const syncedMsg = this.state.walletHeight + 10 >= this.state.networkHeight ? 
             '' 
           : "\nYour wallet isn't fully synced. If you're expecting some transactions, please wait.";
@@ -283,7 +301,15 @@ export class TransactionsScreen extends React.Component {
             </View>;
 
         return(
-            this.state.numTransactions === 0 ? noTransactions : <TransactionList {...this.props} transactions={this.state.transactions}/>
+            this.state.numTransactions === 0 ?
+                noTransactions 
+             : <TransactionList
+                {...this.props}
+                pageNum={this.state.pageNum}
+                numTransactions={this.state.numTransactions}
+                transactions={this.state.transactions}
+                changePage={this.changePage}
+            />
         );
     }
 }
@@ -323,12 +349,49 @@ class TransactionList extends React.Component {
         }));
     }
 
+    getMaxPage() {
+        return Math.ceil(this.props.numTransactions / Constants.numTransactionsPerPage);
+    }
+
     render() {
         return(
             <View style={{
                 backgroundColor: this.props.screenProps.theme.backgroundColour,
                 flex: 1,
             }}>
+                <Header
+                    leftComponent={{
+                        icon: 'navigate-before',
+                        color: this.props.pageNum === 0 ? this.props.screenProps.theme.notVeryVisibleColour : this.props.screenProps.theme.primaryColour,
+                        onPress: () => {
+                            if (this.props.pageNum <= 0) {
+                                return;
+                            }
+
+                            this.props.changePage(this.props.pageNum - 1);
+                        }
+                    }}
+                    centerComponent={{
+                        text: `PAGE ${this.props.pageNum + 1} / ${this.getMaxPage()}`,
+                        style: {
+                            color: this.props.screenProps.theme.primaryColour,
+                            fontSize: 16,
+                        }
+                    }}
+                    rightComponent={{
+                        icon: 'navigate-next',
+                        color: this.props.pageNum === this.getMaxPage() - 1 ? this.props.screenProps.theme.notVeryVisibleColour : this.props.screenProps.theme.primaryColour,
+                        onPress: () => {
+                            if (this.props.pageNum >= this.getMaxPage() - 1) {
+                                return;
+                            }
+
+                            this.props.changePage(this.props.pageNum + 1);
+                        }
+                    }}
+                    backgroundColor={this.props.screenProps.theme.backgroundColour}
+                />
+
                 <List style={{
                     backgroundColor: this.props.screenProps.theme.backgroundColour,
                 }}>
