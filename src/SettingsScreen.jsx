@@ -73,7 +73,7 @@ export class FaqScreen extends React.Component {
                     }}>
                         The wallet does support background syncing, however, it may take some time before you notice this.{'\n\n'}
                         Every 15 minutes, a background sync event is fired. (This is a limitation of the mobile platform){'\n\n'}
-                        After that, background syncing will continue for {Platform.OS === 'ios' ? ' 30 seconds' : ' 14 minutes'}, until the next background sync event is fired.{'\n\n'}
+                        After that, background syncing will continue for {Platform.OS === 'ios' ? '30 seconds' : '14 minutes'}, until the next background sync event is fired.{'\n\n'}
                         However, depending upon your phone model, battery, and OS, these background syncs may occur later than expected, or not at all.{'\n\n'}
                         For further information, see{' '}
                         <Text
