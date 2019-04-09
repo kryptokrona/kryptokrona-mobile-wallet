@@ -10,7 +10,7 @@ import QRCode from 'react-native-qrcode-svg';
 
 import PushNotification from 'react-native-push-notification';
 
-import { NavigationActions } from 'react-navigation';
+import { NavigationActions, NavigationEvents } from 'react-navigation';
 
 import {
     Text, View, Image, TouchableOpacity, PushNotificationIOS,
@@ -217,6 +217,13 @@ export class MainScreen extends React.Component {
                     flex: 1,
                 }}
             >
+                <NavigationEvents
+                    onWillFocus={(payload) => {
+                        if (payload && payload.action && payload.action.params && payload.action.params.reloadBalance) {
+                            this.updateBalance();
+                        }
+                    }}
+                />
                 <View style={{
                     justifyContent: 'space-around',
                     height: Dimensions.get('window').height - 73,

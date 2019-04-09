@@ -385,7 +385,7 @@ export class SwapCurrencyScreen extends React.Component {
                                     this.props.navigation.dispatch(navigateWithDisabledBack('Settings'));
 
                                     /* And go back to the main screen. */
-                                    this.props.navigation.navigate('Main');
+                                    this.props.navigation.navigate('Main', { reloadBalance: true } );
                                 }}
                             />
                         )}
