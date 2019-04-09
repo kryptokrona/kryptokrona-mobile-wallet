@@ -79,6 +79,7 @@ assignees: ''
 ## QR codes and URIs
 
 Can handle the following URIs:
+(Since github doesn't allow clickable URIs - https://hackmd.io/SgUw6oF9RLCjwRMnD0jQpQ?view)
 - [ ] `turtlecoin://TRTLv2Fyavy8CXG8BPEbNeCHFZ1fuDCYCZ3vW5H5LXN4K2M2MHUpTENip9bbavpHvvPwb4NDkBWrNgURAd5DB38FHXWZyoBh4wW?amount=10000&name=Starbucks%20Coffee&paymentid=f13adc8ac78eb22ffcee3f82e0e9ffb251dc7dc0600ef599087a89b623ca1402`
 (Address, amount, name, payment ID)
 
