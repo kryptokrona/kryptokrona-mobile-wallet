@@ -765,7 +765,7 @@ function resetWallet(navigation) {
             {text: 'Resync', onPress: () => {
                 Globals.wallet.rescan();
                 toastPopUp('Wallet resync initiated');
-                navigation.navigate('Main');
+                navigation.navigate('Main', { reloadBalance: true } );
             }},
             {text: 'Cancel', style: 'cancel'},
         ],
