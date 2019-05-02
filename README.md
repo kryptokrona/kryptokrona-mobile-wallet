@@ -126,8 +126,6 @@ This would send `100 TRTL` (10000 in atomic units) to the address `TRTLv2Fyavy8C
 
 You can also just display the URI as a hyperlink. If a user clicks the link, it will open the app, and jump to the confirm screen, just as a QR code would function. (Provided all the fields are given)
 
-[Try clicking this link on a phone with TonChan installed](turtlecoin://TRTLv2Fyavy8CXG8BPEbNeCHFZ1fuDCYCZ3vW5H5LXN4K2M2MHUpTENip9bbavpHvvPwb4NDkBWrNgURAd5DB38FHXWZyoBh4wW?amount=100&name=Zpalm)
-
 ## Running natively on your Android device
 
 Follow [this](https://facebook.github.io/react-native/docs/running-on-device.html) guide.
