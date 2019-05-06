@@ -30,6 +30,7 @@ First we need to install the Android JDK (Version 8!).
 
 * Ubuntu - `sudo apt-get install default-jdk`
 * Arch Linux - `pacman -S jdk-openjdk`
+* OSX - `brew tap AdoptOpenJDK/openjdk` & `brew cask install adoptopenjdk8`
 
 Next, lets install Android Studio.
 
