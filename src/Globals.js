@@ -4,7 +4,9 @@
 
 import * as _ from 'lodash';
 
-import { NetInfo, Alert } from 'react-native';
+import { Alert } from 'react-native';
+
+import NetInfo from "@react-native-community/netinfo";
 
 import { Logger } from './Logger';
 import { getCoinPriceFromAPI } from './Currency';
@@ -56,7 +58,9 @@ class globals {
         this.backgroundSaveTimer = undefined;
         this.logger = new Logger();
 
-        NetInfo.removeEventListener('connectionChange', updateConnection);
+        if (this.unsubscribe) {
+            this.unsubscribe();
+        }
     }
 
     addTransactionDetails(txDetails) {
@@ -108,7 +112,7 @@ export async function initGlobals() {
         Globals.transactionDetails = transactionDetails;
     }
     
-    const netInfo = NetInfo.getConnectionInfo();
+    const netInfo = await NetInfo.fetch();
 
     /* Start syncing */
     if ((Globals.preferences.limitData && netInfo.type === 'cellular')) {
@@ -123,5 +127,5 @@ export async function initGlobals() {
         Globals.wallet.start();
     }
 
-    NetInfo.addEventListener('connectionChange', updateConnection);
+    this.unsubscribe = NetInfo.addEventListener(updateConnection);
 }

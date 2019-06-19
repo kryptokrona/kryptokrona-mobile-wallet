@@ -10,6 +10,8 @@ import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.ReactApplication;
+import com.reactnativecommunity.netinfo.NetInfoPackage;
+import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import com.swmansion.rnscreens.RNScreensPackage;
 import io.sentry.RNSentryPackage;
 import com.github.wumke.RNExitApp.RNExitAppPackage;
@@ -54,6 +56,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new NetInfoPackage(),
+            new AsyncStoragePackage(),
             new RNScreensPackage(),
             new RNSentryPackage(),
             new RNExitAppPackage(),

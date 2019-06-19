@@ -219,8 +219,12 @@ WalletBlockInfo makeNativeWalletBlockInfo(JNIEnv *env, jobject jWalletBlockInfo)
     WalletBlockInfo result;
 
     jobject tx = env->GetObjectField(jWalletBlockInfo, WALLET_BLOCK_INFO_COINBASE_TRANSACTION);
-    result.coinbaseTransaction = makeNativeRawTransaction(env, tx);
-    env->DeleteLocalRef(tx);
+
+    if (tx != nullptr)
+    {
+        result.coinbaseTransaction = makeNativeRawTransaction(env, tx);
+        env->DeleteLocalRef(tx);
+    }
 
     jobjectArray transactions = (jobjectArray)env->GetObjectField(jWalletBlockInfo, WALLET_BLOCK_INFO_TRANSACTIONS);
     result.transactions = makeNativeTransactionVector(env, transactions);
@@ -435,10 +439,10 @@ std::vector<std::tuple<Crypto::PublicKey, TransactionInput>> processBlockOutputs
     std::vector<std::tuple<Crypto::PublicKey, TransactionInput>> inputs;
 
     /* Process the coinbase tx if we're not skipping them for speed */
-    if (processCoinbaseTransactions)
+    if (processCoinbaseTransactions && block.coinbaseTransaction)
     {
         processTransactionOutputs(
-            block.coinbaseTransaction, privateViewKey, spendKeys, isViewWallet, inputs
+            *block.coinbaseTransaction, privateViewKey, spendKeys, isViewWallet, inputs
         );
     }
 

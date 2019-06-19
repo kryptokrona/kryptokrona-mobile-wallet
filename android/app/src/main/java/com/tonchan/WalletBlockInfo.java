@@ -21,7 +21,7 @@ public class WalletBlockInfo {
 
     public WalletBlockInfo(ReadableMap map) {
         this(
-            new RawTransaction(map.getMap("coinbaseTransaction")),
+            map.hasKey("coinbaseTransaction") ? new RawTransaction(map.getMap("coinbaseTransaction")) : null,
             RawTxVector(map.getArray("transactions"))
         );
     }

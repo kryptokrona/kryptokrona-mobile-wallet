@@ -45,7 +45,7 @@ Once you have your virtual device setup, you can launch the app itself.
 
 * Run the program:
 
-`react-native run-android`
+`yarn start` (or `yarn start-release`)
 
 If you get an error about 'Unsupported major.minor version', you may need to set JAVA_HOME to point to the correct jdk.
 
