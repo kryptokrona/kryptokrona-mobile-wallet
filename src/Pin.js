@@ -55,18 +55,11 @@ export class SetPinScreen extends React.Component {
                     colorPassword={this.props.screenProps.theme.primaryColour}
                     stylePinCodeColorSubtitle={this.props.screenProps.theme.primaryColour}
                     stylePinCodeColorTitle={this.props.screenProps.theme.primaryColour}
-                    stylePinCodeButtonCircle={{
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: 64,
-                        height: 64,
-                        backgroundColor: this.props.screenProps.theme.pinCodeBackgroundColour,
-                        borderRadius: 32,
-                    }}
                     stylePinCodeButtonNumber={this.props.screenProps.theme.pinCodeForegroundColour}
                     numbersButtonOverlayColor={this.props.screenProps.theme.secondaryColour}
                     stylePinCodeDeleteButtonColorShowUnderlay={this.props.screenProps.theme.primaryColour}
                     stylePinCodeDeleteButtonColorHideUnderlay={this.props.screenProps.theme.primaryColour}
+                    colorCircleButtons={this.props.screenProps.theme.pinCodeBackgroundColour}
                 />
             </View>
         );
@@ -167,19 +160,12 @@ export class RequestPinScreen extends React.Component {
                     colorPassword={this.props.screenProps.theme.primaryColour}
                     stylePinCodeColorSubtitle={this.props.screenProps.theme.primaryColour}
                     stylePinCodeColorTitle={this.props.screenProps.theme.primaryColour}
-                    stylePinCodeButtonCircle={{
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: 64,
-                        height: 64,
-                        backgroundColor: this.props.screenProps.theme.pinCodeBackgroundColour,
-                        borderRadius: 32,
-                    }}
                     stylePinCodeButtonNumber={this.props.screenProps.theme.pinCodeForegroundColour}
                     numbersButtonOverlayColor={this.props.screenProps.theme.secondaryColour}
                     stylePinCodeDeleteButtonColorShowUnderlay={this.props.screenProps.theme.primaryColour}
                     stylePinCodeDeleteButtonColorHideUnderlay={this.props.screenProps.theme.primaryColour}
                     onClickButtonLockedPage={() => RNExitApp.exitApp()}
+                    colorCircleButtons={this.props.screenProps.theme.pinCodeBackgroundColour}
                 />
 
                 <Button

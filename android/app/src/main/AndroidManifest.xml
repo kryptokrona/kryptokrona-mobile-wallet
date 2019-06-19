@@ -12,6 +12,7 @@
       android:icon="@mipmap/ic_launcher"
       android:allowBackup="false"
       android:largeHeap="true"
+      android:usesCleartextTraffic="${usesCleartextTraffic}"
       android:theme="@style/AppTheme">
         <meta-data  android:name="com.dieam.reactnativepushnotification.notification_channel_name"
                 android:value="YOUR NOTIFICATION CHANNEL NAME"/>

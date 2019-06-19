@@ -4,7 +4,9 @@
 
 import BackgroundFetch from 'react-native-background-fetch';
 
-import { AppState, Platform, NetInfo } from 'react-native';
+import { AppState, Platform } from 'react-native';
+
+import NetInfo from '@react-native-community/netinfo';
 
 import Config from './Config';
 
@@ -57,7 +59,7 @@ async function setupBackgroundSync() {
         return false;
     }
 
-    const netInfo = NetInfo.getConnectionInfo();
+    const netInfo = await NetInfo.fetch();
 
     if (Globals.preferences.limitData && netInfo.type === 'cellular') {
         Globals.logger.addLogMessage('[Background Sync] On mobile data. Not starting background sync.');

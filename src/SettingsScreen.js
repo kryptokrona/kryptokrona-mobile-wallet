@@ -17,8 +17,10 @@ import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import { deleteUserPinCode } from '@haskkor/react-native-pincode';
 
 import {
-    View, FlatList, Alert, Text, Linking, NetInfo, ScrollView, Platform
+    View, FlatList, Alert, Text, Linking, ScrollView, Platform
 } from 'react-native';
+
+import NetInfo from "@react-native-community/netinfo";
 
 import Config from './Config';
 import ListItem from './ListItem';
@@ -513,7 +515,7 @@ export class SettingsScreen extends React.Component {
                                         limitData: Globals.preferences.limitData,
                                     });
 
-                                    const netInfo = await NetInfo.getConnectionInfo();
+                                    const netInfo = await NetInfo.fetch();
                                     
                                     if (Globals.preferences.limitData && netInfo.type === 'cellular') {
                                         Globals.wallet.stop();
@@ -611,7 +613,7 @@ export class SettingsScreen extends React.Component {
                                 description: 'Leave a rating or send the link to your friends',
                                 icon: {
                                     iconName: Platform.OS === 'ios' ? 'app-store' : 'google-play',
-                                    IconType: Platform.OS === 'ios' ? Entypo : FontAwesome,
+                                    IconType: Entypo,
                                 },
                                 onClick: () => {
                                     const link = Platform.OS === 'ios' ? Config.appStoreLink : Config.googlePlayLink;
