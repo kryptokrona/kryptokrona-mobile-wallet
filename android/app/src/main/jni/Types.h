@@ -4,6 +4,8 @@
 
 #include <string>
 
+#include <optional>
+
 struct KeyOutput
 {
     Crypto::PublicKey key;
@@ -36,7 +38,7 @@ struct RawTransaction
 struct WalletBlockInfo
 {
     /* The coinbase transaction */
-    RawTransaction coinbaseTransaction;
+    std::optional<RawTransaction> coinbaseTransaction;
 
     /* The transactions in the block */
     std::vector<RawTransaction> transactions;
