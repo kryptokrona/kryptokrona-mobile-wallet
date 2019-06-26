@@ -81,17 +81,22 @@ async function saveWallet(wallet) {
 }
 
 async function loadWallet() {
-    const [data] = await database.executeSql(
-        `SELECT
-            json
-        FROM
-            wallet
-        WHERE
-            id = 0`,
-    );
+    try {
+        const [data] = await database.executeSql(
+            `SELECT
+                json,
+                foo
+            FROM
+                wallet
+            WHERE
+                id = 0`,
+        );
 
-    if (data && data.rows && data.rows.length >= 1) {
-        return data.rows.item(0).json;
+        if (data && data.rows && data.rows.length >= 1) {
+            return data.rows.item(0).json;
+        }
+    } catch (err) {
+        reportCaughtException(err);
     }
 
     return undefined;

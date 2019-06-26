@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "react-native bundle --platform android --dev true --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res; ./node_modules/.bin/react-native run-android",
+    "start": "./node_modules/.bin/jetify; react-native bundle --platform android --dev true --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res; ./node_modules/.bin/react-native run-android",
     "start-release": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res; ./node_modules/.bin/react-native run-android",
     "build-android": "sudo adb kill-server; sudo adb start-server; cd android; ./gradlew assembleRelease; cd ..",
     "deploy-android": "sudo adb kill-server; sudo adb start-server; cd android; ./gradlew assembleRelease && ./gradlew installRelease; cd ..",
@@ -21,7 +21,7 @@
     "buffer": "^5.2.1",
     "console-browserify": "^1.1.0",
     "https-browserify": "1.0.0",
-    "jetifier": "^1.0.1",
+    "jetifier": "^1.5.0",
     "js-sha512": "^0.8.0",
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
@@ -60,7 +60,7 @@
     "rn-nodeify": "^10.0.1",
     "stream-browserify": "^2.0.2",
     "turtlecoin-crypto": "^3.0.2",
-    "turtlecoin-wallet-backend": "^2.0.0",
+    "turtlecoin-wallet-backend": "https://github.com/turtlecoin/turtlecoin-wallet-backend-js.git",
     "url": "^0.11.0",
     "vm-browserify": "1.1.0"
   },

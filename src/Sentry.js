@@ -4,6 +4,8 @@
 
 import { Sentry } from 'react-native-sentry';
 
+import * as _ from 'lodash';
+
 import Config from './Config';
 
 /* Manually comparing to TurtleCoin to try and prevent getting errors reported
@@ -12,6 +14,12 @@ import Config from './Config';
 const sentryIsEnabled = !__DEV__ && Config.coinName === 'TurtleCoin';
 
 export function reportCaughtException(err) {
+    /* Sentry doesn't properly report arbitary objects. Convert to string if
+       it ain't a string or an error. */
+    if (!_.isString(err) && !(err instanceof Error)) {
+        err = JSON.stringify(err, null, 4);
+    }
+
     if (sentryIsEnabled) {
         try {
             Sentry.captureException(err);
@@ -25,5 +33,8 @@ export function initSentry() {
         /* CHANGE THIS IF YOU ARE FORKING! */
         Sentry.config('https://8ecf138e1d1e4d558178be3f2b5e1925@sentry.io/1411753').install();
         Sentry.setVersion(Config.appVersion);
+        Sentry.setDataCallback((event) => {
+            console.log(event);
+        });
     }
 }
