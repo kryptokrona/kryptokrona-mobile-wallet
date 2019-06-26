@@ -262,7 +262,7 @@ function isAddressValid(address) {
         return [false, errorMessage];
     }
 
-    const addressError = validateAddresses([address], true);
+    const addressError = validateAddresses([address], true, Config);
 
     if (addressError.errorCode !== WalletErrorCode.SUCCESS) {
         errorMessage = addressError.toString();

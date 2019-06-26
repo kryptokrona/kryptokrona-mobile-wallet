@@ -129,13 +129,13 @@ export class TransactionDetailsScreen extends React.Component {
 
                         <ItemDescription
                             title='Amount'
-                            item={prettyPrintAmount(this.state.amount)}
+                            item={prettyPrintAmount(this.state.amount, Config)}
                             {...this.props}
                         />
 
                         {this.state.transaction.totalAmount() < 0 && <ItemDescription
                             title='Fee'
-                            item={prettyPrintAmount(this.state.transaction.fee)}
+                            item={prettyPrintAmount(this.state.transaction.fee, Config)}
                             {...this.props}
                         />}
 
@@ -401,7 +401,7 @@ class TransactionList extends React.Component {
                         keyExtractor={item => item.hash}
                         renderItem={({item}) => (
                             <ListItem
-                                title={prettyPrintAmount(Math.abs(item.totalAmount()) - (item.totalAmount() > 0 ? 0 : item.fee))}
+                                title={prettyPrintAmount(Math.abs(item.totalAmount()) - (item.totalAmount() > 0 ? 0 : item.fee), Config)}
                                 subtitle={item.timestamp === 0 ? 'Processing at ' + prettyPrintDate() : 'Completed on ' + prettyPrintUnixTimestamp(item.timestamp)}
                                 leftIcon={
                                     <View style={{width: 30, alignItems: 'center', justifyContent: 'center', marginRight: 10}}>

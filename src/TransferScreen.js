@@ -490,7 +490,7 @@ export class NewPayeeScreen extends React.Component {
             });
         }
 
-        const addressError = validateAddresses([address], true);
+        const addressError = validateAddresses([address], true, Config);
 
         if (addressError.errorCode !== WalletErrorCode.SUCCESS) {
             errorMessage = addressError.toString();
@@ -801,7 +801,7 @@ export class ConfirmScreen extends React.Component {
                     }}>
                         <Text style={{ fontSize: 13, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                             <Text style={{ color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
-                                {prettyPrintAmount(this.props.navigation.state.params.amount.remainingAtomic)}{' '}
+                                {prettyPrintAmount(this.props.navigation.state.params.amount.remainingAtomic, Config)}{' '}
                             </Text>
                             will reach{' '}
                             <Text style={{ color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
@@ -955,7 +955,7 @@ export class ConfirmScreen extends React.Component {
                         </Text>
 
                         <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                            {prettyPrintAmount(this.props.navigation.state.params.amount.originalAtomic)}
+                            {prettyPrintAmount(this.props.navigation.state.params.amount.originalAtomic, Config)}
                         </Text>
 
                         <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
@@ -963,7 +963,7 @@ export class ConfirmScreen extends React.Component {
                         </Text>
 
                         <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                            {prettyPrintAmount(this.props.navigation.state.params.amount.remainingAtomic)}
+                            {prettyPrintAmount(this.props.navigation.state.params.amount.remainingAtomic, Config)}
                         </Text>
 
                         <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
@@ -971,7 +971,7 @@ export class ConfirmScreen extends React.Component {
                         </Text>
 
                         <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                            {prettyPrintAmount(this.props.navigation.state.params.amount.networkFeeAtomic)}
+                            {prettyPrintAmount(this.props.navigation.state.params.amount.networkFeeAtomic, Config)}
                         </Text>
 
                         {this.props.navigation.state.params.amount.devFeeAtomic > 0 &&
@@ -981,7 +981,7 @@ export class ConfirmScreen extends React.Component {
                             </Text>
 
                             <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                                {prettyPrintAmount(this.props.navigation.state.params.amount.devFeeAtomic)}
+                                {prettyPrintAmount(this.props.navigation.state.params.amount.devFeeAtomic, Config)}
                             </Text>
                         </View>}
 
@@ -992,7 +992,7 @@ export class ConfirmScreen extends React.Component {
                             </Text>
 
                             <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                                {prettyPrintAmount(this.props.navigation.state.params.amount.nodeFeeAtomic)}
+                                {prettyPrintAmount(this.props.navigation.state.params.amount.nodeFeeAtomic, Config)}
                             </Text>
                         </View>}
 
@@ -1003,7 +1003,7 @@ export class ConfirmScreen extends React.Component {
                             </Text>
 
                             <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                                {prettyPrintAmount(this.props.navigation.state.params.amount.totalFeeAtomic)}
+                                {prettyPrintAmount(this.props.navigation.state.params.amount.totalFeeAtomic, Config)}
                             </Text>
                         </View>}
 
@@ -1261,7 +1261,7 @@ export class SendTransactionScreen extends React.Component {
 
                 <Text style={{ fontSize: 13, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                     <Text style={{ color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
-                        {prettyPrintAmount(this.state.amount.remainingAtomic)}{' '}
+                        {prettyPrintAmount(this.state.amount.remainingAtomic, Config)}{' '}
                     </Text>
                     was sent to{' '}
                     <Text style={{ color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>

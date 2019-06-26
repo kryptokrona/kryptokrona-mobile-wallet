@@ -56,3 +56,5 @@ buck-out/
 *.jsbundle
 .externalNativeBuild
 index.android.bundle
+
+android/app/src/main/res/drawable-*

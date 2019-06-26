@@ -203,7 +203,7 @@ export class ImportSeedScreen extends React.Component {
             return false;
         }
 
-        const [valid, error] = isValidMnemonic(words.join(' '));
+        const [valid, error] = isValidMnemonic(words.join(' '), Config);
 
         if (!valid) {
             this.setState({

@@ -96,7 +96,7 @@ function sendNotification(transaction) {
 
     PushNotification.localNotification({
         title: 'Incoming transaction received!',
-        message: `You were sent ${prettyPrintAmount(transaction.totalAmount())}`,
+        message: `You were sent ${prettyPrintAmount(transaction.totalAmount(), Config)}`,
         data: JSON.stringify(transaction.hash),
     });
 }
@@ -326,7 +326,7 @@ class BalanceComponent extends React.Component {
                                          expandedBalance: !this.state.expandedBalance
                                      })}
                                 >
-                                     {prettyPrintAmount(this.props.unlockedBalance + this.props.lockedBalance)}
+                                     {prettyPrintAmount(this.props.unlockedBalance + this.props.lockedBalance, Config)}
                                </OneLineText>;
 
         const lockedBalance = <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
@@ -335,7 +335,7 @@ class BalanceComponent extends React.Component {
                                           onPress={() => this.setState({
                                              expandedBalance: !this.state.expandedBalance
                                           })}>
-                                        {prettyPrintAmount(this.props.lockedBalance)}
+                                        {prettyPrintAmount(this.props.lockedBalance, Config)}
                                     </OneLineText>
                               </View>;
 
@@ -345,7 +345,7 @@ class BalanceComponent extends React.Component {
                                           onPress={() => this.setState({
                                              expandedBalance: !this.props.expandedBalance
                                           })}>
-                                        {prettyPrintAmount(this.props.unlockedBalance)}
+                                        {prettyPrintAmount(this.props.unlockedBalance, Config)}
                                     </OneLineText>
                                 </View>;
 
