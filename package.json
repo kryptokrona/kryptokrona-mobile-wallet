@@ -5,7 +5,7 @@
   "scripts": {
     "start": "./node_modules/.bin/jetify; react-native bundle --platform android --dev true --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res; ./node_modules/.bin/react-native run-android",
     "start-release": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res; ./node_modules/.bin/react-native run-android",
-    "build-android": "sudo adb kill-server; sudo adb start-server; cd android; ./gradlew assembleRelease; cd ..",
+    "build-android": "rm -r android/app/src/main/res/drawable-*; sudo adb kill-server; sudo adb start-server; cd android; ./gradlew assembleRelease; cd ..",
     "deploy-android": "sudo adb kill-server; sudo adb start-server; cd android; ./gradlew assembleRelease && ./gradlew installRelease; cd ..",
     "postinstall": "./node_modules/.bin/rn-nodeify --install fs,dgram,process,path,console,crypto,buffer,stream,vm,http,https,url,zlib,net,assert,tls --hack --yarn; ./node_modules/.bin/react-native link; ./node_modules/.bin/jetify"
   },
