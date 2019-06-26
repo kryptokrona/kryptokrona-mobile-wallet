@@ -84,8 +84,7 @@ async function loadWallet() {
     try {
         const [data] = await database.executeSql(
             `SELECT
-                json,
-                foo
+                json
             FROM
                 wallet
             WHERE
