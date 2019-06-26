@@ -51,6 +51,8 @@ If you get an error about 'Unsupported major.minor version', you may need to set
 
 For example, `export JAVA_HOME=/usr/lib/jvm/java-8-openjdk/jre/`
 
+If you get an error about duplicate resources, run `rm -r android/app/src/main/res/drawable-*`
+
 ## Developing
 
 ### Logging
