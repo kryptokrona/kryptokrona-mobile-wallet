@@ -25,7 +25,7 @@
     "react": "16.8.6",
     "react-native": "0.60.3",
     "react-native-background-fetch": "^2.6.1",
-    "react-native-camera": "^1.0.2",
+    "react-native-camera": "^2.11.1",
     "react-native-crypto": "^2.1.0",
     "react-native-elements": "^1.1.0",
     "react-native-exit-app": "^1.0.0",

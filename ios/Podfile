@@ -34,6 +34,10 @@ target 'TonChan' do
 
   pod 'RNBackgroundFetch', :path => '../node_modules/react-native-background-fetch'
 
+  pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
+
+  pod 'ReactNativePermissions', :path => '../node_modules/react-native-permissions'
+
   target 'TonChanTests' do
     inherit! :search_paths
     # Pods for testing
