@@ -2,13 +2,9 @@
 //
 // Please see the included LICENSE file for more information.
 
-import Realm from 'realm';
-
 import SQLite from 'react-native-sqlite-storage';
 
 import { AsyncStorage } from 'react-native';
-
-import { sha512 } from 'js-sha512';
 
 import Config from './Config';
 import Constants from './Constants';
@@ -21,37 +17,6 @@ import { reportCaughtException } from './Sentry';
 SQLite.enablePromise(true);
 
 let database;
-
-/* Perform conversion from realm to SQL, and delete old realm stuff */
-async function realmToSql(pinCode) {
-    const [wallet, error] = await loadWalletFromRealm(pinCode);
-
-    await Realm.deleteFile({
-    });
-
-    await Realm.deleteFile({
-        path: 'Preferences.realm'
-    });
-
-    await Realm.deleteFile({
-        path: 'PriceData.realm'
-    });
-
-    await Realm.deleteFile({
-        path: 'PayeeData.realm'
-    });
-
-    await Realm.deleteFile({
-        path: 'TransactionDetailsData.realm'
-    });
-
-    /* Got the wallet from realm - store it in SQLite for future */
-    if (wallet) {
-        saveWallet(wallet);
-    }
-
-    return [wallet, error];
-}
 
 export async function deleteDB() {
     try {
@@ -80,7 +45,7 @@ async function saveWallet(wallet) {
     });
 }
 
-async function loadWallet() {
+export async function loadWallet() {
     try {
         const [data] = await database.executeSql(
             `SELECT
@@ -92,13 +57,14 @@ async function loadWallet() {
         );
 
         if (data && data.rows && data.rows.length >= 1) {
-            return data.rows.item(0).json;
+            return [ data.rows.item(0).json, undefined ];
         }
     } catch (err) {
         reportCaughtException(err);
+        return [ undefined, err ];
     }
 
-    return undefined;
+    return [ undefined, 'Wallet not found in database!' ];
 }
 
 /* Create the tables if we haven't made them already */
@@ -173,216 +139,6 @@ export async function openDB() {
     } catch (err) {
         Globals.logger.addLogMessage('Failed to open DB: ' + err);
     }
-}
-
-const WalletSchema = {
-    name: 'Wallet',
-    /* Designate the 'primaryKey' property as the primary key. We can use
-       this so we can update the wallet, rather than having to delete the old
-       one, and resave it */
-    primaryKey: 'primaryKey',
-    properties: {
-        primaryKey: 'int',
-        walletFileFormatVersion: 'int',
-        subWallets: 'SubWallets',
-        walletSynchronizer: 'WalletSynchronizer',
-    }
-};
-
-const WalletSynchronizerSchema = {
-    name: 'WalletSynchronizer',
-    properties: {
-        startTimestamp: 'int',
-        startHeight: 'int',
-        privateViewKey: 'string',
-        transactionSynchronizerStatus: 'SynchronizationStatus',
-    }
-};
-
-const SubWalletSchema = {
-    name: 'SubWallet',
-    properties: {
-        unspentInputs: 'TransactionInput[]',
-        lockedInputs: 'TransactionInput[]',
-        spentInputs: 'TransactionInput[]',
-        unconfirmedIncomingAmounts: 'UnconfirmedInput[]',
-        publicSpendKey: 'string',
-        privateSpendKey: 'string',
-        syncStartTimestamp: 'int',
-        syncStartHeight: 'int',
-        address: 'string',
-        isPrimaryAddress: 'bool'
-    }
-}
-
-const TransactionSchema = {
-    name: 'Transaction',
-    properties: {
-        transfers: 'Transfers[]',
-        hash: 'string',
-        fee: 'int',
-        blockHeight: 'int',
-        timestamp: 'int',
-        paymentID: 'string',
-        unlockTime: 'int',
-        isCoinbaseTransaction: 'bool',
-    }
-}
-
-const SubWalletsSchema = {
-    name: 'SubWallets',
-    properties: {
-        publicSpendKeys: 'string[]',
-        subWallet: 'SubWallet[]',
-        transactions: 'Transaction[]',
-        lockedTransactions: 'Transaction[]',
-        privateViewKey: 'string',
-        isViewWallet: 'bool',
-        txPrivateKeys: 'TxPrivateKeys[]',
-    }
-}
-
-const TxPrivateKeysSchema = {
-    name: 'TxPrivateKeys',
-    properties: {
-        transactionHash: 'string',
-        txPrivateKey: 'string',
-    }
-}
-
-const TransfersSchema = {
-    name: 'Transfers',
-    properties: {
-        amount: 'int',
-        publicKey: 'string',
-    }
-}
-
-const TransactionInputSchema = {
-    name: 'TransactionInput',
-    properties: {
-        keyImage: 'string',
-        amount: 'int',
-        blockHeight: 'int',
-        transactionPublicKey: 'string',
-        transactionIndex: 'int',
-        globalOutputIndex: 'int',
-        key: 'string',
-        spendHeight: 'int',
-        unlockTime: 'int',
-        parentTransactionHash: 'string',
-    }
-}
-
-const UnconfirmedInputSchema = {
-    name: 'UnconfirmedInput',
-    properties: {
-        amount: 'int',
-        key: 'string',
-        parentTransactionHash: 'string',
-    }
-}
-
-const SynchronizationStatusSchema = {
-    name: 'SynchronizationStatus',
-    properties: {
-        blockHashCheckpoints: 'string[]',
-        lastKnownBlockHashes: 'string[]',
-        lastKnownBlockHeight: 'int',
-    }
-}
-
-function realmToTransactionInputJSON(realmObj) {
-    return JSON.parse(JSON.stringify(realmObj));
-}
-
-function realmToIncomingAmountJSON(realmObj) {
-    return JSON.parse(JSON.stringify(realmObj));
-}
-
-function realmToSubWalletJSON(realmObj) {
-    let json = {};
-
-    json.unspentInputs = realmObj.unspentInputs.map(realmToTransactionInputJSON);
-    json.lockedInputs = realmObj.lockedInputs.map(realmToTransactionInputJSON);
-    json.spentInputs = realmObj.spentInputs.map(realmToTransactionInputJSON);
-    json.unconfirmedIncomingAmounts = realmObj.unconfirmedIncomingAmounts.map(realmToIncomingAmountJSON);
-    json.publicSpendKey = realmObj.publicSpendKey;
-    json.privateSpendKey = realmObj.privateSpendKey;
-    json.syncStartTimestamp = realmObj.syncStartTimestamp;
-    json.syncStartHeight = realmObj.syncStartHeight;
-    json.address = realmObj.address;
-    json.isPrimaryAddress = realmObj.isPrimaryAddress;
-
-    return json;
-}
-
-function realmToTransfersJSON(realmObj) {
-    return JSON.parse(JSON.stringify(realmObj));
-}
-
-function realmToTransactionJSON(realmObj) {
-    let json = {};
-
-    json.transfers = realmObj.transfers.map(realmToTransfersJSON);
-    json.hash = realmObj.hash;
-    json.fee = realmObj.fee;
-    json.blockHeight = realmObj.blockHeight;
-    json.timestamp = realmObj.timestamp;
-    json.paymentID = realmObj.paymentID;
-    json.unlockTime = realmObj.unlockTime;
-    json.isCoinbaseTransaction = realmObj.isCoinbaseTransaction;
-
-    return json;
-}
-
-function realmToTxPrivateKeyJSON(realmObj) {
-    return JSON.parse(JSON.stringify(realmObj));
-}
-
-function realmToSubWalletsJSON(realmObj) {
-    let json = {};
-
-    json.publicSpendKeys = realmObj.publicSpendKeys.map((value, key) => value);
-    json.subWallet = realmObj.subWallet.map(realmToSubWalletJSON);
-    json.transactions = realmObj.transactions.map(realmToTransactionJSON);
-    json.lockedTransactions = realmObj.lockedTransactions.map(realmToTransactionJSON);
-    json.privateViewKey = realmObj.privateViewKey;
-    json.isViewWallet = realmObj.isViewWallet;
-    json.txPrivateKeys = realmObj.txPrivateKeys.map(realmToTxPrivateKeyJSON);
-
-    return json;
-}
-
-function realmToTransactionSynchronizerJSON(realmObj) {
-    let json = {};
-
-    json.blockHashCheckpoints = realmObj.blockHashCheckpoints.map(x => x);
-    json.lastKnownBlockHashes = realmObj.lastKnownBlockHashes.map(x => x);
-    json.lastKnownBlockHeight = realmObj.lastKnownBlockHeight;
-
-    return json;
-}
-
-function realmToWalletSynchronizerJSON(realmObj) {
-    let json = {};
-
-    json.startTimestamp = realmObj.startTimestamp;
-    json.startHeight = realmObj.startHeight;
-    json.privateViewKey = realmObj.privateViewKey;
-    json.transactionSynchronizerStatus = realmToTransactionSynchronizerJSON(realmObj.transactionSynchronizerStatus);
-
-    return json;
-}
-
-function realmToWalletJSON(realmObj) {
-    let json = {};
-
-    json.walletFileFormatVersion = realmObj.walletFileFormatVersion;
-    json.subWallets = realmToSubWalletsJSON(realmObj.subWallets);
-    json.walletSynchronizer = realmToWalletSynchronizerJSON(realmObj.walletSynchronizer);
-
-    return JSON.stringify(json);
 }
 
 export async function savePreferencesToDatabase(preferences) {
@@ -506,48 +262,6 @@ export async function saveToDatabase(wallet, pinCode) {
         reportCaughtException(err);
         Globals.logger.addLogMessage('Err saving wallet: ' + err);
     };
-}
-
-export async function loadFromDatabase(pinCode) {
-    const wallet = await loadWallet();
-
-    if (wallet) {
-        return [wallet, undefined];
-    }
-
-    return realmToSql(pinCode);
-}
-
-export async function loadWalletFromRealm(pinCode) {
-    /* Looks like we haven't converted from realm DB yet, lets try opening from
-       there */
-    var key = sha512.arrayBuffer(pinCode.toString());
-
-    try {
-        let realm = await Realm.open({
-            schema: [
-                WalletSchema, WalletSynchronizerSchema, SubWalletSchema,
-                TransactionSchema, SubWalletsSchema, TxPrivateKeysSchema,
-                TransfersSchema, TransactionInputSchema, UnconfirmedInputSchema,
-                SynchronizationStatusSchema
-            ],
-            encryptionKey: key,
-        });
-
-        try {
-            if (realm.objects('Wallet').length > 0) {
-                return [realmToWalletJSON(realm.objects('Wallet')[0]), undefined];
-            }
-        } finally {
-            realm.close();
-        }
-
-        return [undefined, 'Wallet not present in database'];
-    } catch(err) {
-        reportCaughtException(err);
-        Globals.logger.addLogMessage('Error loading database: ' + err);
-        return [undefined, err];
-    }
 }
 
 export async function haveWallet() {

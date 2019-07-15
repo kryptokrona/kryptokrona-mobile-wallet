@@ -13,7 +13,7 @@ import Config from './Config';
 import { Globals } from './Globals';
 import { Spinner } from './Spinner';
 import { FadeView } from './FadeView';
-import { haveWallet, loadFromDatabase } from './Database';
+import { haveWallet, loadWallet } from './Database';
 import { delay, navigateWithDisabledBack } from './Utilities';
 
 function fail(msg) {
@@ -43,7 +43,7 @@ async function tryLoadWallet(pinCode, navigation) {
         }
 
         /* Decrypt wallet data from DB */
-        let [walletData, dbError] = await loadFromDatabase(pinCode);
+        let [walletData, dbError] = await loadWallet();
 
         if (dbError) {
             await fail(dbError);

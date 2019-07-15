@@ -7,15 +7,14 @@ buildscript {
         compileSdkVersion = 28
         targetSdkVersion = 28
         supportLibVersion = "28.0.0"
-        googlePlayServicesVersion = "16.0.0"
-        googlePlayServicesVisionVersion = "17.0.2"
     }
     repositories {
         google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.0'
+        classpath("com.android.tools.build:gradle:3.4.1")
+        classpath "com.android.support:support-compat:28.0.0-alpha1"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -24,29 +23,20 @@ buildscript {
 
 allprojects {
     repositories {
+		maven {
+			url "$rootDir/../node_modules/react-native-background-fetch/android/libs"
+		}
         mavenLocal()
-        google()
-        jcenter()
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-            url "$rootDir/../node_modules/react-native/android"
+            url("$rootDir/../node_modules/react-native/android")
         }
         maven {
-            url "$rootDir/../node_modules/react-native-background-fetch/android/libs"
+            // Android JSC is installed from npm
+            url("$rootDir/../node_modules/jsc-android/dist")
         }
-    }
-    configurations.all {
-        resolutionStrategy.force "com.android.support:support-v4:26.1.0"
-    }
-}
 
-subprojects { subproject ->
-    afterEvaluate{
-        if((subproject.plugins.hasPlugin('android') || subproject.plugins.hasPlugin('android-library'))) {
-            android {
-                compileSdkVersion rootProject.ext.compileSdkVersion
-                buildToolsVersion rootProject.ext.buildToolsVersion
-            }
-        }
+        google()
+        jcenter()
     }
 }

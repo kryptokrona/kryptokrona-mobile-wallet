@@ -4,9 +4,7 @@
 
 import { Platform } from 'react-native';
 
-import {
-    MixinLimit, MixinLimits, BlockchainCacheApi, ConventionalDaemon
-} from 'turtlecoin-wallet-backend';
+import { MixinLimit, MixinLimits, Daemon } from 'turtlecoin-wallet-backend';
 
 import {
     derivePublicKey, generateKeyDerivation, generateRingSignatures,
@@ -150,16 +148,7 @@ const Config = {
     /**
      * Amount of blocks to request from the daemon at once
      */
-    blocksPerDaemonRequest: 20,
-
-    /**
-     * Max size of a post body response - 500kb
-     * Will decrease the amount of blocks requested from the daemon if this
-     * is exceeded.
-     */
-     /* TODO: Currently doesn't work. React native bug. node-fetch, request,
-      * http/https - all fuck up somewhere when trying to implement this */
-    maxBodyResponseSize: 1024 * 512,
+    blocksPerDaemonRequest: 100,
 
     /**
      * Unix timestamp of the time your chain was launched.
@@ -194,7 +183,7 @@ const Config = {
      * Default daemon to use. Can either be a BlockchainCacheApi(baseURL, SSL),
      * or a ConventionalDaemon(url, port).
      */
-    defaultDaemon: new BlockchainCacheApi('blockapi.turtlepay.io', true),
+    defaultDaemon: new Daemon('blockapi.turtlepay.io', 443),
 
     /**
      * A link to where a bug can be reported for your wallet. Please update
@@ -216,7 +205,7 @@ const Config = {
     /**
      * Displayed in the settings screen
      */
-    appVersion: 'v0.1.1',
+    appVersion: 'v1.0.0',
 
     /**
      * Base URL for us to chuck a hash on the end, and find a transaction

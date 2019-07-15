@@ -24,12 +24,3 @@ if (typeof localStorage !== 'undefined') {
 // If using the crypto shim, uncomment the following line to ensure
 // crypto is loaded first, so it can populate global.crypto
 require('crypto')
-
-// symbol polyfills
-global.Symbol = require('core-js/es6/symbol');
-require('core-js/fn/symbol/iterator');
-
-// collection fn polyfills
-require('core-js/fn/map');
-require('core-js/fn/set');
-require('core-js/fn/array/find');

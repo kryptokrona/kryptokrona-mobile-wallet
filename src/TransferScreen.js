@@ -11,7 +11,7 @@ import QRCodeScanner from 'react-native-qrcode-scanner';
 
 import TextTicker from 'react-native-text-ticker';
 
-import HeaderButtons, { HeaderButton, Item } from 'react-navigation-header-buttons';
+import { HeaderButtons, HeaderButton, Item } from 'react-navigation-header-buttons';
 
 import { HeaderBackButton, StackActions } from 'react-navigation';
 

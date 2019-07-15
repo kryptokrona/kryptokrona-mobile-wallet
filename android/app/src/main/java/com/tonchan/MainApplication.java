@@ -2,47 +2,24 @@ package com.tonchan;
 
 import android.app.Application;
 import android.content.Intent;
+import android.util.Log;
 
-import com.bitgo.randombytes.RandomBytesPackage;
-
-import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
-
+import com.facebook.react.PackageList;
+import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
+import com.facebook.react.bridge.JavaScriptExecutorFactory;
+import com.facebook.react.ReactApplication;
+import com.transistorsoft.rnbackgroundfetch.RNBackgroundFetchPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
-import com.facebook.react.ReactApplication;
-import com.reactnativecommunity.netinfo.NetInfoPackage;
-import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
-import com.swmansion.rnscreens.RNScreensPackage;
-import io.sentry.RNSentryPackage;
-import com.github.wumke.RNExitApp.RNExitAppPackage;
-import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.gms.security.ProviderInstaller.ProviderInstallListener;
 
-import com.horcrux.svg.SvgPackage;
-
-import com.transistorsoft.rnbackgroundfetch.RNBackgroundFetchPackage;
-
-import com.oblador.keychain.KeychainPackage;
-import com.oblador.vectoricons.VectorIconsPackage;
-
-import com.peel.react.TcpSocketsModule;
-
-import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
-
-import com.tradle.react.UdpSocketsModule;
-
-import io.realm.react.RealmReactPackage;
-
-import java.util.Arrays;
 import java.util.List;
 
 import org.pgsqlite.SQLitePluginPackage;
-
-import org.reactnative.camera.RNCameraPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -54,27 +31,12 @@ public class MainApplication extends Application implements ReactApplication {
 
     @Override
     protected List<ReactPackage> getPackages() {
-      return Arrays.<ReactPackage>asList(
-          new MainReactPackage(),
-            new NetInfoPackage(),
-            new AsyncStoragePackage(),
-            new RNScreensPackage(),
-            new RNSentryPackage(),
-            new RNExitAppPackage(),
-            new ReactNativePushNotificationPackage(),
-            new RNBackgroundFetchPackage(),
-            new RNCameraPackage(),
-            new SvgPackage(),
-            new KeychainPackage(),
-            new VectorIconsPackage(),
-            new TcpSocketsModule(),
-            new RealmReactPackage(),
-            new UdpSocketsModule(),
-            new RandomBytesPackage(),
-            new RNGestureHandlerPackage(),
-            new SQLitePluginPackage(),
-            new TurtleCoinPackage()
-      );
+      List<ReactPackage> packages = new PackageList(this).getPackages();
+      // Packages that cannot be autolinked yet can be added manually here
+      packages.add(new RNBackgroundFetchPackage());
+      packages.add(new SQLitePluginPackage());
+      packages.add(new TurtleCoinPackage());
+      return packages;
     }
 
     @Override
