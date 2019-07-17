@@ -139,6 +139,7 @@ android {
             moduleName "TurtleCoin_jni"
             stl "stlport_static"
         }
+        missingDimensionStrategy 'react-native-camera', 'general'
     }
     externalNativeBuild {
         ndkBuild {
@@ -207,7 +208,6 @@ android {
 }
 
 dependencies {
-    implementation project(':react-native-gesture-handler')
     implementation project(':react-native-background-fetch')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.facebook.react:react-native:+"  // From node_modules
