@@ -12,4 +12,11 @@ import { initSentry } from './src/Sentry';
 
 import { name as appName } from './app.json';
 
+/* Stub out console.log in production */
+if (!__DEV__) {
+    console.log = () => {};
+}
+
+initSentry();
+
 AppRegistry.registerComponent(appName, () => App);
