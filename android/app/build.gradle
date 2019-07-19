@@ -211,7 +211,6 @@ dependencies {
     implementation project(':react-native-background-fetch')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.facebook.react:react-native:+"  // From node_modules
-    implementation project(':react-native-sqlite-storage')
     implementation 'com.google.android.gms:play-services-safetynet:+'
     apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 

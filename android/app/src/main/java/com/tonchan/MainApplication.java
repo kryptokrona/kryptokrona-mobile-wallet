@@ -19,7 +19,6 @@ import com.google.android.gms.security.ProviderInstaller.ProviderInstallListener
 
 import java.util.List;
 
-import org.pgsqlite.SQLitePluginPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -34,7 +33,6 @@ public class MainApplication extends Application implements ReactApplication {
       List<ReactPackage> packages = new PackageList(this).getPackages();
       // Packages that cannot be autolinked yet can be added manually here
       packages.add(new RNBackgroundFetchPackage());
-      packages.add(new SQLitePluginPackage());
       packages.add(new TurtleCoinPackage());
       return packages;
     }
