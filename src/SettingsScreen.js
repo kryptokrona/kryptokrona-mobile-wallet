@@ -77,6 +77,8 @@ export class FaqScreen extends React.Component {
                         Every 15 minutes, a background sync event is fired. (This is a limitation of the mobile platform){'\n\n'}
                         After that, background syncing will continue for {Platform.OS === 'ios' ? '30 seconds' : '14 minutes'}, until the next background sync event is fired.{'\n\n'}
                         However, depending upon your phone model, battery, and OS, these background syncs may occur later than expected, or not at all.{'\n\n'}
+                        Furthermore, once the App has not been opened in a while, the operating system will kill it, preventing background syncing from occuring.
+                        If when you re-open the app, it asks you to enter your pin - It has been killed, and so will not have been background syncing for some time.{'\n\n'}
                         For further information, see{' '}
                         <Text
                             style={{
@@ -144,6 +146,24 @@ export class FaqScreen extends React.Component {
                         Don't worry, your balance should unlock once the transaction confirms. (Normally in {arrivalTime})
                     </Text>
 
+                    <Text style={{
+                        fontSize: 24,
+                        color: this.props.screenProps.theme.primaryColour,
+                        marginBottom: 5,
+                    }}>
+                        • What is Auto Optimization?
+                    </Text>
+
+                    <Text style={{
+                        color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                        marginBottom: 20,
+                    }}>
+                        Auto Optimization, whenever necessary, sends fusion transactions, to keep your wallet optimized.
+                        As mentioned above, your wallet is comprised of multiple 'chunks' of {Config.coinName}.{'\n\n'}
+                        Optimizing combines the chunks into fewer, larger ones. This enables you to fit more funds in one transaction.{'\n\n'}
+                        This process will result in your balance occasionally being locked - this should only last for a few minutes
+                        while the fusion transactions get added to a block, depending on how unoptimized your wallet is.
+                    </Text>
 
                 </ScrollView>
             </View>
@@ -416,6 +436,7 @@ export class SettingsScreen extends React.Component {
             limitData: Globals.preferences.limitData,
             darkMode: Globals.preferences.theme === 'darkMode',
             pinConfirmation: Globals.preferences.pinConfirmation,
+            autoOptimize: Globals.preferences.autoOptimize,
         }
     }
 
@@ -502,6 +523,27 @@ export class SettingsScreen extends React.Component {
                                 checked: this.state.scanCoinbase,
                             },
                             {
+                                title: 'Enable Auto Optimization',
+                                description: 'Helps sending large TXs (See FAQ)',
+                                icon: {
+                                    iconName: 'refresh',
+                                    IconType: SimpleLineIcons,
+                                },
+                                onClick: () => {
+                                    Globals.preferences.autoOptimize = !Globals.preferences.autoOptimize;
+
+                                    this.setState({
+                                        autoOptimize: Globals.preferences.autoOptimize,
+                                    });
+
+                                    Globals.wallet.enableAutoOptimization(Globals.preferences.autoOptimize);
+                                    toastPopUp(Globals.preferences.autoOptimize ? 'Auto Optimization enabled' : 'Auto Optimization disabled');
+                                    savePreferencesToDatabase(Globals.preferences);
+                                },
+                                checkbox: true,
+                                checked: this.state.autoOptimize,
+                            },
+                            {
                                 title: 'Limit data',
                                 description: 'Only sync when connected to WiFi',
                                 icon: {
@@ -516,6 +558,8 @@ export class SettingsScreen extends React.Component {
                                     });
 
                                     const netInfo = await NetInfo.fetch();
+
+                                    console.log(netInfo.type);
                                     
                                     if (Globals.preferences.limitData && netInfo.type === 'cellular') {
                                         Globals.wallet.stop();

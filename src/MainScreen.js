@@ -34,6 +34,7 @@ import { coinsToFiat, getCoinPriceFromAPI } from './Currency';
 
 async function init(navigation) {
     Globals.wallet.scanCoinbaseTransactions(Globals.preferences.scanCoinbaseTransactions);
+    Globals.wallet.enableAutoOptimization(Globals.preferences.autoOptimize);
 
     Globals.wallet.on('incomingtx', (transaction) => {
         sendNotification(transaction);

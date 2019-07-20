@@ -12,7 +12,7 @@ import { Logger } from './Logger';
 import { getCoinPriceFromAPI } from './Currency';
 
 import {
-    saveToDatabase, loadPreferencesFromDatabase, loadPayeeDataFromDatabase,
+    saveToDatabase, loadPayeeDataFromDatabase,
     savePayeeToDatabase, removePayeeFromDatabase,
     loadTransactionDetailsFromDatabase, saveTransactionDetailsToDatabase,
 } from './Database';
@@ -39,6 +39,7 @@ class globals {
             limitData: false,
             theme: 'darkMode',
             pinConfirmation: false,
+            autoOptimize: true,
         };
 
         /* People in our address book */

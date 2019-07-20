@@ -69,7 +69,18 @@ export async function loadWallet() {
 
 /* Create the tables if we haven't made them already */
 async function createTables(DB) {
+    const [dbVersionData] = await DB.executeSql(
+        `PRAGMA user_version`,
+    );
+
+    let dbVersion = 0;
+
+    if (dbVersionData && dbVersionData.rows && dbVersionData.rows.length >= 1) {
+        dbVersion = dbVersionData.rows.item(0).user_version;
+    }
+
     await DB.transaction((tx) => {
+        
         /* We get JSON out from our wallet backend, and load JSON in from our
            wallet backend - it's a little ugly, but it's faster to just read/write
            json to the DB rather than structuring it. */
@@ -91,6 +102,16 @@ async function createTables(DB) {
                 pinconfirmation BOOLEAN
             )`
         );
+
+        /* Add new autooptimize column */
+        if (dbVersion === 0) {
+            tx.executeSql(
+                `ALTER TABLE
+                    preferences
+                ADD
+                    autooptimize BOOLEAN`
+            );
+        }
 
         tx.executeSql(
             `CREATE TABLE IF NOT EXISTS payees (
@@ -121,9 +142,25 @@ async function createTables(DB) {
         /* Setup default preference values */
         tx.executeSql(
             `INSERT OR IGNORE INTO preferences
-                (id, currency, notificationsenabled, scancoinbasetransactions, limitdata, theme, pinconfirmation)
+                (id, currency, notificationsenabled, scancoinbasetransactions, limitdata, theme, pinconfirmation, autooptimize)
             VALUES
-                (0, 'usd', 1, 0, 0, 'darkMode', 0)`
+                (0, 'usd', 1, 0, 0, 'darkMode', 0, 1)`
+        );
+
+        /* Set new auto optimize column if not assigned yet */
+        if (dbVersion === 0) {
+            tx.executeSql(
+                `UPDATE
+                    preferences
+                SET
+                    autooptimize = 1
+                WHERE
+                    id = 0`
+            );
+        }
+
+        tx.executeSql(
+            `PRAGMA user_version = 1`
         );
     });
 }
@@ -152,7 +189,8 @@ export async function savePreferencesToDatabase(preferences) {
                 scancoinbasetransactions = ?,
                 limitdata = ?,
                 theme = ?,
-                pinconfirmation = ?
+                pinconfirmation = ?,
+                autooptimize = ?
             WHERE
                 id = 0`,
             [
@@ -162,6 +200,7 @@ export async function savePreferencesToDatabase(preferences) {
                 preferences.limitData ? 1 : 0,
                 preferences.theme,
                 preferences.pinConfirmation ? 1 : 0,
+                preferences.autoOptimize ? 1 : 0,
             ]
         );
     });
@@ -175,7 +214,8 @@ export async function loadPreferencesFromDatabase() {
             scancoinbasetransactions,
             limitdata,
             theme,
-            pinconfirmation
+            pinconfirmation,
+            autooptimize
         FROM
             preferences
         WHERE
@@ -192,6 +232,7 @@ export async function loadPreferencesFromDatabase() {
             limitData: item.limitdata === 1,
             theme: item.theme,
             pinConfirmation: item.pinconfirmation === 1,
+            autoOptimize: item.autooptimize === 1,
         }
     }
 
