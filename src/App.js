@@ -99,9 +99,17 @@ const TransferNavigator = createStackNavigator(
     }
 );
 
-TransferNavigator.navigationOptions = {
-    tabBarVisible: false,
-}
+TransferNavigator.navigationOptions = ({ navigation, screenProps }) => {
+    return {
+        tabBarVisible: navigation.state.index === 0, /* Only show tab bar on ChoosePayee */
+        tabBarOptions: {
+            activeBackgroundColor: screenProps.theme.backgroundColour,
+            inactiveBackgroundColor: screenProps.theme.backgroundColour,
+            activeTintColor: screenProps.theme.primaryColour,
+            inactiveTintColor: screenProps.theme.slightlyMoreVisibleColour,
+        }
+    };
+};
 
 const SettingsNavigator = createStackNavigator(
     {
