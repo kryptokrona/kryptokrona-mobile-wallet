@@ -148,7 +148,7 @@ const Config = {
     /**
      * Amount of blocks to request from the daemon at once
      */
-    blocksPerDaemonRequest: 20,
+    blocksPerDaemonRequest: 100,
 
     /**
      * Unix timestamp of the time your chain was launched.

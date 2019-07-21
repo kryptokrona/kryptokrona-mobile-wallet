@@ -53,6 +53,65 @@ export async function generateRingSignatures(
     );
 }
 
+export async function makePostRequest(endpoint, body) {
+    if (endpoint !== '/getwalletsyncdata') {
+        return this.makeRequest(endpoint, 'POST', body);
+    }
+
+    const {
+        blockCount, blockHashCheckpoints, startHeight, startTimestamp,
+        skipCoinbaseTransactions
+    } = body;
+
+    const protocol = this.sslDetermined ? (this.ssl ? 'https' : 'http') : 'https';
+    const url = `${protocol}://${this.host}:${this.port}/getwalletsyncdata`;
+
+    /* This is being executed within the Daemon module, so we can get access
+       to it's class with `this` */
+    let data = await NativeModules.TurtleCoin.getWalletSyncData(
+        blockHashCheckpoints,
+        startHeight,
+        startTimestamp,
+        blockCount,
+        skipCoinbaseTransactions,
+        url,
+    );
+
+    if (data.error) {
+        if (this.sslDetermined) {
+            throw new Error(data.error);
+        }
+
+        /* Ssl failed, lets try http */
+        data = await NativeModules.TurtleCoin.getWalletSyncData(
+            blockHashCheckpoints,
+            startHeight,
+            startTimestamp,
+            blockCount,
+            this.config.scanCoinbaseTransactions,
+            `http://${this.host}:${this.port}/getwalletsyncdata`,
+        );
+
+        if (data.error) {
+            throw new Error(data.error);
+        }
+
+        try {
+            data = JSON.parse(data);
+        } catch (err) {
+            throw new Error(err);
+        }
+    }
+
+    try {
+        data = JSON.parse(data)
+    } catch (err) {
+        throw new Error(err);
+    }
+
+    return data;
+}
+
 export async function processBlockOutputs(
     block,
     privateViewKey,

@@ -10,6 +10,15 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 public class TurtleCoinModule extends ReactContextBaseJavaModule {
     static {
         System.loadLibrary("TurtleCoin_jni");
@@ -143,6 +152,141 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
 
         } catch (Exception e) {
             promise.reject("Error in process block outputs: ", e);
+        }
+    }
+
+    @ReactMethod
+    public void getWalletSyncData(
+        ReadableArray blockHashCheckpointsJS,
+        double startHeight,
+        double startTimestamp,
+        double blockCount,
+        boolean skipCoinbaseTransactions,
+        String url,
+        Promise promise) {
+
+        String[] blockHashCheckpoints = new String[blockHashCheckpointsJS.size()];
+
+        for (int i = 0; i < blockHashCheckpointsJS.size(); i++) {
+            blockHashCheckpoints[i] = blockHashCheckpointsJS.getString(i);
+        }
+
+        getWalletSyncDataImpl(
+            blockHashCheckpoints,
+            (long)startHeight,
+            (long)startTimestamp,
+            (long)blockCount,
+            skipCoinbaseTransactions,
+            url,
+            promise
+        );
+    }
+
+    private void getWalletSyncDataImpl(
+        String[] blockHashCheckpoints,
+        long startHeight,
+        long startTimestamp,
+        long blockCount,
+        boolean skipCoinbaseTransactions,
+        String url,
+        Promise promise) {
+
+        try
+        {
+            URL obj = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+
+            /* We're sending a JSON post */
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            connection.setRequestProperty("Accept", "application/json");
+
+            /* Indicate we have a POST body */
+            connection.setDoOutput(true);
+
+            DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+
+            JSONObject json = new JSONObject();
+
+            JSONArray checkpoints = new JSONArray();
+
+            for (int i = 0; i < blockHashCheckpoints.length; i++)
+            {
+                checkpoints.put(blockHashCheckpoints[i]);
+            }
+
+            json.put("blockHashCheckpoints", checkpoints);
+
+            json.put("startHeight", startHeight);
+            json.put("startTimestamp", startTimestamp);
+            json.put("blockCount", blockCount);
+            json.put("skipCoinbaseTransactions", skipCoinbaseTransactions);
+
+            wr.writeBytes(json.toString());
+            wr.flush();
+            wr.close();
+
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode != 200)
+            {
+                throw new Exception("Failed to fetch, response code: " + responseCode);
+            }
+
+            int oneMegaByte = 1024 * 1024;
+
+            BufferedReader in = new BufferedReader(
+                new InputStreamReader(connection.getInputStream(), "UTF-8"),
+                oneMegaByte
+            );
+
+            StringBuffer response = new StringBuffer();
+
+            char[] inputBuffer = new char[8192];
+
+            int len = 0;
+
+            while ((len = in.read(inputBuffer)) != -1)
+            {
+                if (response.length() >= oneMegaByte || len >= oneMegaByte)
+                {
+                    in.close();
+
+                    if (blockCount <= 1)
+                    {
+                        throw new Exception("Failed to fetch, response too large");
+                    }
+
+                    blockCount /= 2;
+
+                    /* Response is too large, and will likely cause us to go OOM
+                       and crash. Lets half the block count and try again. */
+                    getWalletSyncDataImpl(
+                        blockHashCheckpoints,
+                        startHeight,
+                        startTimestamp,
+                        blockCount,
+                        skipCoinbaseTransactions,
+                        url,
+                        promise
+                    );
+
+                    return;
+                }
+
+                response.append(new String(inputBuffer, 0, len));
+            }
+
+            in.close();
+
+            promise.resolve(response.toString());
+        }
+        catch (Exception e)
+        {
+            WritableMap map = Arguments.createMap();
+            map.putString("error", e.getMessage());
+
+            promise.resolve(map);
         }
     }
 

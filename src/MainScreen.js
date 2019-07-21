@@ -27,7 +27,7 @@ import { ProgressBar } from './ProgressBar';
 import { saveToDatabase } from './Database';
 import { Globals, initGlobals } from './Globals';
 import { reportCaughtException } from './Sentry';
-import { processBlockOutputs } from './NativeCode';
+import { processBlockOutputs, makePostRequest } from './NativeCode';
 import { initBackgroundSync } from './BackgroundSync';
 import { CopyButton, OneLineText } from './SharedComponents';
 import { coinsToFiat, getCoinPriceFromAPI } from './Currency';
@@ -55,6 +55,9 @@ async function init(navigation) {
     /* TODO: iOS support */
     if (Platform.OS === 'android') {
         Globals.wallet.setBlockOutputProcessFunc(processBlockOutputs);
+        /* Override with our native makePostRequest implementation which can
+           actually cancel requests part way through */
+        Config.defaultDaemon.makePostRequest = makePostRequest;
     }
 
     initGlobals();
