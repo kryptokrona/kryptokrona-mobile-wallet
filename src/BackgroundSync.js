@@ -6,23 +6,36 @@ import BackgroundFetch from 'react-native-background-fetch';
 
 import { AppState, Platform } from 'react-native';
 
+import { WalletBackend, LogLevel } from 'turtlecoin-wallet-backend';
+
+import PushNotification from 'react-native-push-notification';
+
 import NetInfo from '@react-native-community/netinfo';
 
 import Config from './Config';
 
 import { Globals } from './Globals';
 
-import { saveToDatabase } from './Database';
+import { processBlockOutputs, makePostRequest } from './NativeCode';
+
+import {
+    saveToDatabase, haveWallet, loadWallet, openDB, loadPreferencesFromDatabase
+} from './Database';
 
 /* Note: headless/start on boot not enabled, since we don't have the pin
    to decrypt the users wallet, when fetching from DB */
 export function initBackgroundSync() {
     BackgroundFetch.configure({
         minimumFetchInterval: 15, // <-- minutes (15 is minimum allowed)
+        stopOnTerminate: false,
+        startOnBoot: true,
+        forceReload: false,
+        enableHeadless: true,
+        requiredNetworkType: BackgroundFetch.NETWORK_TYPE_ANY,
     }, async () => {
         await backgroundSync();
     }, (error) => {
-        Globals.logger.addLogMessage("[js] RNBackgroundFetch failed to start");
+        Globals.logger.addLogMessage("[js] RNBackgroundFetch failed to start: " + error.toString());
     });
 }
 
@@ -53,10 +66,13 @@ async function setupBackgroundSync() {
         return false;
     }
 
-    /* Wallet not loaded yet. Probably shouldn't happen, but helps to be safe */
+    /* Wallet not loaded yet. Probably launching from headlessJS */
     if (Globals.wallet === undefined) {
-        Globals.logger.addLogMessage('[Background Sync] Wallet not loading. Not starting background sync.');
-        return false;
+        const backgroundInitSuccess = await fromHeadlessJSInit();
+
+        if (!backgroundInitSuccess) {
+            return false;
+        }
     }
 
     const netInfo = await NetInfo.fetch();
@@ -88,6 +104,83 @@ function finishBackgroundSync() {
     Globals.logger.addLogMessage('[Background Sync] Background sync complete.');
 }
 
+async function fromHeadlessJSInit() {
+    /* See if user has previously made a wallet */
+    const hasWallet = await haveWallet();
+
+    if (!hasWallet) {
+        Globals.logger.addLogMessage('[Background Sync] No wallet stored. Not starting background sync.');
+        return false;
+    }
+
+    await openDB();
+
+    const prefs = await loadPreferencesFromDatabase();
+
+    if (prefs !== undefined) {
+        Globals.preferences = prefs;
+    }
+
+    /* Load wallet data from DB */
+    let [walletData, dbError] = await loadWallet();
+
+    if (dbError) {
+        Globals.logger.addLogMessage('[Background Sync] Failed to load wallet. Not starting background sync.');
+        return false;
+    }
+
+    const [wallet, walletError] = WalletBackend.loadWalletFromJSON(
+        Config.defaultDaemon, walletData, Config
+    );
+
+    if (walletError) {
+        Globals.logger.addLogMessage('[Background Sync] Failed to load wallet. Not starting background sync.');
+        return false;
+    }
+
+    Globals.wallet = wallet;
+
+    Globals.wallet.scanCoinbaseTransactions(Globals.preferences.scanCoinbaseTransactions);
+    Globals.wallet.enableAutoOptimization(Globals.preferences.autoOptimize);
+
+    Globals.wallet.on('incomingtx', (transaction) => {
+        sendNotification(transaction);
+    });
+
+    Globals.wallet.setLoggerCallback((prettyMessage, message) => {
+        Globals.logger.addLogMessage(message);
+    });
+
+    Globals.wallet.setLogLevel(LogLevel.DEBUG);
+
+    /* Use our native C++ func to process blocks, provided we're on android */
+    /* TODO: iOS support */
+    if (Platform.OS === 'android') {
+        Globals.wallet.setBlockOutputProcessFunc(processBlockOutputs);
+        /* Override with our native makePostRequest implementation which can
+           actually cancel requests part way through */
+        Config.defaultDaemon.makePostRequest = makePostRequest;
+    }
+
+    PushNotification.configure({
+        onNotification: (notification) => {
+            notification.finish(PushNotificationIOS.FetchResult.NoData);
+        },
+
+        permissions: {
+            alert: true,
+            badge: true,
+            sound: true,
+        },
+
+        popInitialNotification: true,
+
+        requestPermissions: true,
+    });
+
+    return true;
+}
+
 /**
  * Perform the background sync itself.
  * Note - don't use anything with setInterval here, it won't run in the background
@@ -111,7 +204,6 @@ export async function backgroundSync() {
 
     /* Run for 25 seconds or until the app comes back to the foreground */
     while (!State.shouldStop && secsRunning < allowedRunTime) {
-
         /* Update the daemon info */
         await Globals.wallet.internal().updateDaemonInfo();
 

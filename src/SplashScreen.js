@@ -42,7 +42,7 @@ async function tryLoadWallet(pinCode, navigation) {
             return;
         }
 
-        /* Decrypt wallet data from DB */
+        /* Load wallet data from DB */
         let [walletData, dbError] = await loadWallet();
 
         if (dbError) {
