@@ -72,11 +72,11 @@ export class RequestHardwareAuthScreen extends React.Component {
                 'Failed ' + this.props.navigation.state.params.subtitle,
                 `Please try again (Error: ${authDetails.error})`,
                 [
-                    {text: 'OK'},
+                    {text: 'OK', onPress: () => {
+                        this.auth();
+                    }},
                 ]
             );
-
-            this.auth();
         }
     }
 

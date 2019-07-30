@@ -21,7 +21,7 @@ import {
 
 import {
     View, Text, TextInput, TouchableWithoutFeedback, FlatList, Platform,
-    ScrollView, Clipboard, Alert,
+    ScrollView, Clipboard,
 } from 'react-native';
 
 import { Input, Button } from 'react-native-elements';
