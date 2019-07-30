@@ -77,8 +77,6 @@ export class FaqScreen extends React.Component {
                         Every 15 minutes, a background sync event is fired. (This is a limitation of the mobile platform){'\n\n'}
                         After that, background syncing will continue for {Platform.OS === 'ios' ? '30 seconds' : '14 minutes'}, until the next background sync event is fired.{'\n\n'}
                         However, depending upon your phone model, battery, and OS, these background syncs may occur later than expected, or not at all.{'\n\n'}
-                        Furthermore, once the App has not been opened in a while, the operating system will kill it, preventing background syncing from occuring.
-                        If when you re-open the app, it asks you to enter your pin - It has been killed, and so will not have been background syncing for some time.{'\n\n'}
                         For further information, see{' '}
                         <Text
                             style={{
