@@ -84,8 +84,8 @@ export class CreateWalletScreen extends React.Component {
         
         Globals.wallet = WalletBackend.createWallet(Config.defaultDaemon, Config);
 
-        /* Encrypt wallet with pincode in DB */
-        saveToDatabase(Globals.wallet, Globals.pinCode);
+        /* Save wallet in DB */
+        saveToDatabase(Globals.wallet);
     };
 
     render() {

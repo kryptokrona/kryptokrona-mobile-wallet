@@ -295,7 +295,7 @@ export async function loadPayeeDataFromDatabase() {
     return undefined;
 }
 
-export async function saveToDatabase(wallet, pinCode) {
+export async function saveToDatabase(wallet) {
     try {
         await saveWallet(wallet.toJSONString());
         await setHaveWallet(true);

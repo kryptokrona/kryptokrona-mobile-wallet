@@ -22,9 +22,6 @@ class globals {
         /* Can't really pass wallet between tab screens, and need it everywhere */
         this.wallet = undefined;
 
-        /* Need pincode so we can save wallet */
-        this.pinCode = undefined;
-
         /* Need to be able to cancel the background saving if we make a new wallet */
         this.backgroundSaveTimer = undefined;
 

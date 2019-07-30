@@ -25,8 +25,11 @@ import { DisclaimerScreen } from './DisclaimerScreen';
 import { loadPreferencesFromDatabase, openDB } from './Database';
 import { ModifyPayeeScreen, RecipientsScreen } from './Recipients';
 import { WalletOptionScreen, CreateWalletScreen } from './CreateScreen';
-import { SetPinScreen, RequestPinScreen, ForgotPinScreen } from './Pin';
 import { TransactionsScreen, TransactionDetailsScreen } from './TransactionsScreen';
+
+import {
+    SetPinScreen, RequestPinScreen, ForgotPinScreen, RequestHardwareAuthScreen
+} from './Authenticate';
 
 import {
     SettingsScreen, SwapCurrencyScreen, ExportKeysScreen, LoggingScreen, FaqScreen,
@@ -261,6 +264,9 @@ const LoginNavigator = createStackNavigator(
 
         /* Explain fee, I'm not responsible for anything, etc */
         Disclaimer: DisclaimerScreen,
+
+        /* Request authentication via fingerprint, touchid, etc */
+        RequestHardwareAuth: RequestHardwareAuthScreen,
     },
     {
         initialRouteName: 'Splash',

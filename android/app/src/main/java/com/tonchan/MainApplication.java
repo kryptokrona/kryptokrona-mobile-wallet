@@ -18,10 +18,17 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.gms.security.ProviderInstaller.ProviderInstallListener;
 
+import java.util.Arrays;
 import java.util.List;
 
+import com.tonchan.generated.BasePackageList;
+
+import org.unimodules.adapters.react.ModuleRegistryAdapter;
+import org.unimodules.adapters.react.ReactModuleRegistryProvider;
+import org.unimodules.core.interfaces.SingletonModule;
 
 public class MainApplication extends Application implements ReactApplication {
+  private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(new BasePackageList().getPackageList(), Arrays.<SingletonModule>asList());
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
     @Override
@@ -35,6 +42,7 @@ public class MainApplication extends Application implements ReactApplication {
       // Packages that cannot be autolinked yet can be added manually here
       packages.add(new RNBackgroundFetchPackage());
       packages.add(new TurtleCoinPackage());
+      packages.add(new ModuleRegistryAdapter(mModuleRegistryProvider));
       return packages;
     }
 

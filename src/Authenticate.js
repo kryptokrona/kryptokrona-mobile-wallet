@@ -4,21 +4,106 @@
 
 import PINCode from '@haskkor/react-native-pincode';
 
+import * as LocalAuthentication from 'expo-local-authentication';
+
+import * as Animatable from 'react-native-animatable';
+
 import RNExitApp from 'react-native-exit-app';
 
 import React from 'react';
 
-import { View, Alert, Text } from 'react-native';
+import { View, Alert, Text, Platform, Image } from 'react-native';
 
 import { Button } from 'react-native-elements';
 
 import Config from './Config';
 
-import { Globals } from './Globals';
+import { Styles } from './Styles';
 import { FadeView } from './FadeView';
 import { setHaveWallet } from './Database';
 import { BottomButton } from './SharedComponents';
 import { navigateWithDisabledBack } from './Utilities';
+
+export class RequestHardwareAuthScreen extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    componentDidMount() {
+        this.auth();
+    }
+
+    async auth() {
+        /* touchId === 1 = have touch ID, faceId === 2 = have face ID */
+        const [ touchId, faceId ] = await LocalAuthentication.supportedAuthenticationTypesAsync();
+
+        const authDetails = await LocalAuthentication.authenticateAsync({
+            promptMessage: `Use ${faceId === 2 ? 'Face ID' : 'Touch ID'} ${this.props.navigation.state.params.subtitle}`,
+        });
+
+        if (authDetails.success) {
+            this.props.navigation.state.params.finishFunction(this.props.navigation);
+        } else {
+            Alert.alert(
+                'Failed ' + this.props.navigation.state.params.subtitle,
+                `Please try again (Error: ${authDetails.error})`,
+                [
+                    {text: 'OK'},
+                ]
+            );
+
+            this.auth();
+        }
+    }
+
+    render() {
+        return(
+            <View style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: this.props.screenProps.theme.backgroundColour
+            }}>
+                {Platform.OS === 'android' &&
+                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                        <Image
+                            source={require('../assets/img/spinner.png')}
+                            style={{
+                                resizeMode: 'contain',
+                                width: 170,
+                                height: 170,
+                                marginBottom: 10,
+                                justifyContent: 'flex-start',
+                            }}
+                        />
+
+                        <Text style={[Styles.centeredText, {
+                            fontSize: 22,
+                            color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                            marginHorizontal: 80,
+                        }]}>
+                            Touch the fingerprint sensor {this.props.navigation.state.params.subtitle}
+                        </Text>
+
+                        <Animatable.Image
+                            source={require('../assets/img/fingerprint.png')}
+                            style={{
+                                resizeMode: 'contain',
+                                width: 80,
+                                height: 80,
+                                marginTop: 40,
+                                justifyContent: 'flex-end',
+                            }}
+                            animation='pulse'
+                            easing='ease-out'
+                            iterationCount='infinite'
+                        />
+                    </View>
+                }
+            </View>
+        );
+    }
+}
 
 /**
  * Enter a pin for the new wallet
@@ -33,7 +118,6 @@ export class SetPinScreen extends React.Component {
     }
     
     continue(pinCode) {
-        Globals.pinCode = pinCode;
         /* Continue on to create or import a wallet */
         this.props.navigation.navigate(this.props.navigation.state.params.nextRoute);
     }
@@ -142,7 +226,6 @@ export class RequestPinScreen extends React.Component {
 
     render() {
         return(
-            /* Fade in over 1.5 secs */
             <View
                 style={{
                     flex: 1,
@@ -151,8 +234,8 @@ export class RequestPinScreen extends React.Component {
             >
                 <PINCode
                     status={'enter'}
-                    finishProcess={(pinCode) => {
-                        this.props.navigation.state.params.finishFunction(pinCode, this.props.navigation);
+                    finishProcess={() => {
+                        this.props.navigation.state.params.finishFunction(this.props.navigation);
                     }}
                     subtitleEnter={this.props.navigation.state.params.subtitle}
                     passwordLength={6}

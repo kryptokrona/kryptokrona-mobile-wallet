@@ -461,7 +461,7 @@ async function backgroundSave() {
     Globals.logger.addLogMessage('Saving wallet...');
 
     try {
-        await saveToDatabase(Globals.wallet, Globals.pinCode);
+        await saveToDatabase(Globals.wallet);
         Globals.logger.addLogMessage('Save complete.');
     } catch (err) {
         reportCaughtException(err);

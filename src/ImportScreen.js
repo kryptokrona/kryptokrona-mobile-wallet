@@ -229,8 +229,7 @@ export class ImportSeedScreen extends React.Component {
 
         Globals.wallet = wallet;
 
-        /* Encrypt wallet with pincode in DB */
-        saveToDatabase(Globals.wallet, Globals.pinCode);
+        saveToDatabase(Globals.wallet);
 
         this.props.navigation.navigate('Home');
     }
@@ -371,8 +370,7 @@ export class ImportKeysScreen extends React.Component {
 
         Globals.wallet = wallet;
 
-        /* Encrypt wallet with pincode in DB */
-        saveToDatabase(Globals.wallet, Globals.pinCode);
+        saveToDatabase(Globals.wallet);
 
         this.props.navigation.navigate('Home');
     }

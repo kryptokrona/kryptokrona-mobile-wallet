@@ -214,7 +214,7 @@ export async function backgroundSync() {
             Globals.logger.addLogMessage('[Background Sync] Wallet is synced. Stopping background sync.');
 
             /* Save the wallet */
-            saveToDatabase(Globals.wallet, Globals.pinCode);
+            saveToDatabase(Globals.wallet);
 
             break;
         }
@@ -235,7 +235,7 @@ export async function backgroundSync() {
         Globals.logger.addLogMessage('[Background Sync] Saving wallet in background.');
 
         /* Save the wallet */
-        saveToDatabase(Globals.wallet, Globals.pinCode);
+        saveToDatabase(Globals.wallet);
 
         /* Update our running time */
         secsRunning = (new Date() - startTime) / 1000;
