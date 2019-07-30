@@ -28,7 +28,7 @@ import { WalletOptionScreen, CreateWalletScreen } from './CreateScreen';
 import { TransactionsScreen, TransactionDetailsScreen } from './TransactionsScreen';
 
 import {
-    SetPinScreen, RequestPinScreen, ForgotPinScreen, RequestHardwareAuthScreen
+    SetPinScreen, RequestPinScreen, ForgotPinScreen, RequestHardwareAuthScreen,
 } from './Authenticate';
 
 import {

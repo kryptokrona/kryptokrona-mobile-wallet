@@ -4,8 +4,6 @@
 
 import React from 'react';
 
-import * as LocalAuthentication from 'expo-local-authentication';
-
 import { WalletBackend } from 'turtlecoin-wallet-backend';
 
 import { View, Alert } from 'react-native';
@@ -15,6 +13,7 @@ import Config from './Config';
 import { Globals } from './Globals';
 import { Spinner } from './Spinner';
 import { FadeView } from './FadeView';
+import { Authenticate } from './Authenticate';
 import { haveWallet, loadWallet } from './Database';
 import { delay, navigateWithDisabledBack } from './Utilities';
 
@@ -79,11 +78,6 @@ export class SplashScreen extends React.Component {
             /* See if user has previously made a wallet */
             const hasWallet = await haveWallet();
 
-            const haveHardwareAuth = await LocalAuthentication.hasHardwareAsync();
-            const haveSetupHardwareAuth = await LocalAuthentication.isEnrolledAsync();
-
-            const useHardwareAuth = haveHardwareAuth && haveSetupHardwareAuth;
-
             /* Above operation takes some time. Loading animation is pretty ugly
                if it only stays for 0.5 seconds, and too slow if we don't have
                any animation at all..
@@ -93,27 +87,17 @@ export class SplashScreen extends React.Component {
 
             /* Get the pin, or show disclaimer then create a wallet if no pin */
             if (hasWallet) {
-                if (useHardwareAuth) {
-                    this.props.navigation.dispatch(
-                        navigateWithDisabledBack('RequestHardwareAuth', {
-                            finishFunction: tryLoadWallet,
-                            subtitle: 'to unlock your wallet',
-                        }),
-                    );
-                } else {
-                    this.props.navigation.dispatch(
-                        navigateWithDisabledBack('RequestPin', {
-                            finishFunction: tryLoadWallet,
-                            subtitle: 'to unlock your wallet',
-                        }),
-                    );
-                }
+                Authenticate(
+                    this.props.navigation,
+                    'to unlock your wallet',
+                    tryLoadWallet,
+                    true
+                );
             } else {
                 this.props.navigation.dispatch(
                     navigateWithDisabledBack('WalletOption'),
                 );
             }
-
         })();
     }
 

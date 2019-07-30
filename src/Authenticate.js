@@ -24,6 +24,30 @@ import { setHaveWallet } from './Database';
 import { BottomButton } from './SharedComponents';
 import { navigateWithDisabledBack } from './Utilities';
 
+/* Dummy component that redirects to pin auth or hardware auth as appropriate */
+export async function Authenticate(navigation, subtitle, finishFunction, disableBack = false) {
+    const haveHardwareAuth = await LocalAuthentication.hasHardwareAsync();
+    const haveSetupHardwareAuth = await LocalAuthentication.isEnrolledAsync();
+
+    const useHardwareAuth = haveHardwareAuth && haveSetupHardwareAuth;
+
+    const route = useHardwareAuth ? 'RequestHardwareAuth' : 'RequestPin';
+
+    if (disableBack) {
+        navigation.dispatch(
+            navigateWithDisabledBack(route, {
+                finishFunction,
+                subtitle,
+            }),
+        );
+    } else {
+        navigation.navigate(route, {
+            finishFunction,
+            subtitle,
+        });
+    }
+}
+
 export class RequestHardwareAuthScreen extends React.Component {
     constructor(props) {
         super(props);

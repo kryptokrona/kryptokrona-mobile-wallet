@@ -29,6 +29,7 @@ import Constants from './Constants';
 
 import { Styles } from './Styles';
 import { Globals } from './Globals';
+import { Authenticate } from './Authenticate';
 import { SeedComponent, CopyButton } from './SharedComponents';
 import { savePreferencesToDatabase, setHaveWallet } from './Database';
 import { navigateWithDisabledBack, toastPopUp, getArrivalTime } from './Utilities';
@@ -433,7 +434,7 @@ export class SettingsScreen extends React.Component {
             scanCoinbase: Globals.preferences.scanCoinbaseTransactions,
             limitData: Globals.preferences.limitData,
             darkMode: Globals.preferences.theme === 'darkMode',
-            pinConfirmation: Globals.preferences.pinConfirmation,
+            authConfirmation: Globals.preferences.authConfirmation,
             autoOptimize: Globals.preferences.autoOptimize,
         }
     }
@@ -457,14 +458,15 @@ export class SettingsScreen extends React.Component {
                                     IconType: MaterialCommunityIcons,
                                 },
                                 onClick: () => {
-                                    if (Globals.preferences.pinConfirmation) {
-                                        this.props.navigation.navigate('RequestPin', {
-                                            subtitle: 'to backup your keys',
-                                            finishFunction: () => {
+                                    if (Globals.preferences.authConfirmation) {
+                                        Authenticate(
+                                            this.props.navigation.navigate,
+                                            'to backup your keys',
+                                            () => {
                                                 this.props.navigation.dispatch(navigateWithDisabledBack('Settings'));
                                                 this.props.navigation.navigate('ExportKeys');
                                             }
-                                        });
+                                        );
                                     } else {
                                         this.props.navigation.navigate('ExportKeys');
                                     }
@@ -602,42 +604,43 @@ export class SettingsScreen extends React.Component {
                                 checked: this.state.darkMode,
                             },
                             {
-                                title: 'Enable PIN confirmation',
-                                description: 'Require PIN for sensitive operations',
+                                title: 'Enable PIN/Fingerprint confirmation',
+                                description: 'Require auth for sensitive operations',
                                 icon: {
                                     iconName: 'security',
                                     IconType: MaterialCommunityIcons,
                                 },
                                 onClick: () => {
                                     /* Require pin to disable */
-                                    if (Globals.preferences.pinConfirmation) {
-                                        this.props.navigation.navigate('RequestPin', {
-                                            subtitle: 'to disable pin confirmation',
-                                            finishFunction: () => {
-                                                Globals.preferences.pinConfirmation = !Globals.preferences.pinConfirmation;
+                                    if (Globals.preferences.authConfirmation) {
+                                        Authenticate(
+                                            this.props.navigation,
+                                            'to disable PIN/Fingerprint confirmation', 
+                                            () => {
+                                                Globals.preferences.authConfirmation = !Globals.preferences.authConfirmation;
 
                                                 this.props.navigation.navigate('Settings');
 
                                                 savePreferencesToDatabase(Globals.preferences);
 
                                                 this.setState({
-                                                    pinConfirmation: Globals.preferences.pinConfirmation,
+                                                    authConfirmation: Globals.preferences.authConfirmation,
                                                 });
                                             }
-                                        });
+                                        );
                                     } else {
-                                        Globals.preferences.pinConfirmation = !Globals.preferences.pinConfirmation;
+                                        Globals.preferences.authConfirmation = !Globals.preferences.authConfirmation;
 
                                         this.setState({
-                                            pinConfirmation: Globals.preferences.pinConfirmation,
+                                            authConfirmation: Globals.preferences.authConfirmation,
                                         });
 
-                                        toastPopUp(Globals.preferences.pinConfirmation ? 'Pin Confirmation Enabled' : 'Pin Confirmation Disabled');
+                                        toastPopUp(Globals.preferences.authConfirmation ? 'Pin Confirmation Enabled' : 'Pin Confirmation Disabled');
                                         savePreferencesToDatabase(Globals.preferences);
                                     }
                                 },
                                 checkbox: true,
-                                checked: this.state.pinConfirmation,
+                                checked: this.state.authConfirmation,
                             },
                             {
                                 title: 'FAQ',
@@ -695,14 +698,15 @@ export class SettingsScreen extends React.Component {
                                     IconType: Ionicons,
                                 },
                                 onClick: () => {
-                                    if (Globals.preferences.pinConfirmation) {
-                                        this.props.navigation.navigate('RequestPin', {
-                                            subtitle: 'to resync your wallet',
-                                            finishFunction: () => {
+                                    if (Globals.preferences.authConfirmation) {
+                                        Authenticate(
+                                            this.props.navigation,
+                                            'to resync your wallet',
+                                            () => {
                                                 this.props.navigation.navigate('Settings');
                                                 resetWallet(this.props.navigation);
                                             }
-                                        });
+                                        );
                                     } else {
                                         resetWallet(this.props.navigation);
                                     }
@@ -716,14 +720,15 @@ export class SettingsScreen extends React.Component {
                                     IconType: AntDesign,
                                 },
                                 onClick: () => {
-                                    if (Globals.preferences.pinConfirmation) {
-                                        this.props.navigation.navigate('RequestPin', {
-                                            subtitle: 'to delete your wallet',
-                                            finishFunction: () => {
+                                    if (Globals.preferences.authConfirmation) {
+                                        Authenticate(
+                                            this.props.navigation,
+                                            'to delete your wallet',
+                                            () => {
                                                 this.props.navigation.navigate('Settings');
                                                 deleteWallet(this.props.navigation)
                                             }
-                                        });
+                                        );
                                     } else {
                                         deleteWallet(this.props.navigation)
                                     }

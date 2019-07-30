@@ -32,6 +32,7 @@ import List from './ListContainer';
 
 import { Styles } from './Styles';
 import { Globals } from './Globals';
+import { Authenticate } from './Authenticate';
 import { Hr, BottomButton } from './SharedComponents';
 import { removeFee, toAtomic, fromAtomic, addFee } from './Fee';
 
@@ -1021,15 +1022,16 @@ export class ConfirmScreen extends React.Component {
                             memo: this.state.memo,
                         };
 
-                        if (Globals.preferences.pinConfirmation) {
+                        if (Globals.preferences.authConfirmation) {
                             /* Verify they have the correct pin, then send the actual TX */
-                            this.props.navigation.navigate('RequestPin', {
-                                subtitle: 'to confirm the transaction',
-                                finishFunction: () => {
+                            Authenticate(
+                                this.props.navigation,
+                                'to confirm the transaction',
+                                () => {
                                     this.props.navigation.dispatch(navigateWithDisabledBack('ChoosePayee'));
                                     this.props.navigation.navigate('SendTransaction', {...params});
                                 }
-                            });
+                            );
                         } else {
                             /* Reset this stack to be on the transfer screen */
                             this.props.navigation.dispatch(navigateWithDisabledBack('ChoosePayee'));

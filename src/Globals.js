@@ -35,7 +35,7 @@ class globals {
             scanCoinbaseTransactions: false,
             limitData: false,
             theme: 'darkMode',
-            pinConfirmation: false,
+            authConfirmation: false,
             autoOptimize: true,
         };
 
