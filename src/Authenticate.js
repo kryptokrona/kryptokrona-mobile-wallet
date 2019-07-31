@@ -2,7 +2,7 @@
 //
 // Please see the included LICENSE file for more information.
 
-import PINCode, { hasUserSetPinCode } from '@haskkor/react-native-pincode';
+import PINCode, { hasUserSetPinCode, deleteUserPinCode } from '@haskkor/react-native-pincode';
 
 import * as LocalAuthentication from 'expo-local-authentication';
 
@@ -407,13 +407,19 @@ export class ForgotPinScreen extends React.Component {
                 <BottomButton
                     title='Delete Wallet'
                     onPress={() => {
-                        setHaveWallet(false);
-                        this.props.navigation.navigate('Splash');
-                        /* Can't use navigateWithDisabledBack between routes, but don't
-                           want to be able to go back to previous screen...
-                           Navigate to splash, then once on that route, reset the
-                           stack. */
-                        this.props.navigation.dispatch(navigateWithDisabledBack('Splash'));
+                        ((async) => {
+                            await setHaveWallet(false);
+
+                            await deleteUserPinCode();
+
+                            this.props.navigation.navigate('Splash');
+
+                            /* Can't use navigateWithDisabledBack between routes, but don't
+                               want to be able to go back to previous screen...
+                               Navigate to splash, then once on that route, reset the
+                               stack. */
+                            this.props.navigation.dispatch(navigateWithDisabledBack('Splash'));
+                        })();
                     }}
                     buttonStyle={{
                         backgroundColor: 'red',
