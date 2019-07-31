@@ -1199,10 +1199,10 @@
     lodash.unescape "4.0.1"
     semver "5.5.0"
 
-"@unimodules/core@3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@unimodules/core/-/core-3.0.0.tgz#bd00ce2a7d2c8bafdb086673bc437f4de5a0920c"
-  integrity sha512-57k14gPJYZKGxrQk5ZJV8VKSARHeaLpxI7eXE1ajhkQ+Eh9UF0VBr3WUQo/KmYWaGllTG2YVVe/SGcmkvsvugA==
+"@unimodules/core@3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@unimodules/core/-/core-3.0.2.tgz#a2b143fb1e743809ba17c60ae1848f82b8637901"
+  integrity sha512-EMZjVp+yrtoPKpDBPvj4+hyDWALl7gvpWeUsDz2Nb9MMBPLnhag1uNk3KC98StJdnjbSXKSdKrCMMidOXnyKcg==
   dependencies:
     compare-versions "^3.4.0"
 
@@ -6459,12 +6459,12 @@ react-native-udp@^2.6.1:
     ip-regex "^1.0.3"
     util "^0.10.3"
 
-react-native-unimodules@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/react-native-unimodules/-/react-native-unimodules-0.5.0.tgz#ab6be58e2c2ebcc812a1df4debda0780ffe1898f"
-  integrity sha512-dGCjR7MUStKSN2SXRAptClmBKXOUwKqvXbeH+2Mco+mjd/bXlyTegnBAlWiUolh6DZrN1DnBOxi55l0vWlFpBQ==
+react-native-unimodules@^0.5.2:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/react-native-unimodules/-/react-native-unimodules-0.5.2.tgz#02ace4a3633906ebe43ff42164482795965d38a0"
+  integrity sha512-/wRMjdLsSgIOrnr7FRtXiv2Km0KH0IRXDky2uGp0K4i7NLEme7Fn4e3mEbqALfa7t3lIa2KLU15mVsp41TKlEg==
   dependencies:
-    "@unimodules/core" "3.0.0"
+    "@unimodules/core" "3.0.2"
     "@unimodules/react-native-adapter" "3.0.0"
     chalk "^2.4.2"
     expo-app-loader-provider "6.0.0"
@@ -7696,10 +7696,10 @@ turtlecoin-utils@^1.0.3:
   optionalDependencies:
     turtlecoin-crypto "^3.0.4"
 
-turtlecoin-wallet-backend@^3.4.8:
-  version "3.4.8"
-  resolved "https://registry.yarnpkg.com/turtlecoin-wallet-backend/-/turtlecoin-wallet-backend-3.4.8.tgz#6c411425181bd1fddcf8d3c9b583a40b578a8741"
-  integrity sha512-cVcu9GnqoH+shvz3c7t6pc8pZnID1CFYJFV+mnISdCVfSu0i3vI/0pdGdRO/izE3MUgUvAtyNR63EPeRk4vURA==
+turtlecoin-wallet-backend@^3.4.9:
+  version "3.4.9"
+  resolved "https://registry.yarnpkg.com/turtlecoin-wallet-backend/-/turtlecoin-wallet-backend-3.4.9.tgz#a1e4e1fa77c5fa6cb27ddeb6c7a04a9bac02413e"
+  integrity sha512-VU6of+Wu6LcF2orWqYmUObEB/coYVXJImQ85/0ZU0zHSpRMwH872El9FRxjXMiWi7zgwEZsBM1tkA34FeCsMow==
   dependencies:
     lodash "^4.17.15"
     object-sizeof "^1.4.0"
