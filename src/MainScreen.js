@@ -6,6 +6,8 @@ import React from 'react';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 
+import * as Animatable from 'react-native-animatable';
+
 import QRCode from 'react-native-qrcode-svg';
 
 import PushNotification from 'react-native-push-notification';
@@ -321,6 +323,15 @@ class BalanceComponent extends React.Component {
         this.state = {
             expandedBalance: false,
         };
+
+        this.balanceRef = (ref) => this.balance = ref;
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.unlockedBalance !== this.props.unlockedBalance ||
+            nextProps.lockedBalance !== this.props.lockedBalance) {
+            this.balance.bounce(800);
+        }
     }
 
     render() {
@@ -364,7 +375,9 @@ class BalanceComponent extends React.Component {
                         TOTAL BALANCE
                     </Text>
 
-                    {this.state.expandedBalance ? expandedBalance : compactBalance}
+                    <Animatable.View ref={this.balanceRef}>
+                        {this.state.expandedBalance ? expandedBalance : compactBalance}
+                    </Animatable.View>
 
                     <Text style={{ color: this.props.screenProps.theme.slightlyMoreVisibleColour, fontSize: 20 }}>
                         {this.props.coinValue}
