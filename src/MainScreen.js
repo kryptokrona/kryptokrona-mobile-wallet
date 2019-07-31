@@ -428,6 +428,10 @@ class SyncComponent extends React.Component {
         /* Don't divide by zero */
         let progress = networkHeight === 0 ? 0 : walletHeight / networkHeight;
 
+        if (progress > 1) {
+            progress = 1;
+        }
+
         let percent = 100 * progress;
 
         /* Prevent bar looking full when it's not */
