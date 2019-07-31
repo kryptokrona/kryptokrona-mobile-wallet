@@ -2,7 +2,7 @@
 //
 // Please see the included LICENSE file for more information.
 
-import PINCode from '@haskkor/react-native-pincode';
+import PINCode, { hasUserSetPinCode } from '@haskkor/react-native-pincode';
 
 import * as LocalAuthentication from 'expo-local-authentication';
 
@@ -12,26 +12,38 @@ import RNExitApp from 'react-native-exit-app';
 
 import React from 'react';
 
-import { View, Alert, Text, Platform, Image } from 'react-native';
+import { View, Alert, Text, Platform, Image, Switch } from 'react-native';
 
 import { Button } from 'react-native-elements';
 
 import Config from './Config';
 
 import { Styles } from './Styles';
+import { Globals } from './Globals';
 import { FadeView } from './FadeView';
-import { setHaveWallet } from './Database';
+import { setHaveWallet, savePreferencesToDatabase } from './Database';
 import { BottomButton } from './SharedComponents';
 import { navigateWithDisabledBack } from './Utilities';
 
 /* Dummy component that redirects to pin auth or hardware auth as appropriate */
 export async function Authenticate(navigation, subtitle, finishFunction, disableBack = false) {
+    /* No auth, just go straight to the finish function */
+    if (Globals.preferences.authenticationMethod === 'none') {
+        finishFunction(navigation);
+        return;
+    }
+
     const haveHardwareAuth = await LocalAuthentication.hasHardwareAsync();
     const haveSetupHardwareAuth = await LocalAuthentication.isEnrolledAsync();
 
     const useHardwareAuth = haveHardwareAuth && haveSetupHardwareAuth;
 
-    const route = useHardwareAuth ? 'RequestHardwareAuth' : 'RequestPin';
+    let route = 'RequestPin';
+
+    /* User wants to use hardware authentication, and we have it available */
+    if (useHardwareAuth && Globals.preferences.authenticationMethod === 'hardware-auth') {
+        route = 'RequestHardwareAuth';
+    }
 
     if (disableBack) {
         navigation.dispatch(
@@ -47,6 +59,11 @@ export async function Authenticate(navigation, subtitle, finishFunction, disable
         });
     }
 }
+
+const authErrorToHumanError = new Map([
+    ['authentication_failed', 'Fingerprint does not matched stored fingerprint'],
+    ['insufficient', 'Could not get a full fingerprint reading'],
+]);
 
 export class RequestHardwareAuthScreen extends React.Component {
     constructor(props) {
@@ -68,9 +85,11 @@ export class RequestHardwareAuthScreen extends React.Component {
         if (authDetails.success) {
             this.props.navigation.state.params.finishFunction(this.props.navigation);
         } else {
+            const detailedError = authErrorToHumanError.get(authDetails.error) || authDetails.error;
+
             Alert.alert(
                 'Failed ' + this.props.navigation.state.params.subtitle,
-                `Please try again (Error: ${authDetails.error})`,
+                `Please try again (Error: ${detailedError})`,
                 [
                     {text: 'OK', onPress: () => {
                         this.auth();
@@ -90,40 +109,198 @@ export class RequestHardwareAuthScreen extends React.Component {
             }}>
                 {Platform.OS === 'android' &&
                     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                        <Image
-                            source={require('../assets/img/spinner.png')}
-                            style={{
-                                resizeMode: 'contain',
-                                width: 170,
-                                height: 170,
-                                marginBottom: 10,
-                                justifyContent: 'flex-start',
-                            }}
-                        />
+                        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                            <Image
+                                source={require('../assets/img/spinner.png')}
+                                style={{
+                                    resizeMode: 'contain',
+                                    width: 170,
+                                    height: 170,
+                                    marginBottom: 10,
+                                    justifyContent: 'flex-start',
+                                }}
+                            />
 
-                        <Text style={[Styles.centeredText, {
-                            fontSize: 22,
-                            color: this.props.screenProps.theme.slightlyMoreVisibleColour,
-                            marginHorizontal: 80,
-                        }]}>
-                            Touch the fingerprint sensor {this.props.navigation.state.params.subtitle}
-                        </Text>
+                            <Text style={[Styles.centeredText, {
+                                fontSize: 22,
+                                color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                                marginHorizontal: 80,
+                            }]}>
+                                Touch the fingerprint sensor {this.props.navigation.state.params.subtitle}
+                            </Text>
 
-                        <Animatable.Image
-                            source={require('../assets/img/fingerprint.png')}
-                            style={{
-                                resizeMode: 'contain',
-                                width: 80,
-                                height: 80,
-                                marginTop: 40,
-                                justifyContent: 'flex-end',
-                            }}
-                            animation='pulse'
-                            easing='ease-out'
-                            iterationCount='infinite'
-                        />
+                            <Animatable.Image
+                                source={require('../assets/img/fingerprint.png')}
+                                style={{
+                                    resizeMode: 'contain',
+                                    width: 80,
+                                    height: 80,
+                                    marginTop: 40,
+                                    justifyContent: 'flex-end',
+                                }}
+                                animation='pulse'
+                                easing='ease-out'
+                                iterationCount='infinite'
+                            />
+                        </View>
+
+                        <View style={{ width: '100%', bottom: 20, position: 'absolute' }}>
+                            <Button
+                                title='Or enter your PIN'
+                                onPress={() => {
+                                    this.props.navigation.navigate('RequestPin', {
+                                        subtitle: this.props.navigation.state.params.subtitle,
+                                        finishFunction: this.props.navigation.state.params.finishFunction
+                                    })
+                                }}
+                                titleStyle={{
+                                    color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                                    fontSize: 15,
+                                    textDecorationLine: 'underline',
+                                }}
+                                type='clear'
+                            />
+                        </View>
                     </View>
                 }
+            </View>
+        );
+    }
+}
+
+export class ChooseAuthMethodScreen extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            hardwareAuth: Globals.preferences.authenticationMethod === 'hardware-auth',
+            pinCode: Globals.preferences.authenticationMethod === 'pincode',
+            noAuth: Globals.preferences.authenticationMethod === 'none',
+        }
+    }
+
+    render() {
+        return(
+            <View style={{ flex: 1, backgroundColor: this.props.screenProps.theme.backgroundColour }}>
+                <View style={{
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
+                    flex: 1,
+                    marginTop: 60,
+                    backgroundColor: this.props.screenProps.theme.backgroundColour
+                }}>
+                    <Text style={{
+                        color: this.props.screenProps.theme.primaryColour,
+                        fontSize: 25,
+                        marginBottom: 40,
+                        marginLeft: 30,
+                        marginRight: 20
+                    }}>
+                        How would you like to secure your wallet?
+                    </Text>
+
+                    <View style={{ flexDirection: 'row', marginRight: 20, marginLeft: 25, marginBottom: 20 }}>
+                        <Switch
+                            value={this.state.hardwareAuth}
+                            onValueChange={(value) => {
+                                this.setState({
+                                    hardwareAuth: value,
+                                    pinCode: value ? false : this.state.pinCode,
+                                    noAuth: value ? false : this.state.noAuth,
+                                });
+                            }}
+                            style={{ marginRight: 15 }}
+                        />
+
+                        <View style={{ flex: 1 }}>
+                            <Text style={{
+                                fontSize: 15,
+                                color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                            }}>
+                                Use Hardware Authentication where available (Fingerprint, FaceID, TouchID), and if not available, fallback to a PIN Code.
+                            </Text>
+                        </View>
+                    </View>
+
+                    <View style={{ flexDirection: 'row', marginRight: 20, marginLeft: 25, marginBottom: 20 }}>
+                        <Switch
+                            value={this.state.pinCode}
+                            onValueChange={(value) => {
+                                this.setState({
+                                    hardwareAuth: value ? false : this.state.hardwareAuth,
+                                    pinCode: value,
+                                    noAuth: value ? false : this.state.noAuth,
+                                });
+                            }}
+                            style={{ marginRight: 15 }}
+                        />
+
+                        <View style={{ flex: 1 }}>
+                            <Text style={{
+                                fontSize: 15,
+                                color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                            }}>
+                                Use a 6 digit PIN Code.
+                            </Text>
+                        </View>
+
+                    </View>
+
+                    <View style={{ flexDirection: 'row', marginRight: 20, marginLeft: 25, marginBottom: 20 }}>
+                        <Switch
+                            value={this.state.noAuth}
+                            onValueChange={(value) => {
+                                this.setState({
+                                    hardwareAuth: value ? false : this.state.hardwareAuth,
+                                    pinCode: value ? false : this.state.pinCode,
+                                    noAuth: value
+                                });
+                            }}
+                            style={{ marginRight: 15 }}
+                        />
+
+                        <View style={{ flex: 1 }}>
+                            <Text style={{
+                                fontSize: 15,
+                                color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                            }}>
+                                Use no authentication at all.
+                            </Text>
+                        </View>
+
+                    </View>
+
+                    <BottomButton
+                        title="Continue"
+                        onPress={() => {
+                            (async() => {
+                                let method = 'none';
+
+                                if (this.state.hardwareAuth) {
+                                    method = 'hardware-auth';
+                                } else if (this.state.pinCode) {
+                                    method = 'pincode';
+                                }
+
+                                Globals.preferences.authenticationMethod = method;
+
+                                savePreferencesToDatabase(Globals.preferences);
+
+                                const havePincode = await hasUserSetPinCode();
+
+                                if (method === 'none' || havePincode) {
+                                    this.props.navigation.navigate(this.props.navigation.state.params.nextRoute);
+                                } else {
+                                    this.props.navigation.navigate('SetPin', {
+                                        nextRoute: this.props.navigation.state.params.nextRoute
+                                    });
+                                }
+                            })();
+                        }}
+                        disabled={!(this.state.noAuth || this.state.pinCode || this.state.hardwareAuth)}
+                        {...this.props}
+                    />
+                </View>
             </View>
         );
     }

@@ -29,6 +29,7 @@ import { TransactionsScreen, TransactionDetailsScreen } from './TransactionsScre
 
 import {
     SetPinScreen, RequestPinScreen, ForgotPinScreen, RequestHardwareAuthScreen,
+    ChooseAuthMethodScreen,
 } from './Authenticate';
 
 import {
@@ -123,6 +124,8 @@ const SettingsNavigator = createStackNavigator(
         Faq: FaqScreen,
         RequestPin: RequestPinScreen,
         ForgotPin: ForgotPinScreen,
+        SetPin: SetPinScreen,
+        ChooseAuthMethod: ChooseAuthMethodScreen
     },
     {
         initialRouteName: 'Settings',
@@ -267,6 +270,9 @@ const LoginNavigator = createStackNavigator(
 
         /* Request authentication via fingerprint, touchid, etc */
         RequestHardwareAuth: RequestHardwareAuthScreen,
+
+        /* Whether we should use pin, fingerprint, or no auth */
+        ChooseAuthMethod: ChooseAuthMethodScreen,
     },
     {
         initialRouteName: 'Splash',

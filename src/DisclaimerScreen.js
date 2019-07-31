@@ -121,7 +121,7 @@ export class DisclaimerScreen extends React.Component {
                     <BottomButton
                         title="Continue"
                         onPress={() => {
-                            this.props.navigation.navigate('SetPin', { nextRoute: this.props.navigation.state.params.nextRoute })
+                            this.props.navigation.navigate('ChooseAuthMethod', { nextRoute: this.props.navigation.state.params.nextRoute })
                         }}
                         disabled={!this.state.feeAccepted || !this.state.keyOwnershipAccepted || !this.state.warrantyAccepted}
                         {...this.props}

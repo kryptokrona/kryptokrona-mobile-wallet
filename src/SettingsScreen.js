@@ -14,8 +14,6 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
-import { deleteUserPinCode } from '@haskkor/react-native-pincode';
-
 import {
     View, FlatList, Alert, Text, Linking, ScrollView, Platform
 } from 'react-native';
@@ -643,6 +641,19 @@ export class SettingsScreen extends React.Component {
                                 checked: this.state.authConfirmation,
                             },
                             {
+                                title: 'Change login method',
+                                description: 'Use Pin, Fingerprint, or No Security',
+                                icon: {
+                                    iconName: 'security',
+                                    IconType: MaterialCommunityIcons,
+                                },
+                                onClick: () => {
+                                    this.props.navigation.navigate('ChooseAuthMethod', {
+                                        nextRoute: 'Settings',
+                                    });
+                                },
+                            },
+                            {
                                 title: 'FAQ',
                                 description: 'Find answers to common questions',
                                 icon: {
@@ -787,9 +798,6 @@ function deleteWallet(navigation) {
                 (async () => {
                     /* Disabling saving */
                     clearInterval(Globals.backgroundSaveTimer);
-
-                    /* Delete pin code */
-                    deleteUserPinCode();
 
                     await setHaveWallet(false);
 
