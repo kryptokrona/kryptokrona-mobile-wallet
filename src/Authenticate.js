@@ -407,7 +407,7 @@ export class ForgotPinScreen extends React.Component {
                 <BottomButton
                     title='Delete Wallet'
                     onPress={() => {
-                        ((async) => {
+                        (async () => {
                             await setHaveWallet(false);
 
                             await deleteUserPinCode();
