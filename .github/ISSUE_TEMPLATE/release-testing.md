@@ -17,6 +17,7 @@ assignees: ''
 - [ ] Import scan height range works
 - [ ] Import scan height month works
 - [ ] Import scan height exact height works
+- [ ] New PIN is prompted for after 'Forgot PIN' deletion
 
 ## General Operation
 
@@ -26,6 +27,10 @@ assignees: ''
 - [ ] Notifications are received when transactions is received in background
 - [ ] Background sync works
 - [ ] Wallet sync process is saved
+- [ ] Can login with fingerprint
+- [ ] Can login with pin
+- [ ] Can login without authentication
+- [ ] Animations are fired on balance recieve, sync completion, refreshing price
 
 ## Transferring
 
@@ -75,6 +80,7 @@ assignees: ''
 - [ ] Reset from timestamp created wallet works
 - [ ] Reset from scan height created wallet works
 - [ ] Reset from scan height of zero works
+- [ ] Swapping auth method works correctly
 
 ## QR codes and URIs
 
