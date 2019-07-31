@@ -325,12 +325,17 @@ class BalanceComponent extends React.Component {
         };
 
         this.balanceRef = (ref) => this.balance = ref;
+        this.valueRef = (ref) => this.value = ref;
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.unlockedBalance !== this.props.unlockedBalance ||
             nextProps.lockedBalance !== this.props.lockedBalance) {
             this.balance.bounce(800);
+        }
+
+        if (nextProps.coinValue !== this.props.coinValue) {
+            this.value.bounce(800);
         }
     }
 
@@ -379,9 +384,12 @@ class BalanceComponent extends React.Component {
                         {this.state.expandedBalance ? expandedBalance : compactBalance}
                     </Animatable.View>
 
-                    <Text style={{ color: this.props.screenProps.theme.slightlyMoreVisibleColour, fontSize: 20 }}>
+                    <Animatable.Text
+                        ref={this.valueRef}
+                        style={{ color: this.props.screenProps.theme.slightlyMoreVisibleColour, fontSize: 20 }}
+                    >
                         {this.props.coinValue}
-                    </Text>
+                    </Animatable.Text>
             </View>
         );
     }
