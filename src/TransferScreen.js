@@ -4,6 +4,8 @@
 
 import React from 'react';
 
+import * as Animatable from 'react-native-animatable';
+
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
@@ -1226,24 +1228,32 @@ export class SendTransactionScreen extends React.Component {
     render() {
         const sending =
             <View>
-                <Text style={{
-                    color: this.props.screenProps.theme.primaryColour,
-                    fontSize: 25,
-                }}>
+                <Animatable.Text
+                    style={{
+                        color: this.props.screenProps.theme.primaryColour,
+                        fontSize: 25,
+                    }}
+                    animation='pulse'
+                    iterationCount='infinite'
+                >
                     Sending transaction, please wait...
-                </Text>
+                </Animatable.Text>
             </View>;
 
         const fail =
             <View>
-                <Text style={{
-                    color: 'red',
-                    fontSize: 25,
-                    marginBottom: 25,
-                    fontWeight: 'bold',
-                }}>
+                <Animatable.Text
+                    style={{
+                        color: 'red',
+                        fontSize: 25,
+                        marginBottom: 25,
+                        fontWeight: 'bold',
+                    }}
+                    animation='shake'
+                    delay='1000'
+                >
                     Transaction failed!
-                </Text>
+                </Animatable.Text>
 
                 <Text style={{ fontSize: 13 }}>
                     {this.state.errMsg}
@@ -1252,14 +1262,17 @@ export class SendTransactionScreen extends React.Component {
 
         const success =
             <View>
-                <Text style={{
-                    color: this.props.screenProps.theme.primaryColour,
-                    fontSize: 25,
-                    marginBottom: 25,
-                    fontWeight: 'bold'
-                }}>
+                <Animatable.Text style={{
+                        color: this.props.screenProps.theme.primaryColour,
+                        fontSize: 25,
+                        marginBottom: 25,
+                        fontWeight: 'bold'
+                    }}
+                    animation='tada'
+                    delay='1000'
+                >
                     Transaction complete
-                </Text>
+                </Animatable.Text>
 
                 <Text style={{ fontSize: 13, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                     <Text style={{ color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>

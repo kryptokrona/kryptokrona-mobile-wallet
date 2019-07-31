@@ -405,6 +405,8 @@ class SyncComponent extends React.Component {
         };
 
         this.updateSyncStatus = this.updateSyncStatus.bind(this);
+
+        this.syncRef = (ref) => this.sync = ref;
     }
 
     updateSyncStatus(walletHeight, localHeight, networkHeight) {
@@ -430,13 +432,15 @@ class SyncComponent extends React.Component {
             percent = 99.99;
         }
 
+        const justSynced = progress === 1 && this.state.progress !== 1;
+
         this.setState({
             walletHeight,
             localHeight,
             networkHeight,
             progress,
             percent: percent.toFixed(2),
-        });
+        }, () => { if (justSynced) { this.sync.bounce(800) } });
     }
 
     componentDidMount() {
@@ -452,11 +456,11 @@ class SyncComponent extends React.Component {
     render() {
         return(
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', bottom: 20, position: 'absolute', left: 0, right: 0 }}>
-                <Text style={{
+                <Animatable.Text ref={this.syncRef} style={{
                     color: this.props.screenProps.theme.slightlyMoreVisibleColour,
                 }}>
                     {this.state.walletHeight} / {this.state.networkHeight} - {this.state.percent}%
-                </Text>
+                </Animatable.Text>
                 <ProgressBar
                     progress={this.state.progress}
                     style={{justifyContent: 'flex-end', alignItems: 'center', width: 300, marginTop: 10}}
