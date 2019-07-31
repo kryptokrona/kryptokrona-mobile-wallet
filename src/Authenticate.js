@@ -63,6 +63,7 @@ export async function Authenticate(navigation, subtitle, finishFunction, disable
 const authErrorToHumanError = new Map([
     ['authentication_failed', 'Fingerprint does not matched stored fingerprint'],
     ['insufficient', 'Could not get a full fingerprint reading'],
+    ['lockout', 'Too many failed attempts. Please use PIN auth instead'],
 ]);
 
 export class RequestHardwareAuthScreen extends React.Component {
@@ -84,6 +85,19 @@ export class RequestHardwareAuthScreen extends React.Component {
 
         if (authDetails.success) {
             this.props.navigation.state.params.finishFunction(this.props.navigation);
+        } else if (authDetails.error === 'lockout') {
+            Alert.alert(
+                'Failed ' + this.props.navigation.state.params.subtitle,
+                authErrorToHumanError.get(authDetails.error),
+                [
+                    {text: 'OK', onPress: () => {
+                        this.props.navigation.navigate('RequestPin', {
+                            subtitle: this.props.navigation.state.params.subtitle,
+                            finishFunction: this.props.navigation.state.params.finishFunction
+                        })
+                    }},
+                ]
+            );
         } else {
             const detailedError = authErrorToHumanError.get(authDetails.error) || authDetails.error;
 
