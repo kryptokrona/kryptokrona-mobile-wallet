@@ -458,7 +458,7 @@ export class SettingsScreen extends React.Component {
                                 onClick: () => {
                                     if (Globals.preferences.authConfirmation) {
                                         Authenticate(
-                                            this.props.navigation.navigate,
+                                            this.props.navigation,
                                             'to backup your keys',
                                             () => {
                                                 this.props.navigation.dispatch(navigateWithDisabledBack('Settings'));
@@ -557,8 +557,6 @@ export class SettingsScreen extends React.Component {
 
                                     const netInfo = await NetInfo.fetch();
 
-                                    console.log(netInfo.type);
-                                    
                                     if (Globals.preferences.limitData && netInfo.type === 'cellular') {
                                         Globals.wallet.stop();
                                     } else {
