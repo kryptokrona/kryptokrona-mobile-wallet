@@ -17,7 +17,7 @@ import { backgroundSync } from './src/BackgroundSync';
 
 /* Stub out console.log in production */
 if (!__DEV__) {
-    //console.log = () => {};
+    console.log = () => {};
 }
 
 BackgroundFetch.registerHeadlessTask(async () => {
