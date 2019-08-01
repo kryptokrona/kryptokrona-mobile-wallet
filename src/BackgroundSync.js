@@ -16,6 +16,8 @@ import Config from './Config';
 
 import { Globals } from './Globals';
 
+import { sendNotification } from './MainScreen';
+
 import { processBlockOutputs, makePostRequest } from './NativeCode';
 
 import {

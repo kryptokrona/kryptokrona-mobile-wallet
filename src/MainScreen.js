@@ -89,7 +89,7 @@ function handleNotification(notification) {
     notification.finish(PushNotificationIOS.FetchResult.NoData);
 }
 
-function sendNotification(transaction) {
+export function sendNotification(transaction) {
     /* Don't show notifications if disabled */
     if (!Globals.preferences.notificationsEnabled) {
         return;
@@ -104,6 +104,8 @@ function sendNotification(transaction) {
         title: 'Incoming transaction received!',
         message: `You were sent ${prettyPrintAmount(transaction.totalAmount(), Config)}`,
         data: JSON.stringify(transaction.hash),
+        largeIcon: 'ic_notification_color',
+        smallIcon: 'ic_notification_color',
     });
 }
 
