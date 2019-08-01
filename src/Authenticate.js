@@ -77,9 +77,6 @@ export class RequestHardwareAuthScreen extends React.Component {
     }
 
     async auth() {
-        /* Cancel any previous attempts */
-        await LocalAuthentication.cancelAuthenticate();
-
         /* touchId === 1 = have touch ID, faceId === 2 = have face ID */
         const [ touchId, faceId ] = await LocalAuthentication.supportedAuthenticationTypesAsync();
 
