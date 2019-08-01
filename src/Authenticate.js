@@ -4,7 +4,7 @@
 
 import PINCode, { hasUserSetPinCode, deleteUserPinCode } from '@haskkor/react-native-pincode';
 
-import * as LocalAuthentication from 'expo-local-authentication';
+import FingerprintScanner from 'react-native-fingerprint-scanner';
 
 import * as Animatable from 'react-native-animatable';
 
@@ -33,16 +33,17 @@ export async function Authenticate(navigation, subtitle, finishFunction, disable
         return;
     }
 
-    const haveHardwareAuth = await LocalAuthentication.hasHardwareAsync();
-    const haveSetupHardwareAuth = await LocalAuthentication.isEnrolledAsync();
-
-    const useHardwareAuth = haveHardwareAuth && haveSetupHardwareAuth;
-
     let route = 'RequestPin';
 
-    /* User wants to use hardware authentication, and we have it available */
-    if (useHardwareAuth && Globals.preferences.authenticationMethod === 'hardware-auth') {
-        route = 'RequestHardwareAuth';
+    try {
+        const sensorType = await FingerprintScanner.isSensorAvailable();
+
+        /* User wants to use hardware authentication, and we have it available */
+        if (Globals.preferences.authenticationMethod === 'hardware-auth') {
+            route = 'RequestHardwareAuth';
+        }
+    } catch (err) {
+        // No fingerprint sensor
     }
 
     if (disableBack) {
@@ -61,35 +62,58 @@ export async function Authenticate(navigation, subtitle, finishFunction, disable
 }
 
 const authErrorToHumanError = new Map([
-    ['authentication_failed', 'Fingerprint does not matched stored fingerprint'],
-    ['insufficient', 'Could not get a full fingerprint reading'],
-    ['lockout', 'Too many failed attempts. Please use PIN auth instead'],
-    ['app_cancel', 'Authentication was cancelled by the system. Please use PIN auth instead'],
+    ['AuthenticationNotMatch', 'Fingerprint does not match stored fingerprint.'],
+    ['AuthenticationFailed', 'Fingerprint does not match stored fingerprint.'],
+    ['UserCancel', 'Authentication was cancelled.'],
+    ['UserFallback', 'Authentication was cancelled.'],
+    ['SystemCancel', 'Authentication was cancelled by the system.'],
+    ['PasscodeNotSet', 'No fingerprints have been registered.'],
+    ['FingerprintScannerNotAvailable', 'This device does not support fingerprint scanning.'],
+    ['FingerprintScannerNotEnrolled', 'No fingerprints have been registered.'],
+    ['FingerprintScannerUnknownError', 'Failed to authenticate for an unknown reason.'],
+    ['FingerprintScannerNotSupported', 'This device does not support fingerprint scanning.'],
+    ['DeviceLocked', 'Authentication failed too many times.'],
 ]);
 
 export class RequestHardwareAuthScreen extends React.Component {
     constructor(props) {
         super(props);
+
+        this.onAuthAttempt = this.onAuthAttempt.bind(this);
     }
 
     componentDidMount() {
         this.auth();
     }
 
-    async auth() {
-        /* touchId === 1 = have touch ID, faceId === 2 = have face ID */
-        const [ touchId, faceId ] = await LocalAuthentication.supportedAuthenticationTypesAsync();
+    componentWillUnmount() {
+        FingerprintScanner.release();
+    }
 
-        const authDetails = await LocalAuthentication.authenticateAsync({
-            promptMessage: `Use ${faceId === 2 ? 'Face ID' : 'Touch ID'} ${this.props.navigation.state.params.subtitle}`,
-        });
+    onAuthAttempt(error) {
+        const detailedError = authErrorToHumanError.get(error.name) || error.message;
 
-        if (authDetails.success) {
-            this.props.navigation.state.params.finishFunction(this.props.navigation);
-        } else if (authDetails.error === 'lockout' || authDetails.error === 'app_cancel') {
+        const usePinInsteadErrors = [
+            'UserCancel',
+            'UserFallback',
+            'SystemCancel',
+            'PasscodeNotSet',
+            'FingerprintScannerNotAvailable',
+            'FingerprintScannerNotEnrolled',
+            'FingerprintScannerUnknownError',
+            'FingerprintScannerNotSupported',
+            'DeviceLocked',
+        ];
+
+        console.log(error.name);
+        console.log(error.message);
+
+        /* Use pin instead of fingerprint scanner if a specific
+           type of error is thrown */
+        if (usePinInsteadErrors.includes(error.name)) {
             Alert.alert(
                 'Failed ' + this.props.navigation.state.params.subtitle,
-                authErrorToHumanError.get(authDetails.error),
+                `${detailedError} Please use PIN Auth instead.`,
                 [
                     {text: 'OK', onPress: () => {
                         this.props.navigation.navigate('RequestPin', {
@@ -100,8 +124,6 @@ export class RequestHardwareAuthScreen extends React.Component {
                 ]
             );
         } else {
-            const detailedError = authErrorToHumanError.get(authDetails.error) || authDetails.error;
-
             Alert.alert(
                 'Failed ' + this.props.navigation.state.params.subtitle,
                 `Please try again (Error: ${detailedError})`,
@@ -112,6 +134,18 @@ export class RequestHardwareAuthScreen extends React.Component {
                 ]
             );
         }
+    }
+
+    async auth() {
+        try {
+            await FingerprintScanner.authenticate({
+                onAttempt: this.onAuthAttempt,
+            });
+
+            this.props.navigation.state.params.finishFunction(this.props.navigation);
+        } catch(error) {
+            this.onAuthAttempt(error);
+        };
     }
 
     render() {

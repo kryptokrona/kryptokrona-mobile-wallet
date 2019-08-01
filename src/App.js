@@ -88,6 +88,7 @@ const TransferNavigator = createStackNavigator(
         QrScanner: QrScannerScreen,
         SendTransaction: SendTransactionScreen,
         RequestPin: RequestPinScreen,
+        RequestHardwareAuth: RequestHardwareAuthScreen,
     },
     {
         initialRouteName: 'ChoosePayee',
@@ -125,7 +126,8 @@ const SettingsNavigator = createStackNavigator(
         RequestPin: RequestPinScreen,
         ForgotPin: ForgotPinScreen,
         SetPin: SetPinScreen,
-        ChooseAuthMethod: ChooseAuthMethodScreen
+        ChooseAuthMethod: ChooseAuthMethodScreen,
+        RequestHardwareAuth: RequestHardwareAuthScreen,
     },
     {
         initialRouteName: 'Settings',
