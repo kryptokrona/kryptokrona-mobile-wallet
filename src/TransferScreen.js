@@ -1250,7 +1250,7 @@ export class SendTransactionScreen extends React.Component {
                         fontWeight: 'bold',
                     }}
                     animation='shake'
-                    delay='1000'
+                    delay={1000}
                 >
                     Transaction failed!
                 </Animatable.Text>
@@ -1269,7 +1269,7 @@ export class SendTransactionScreen extends React.Component {
                         fontWeight: 'bold'
                     }}
                     animation='tada'
-                    delay='1000'
+                    delay={1000}
                 >
                     Transaction complete
                 </Animatable.Text>
