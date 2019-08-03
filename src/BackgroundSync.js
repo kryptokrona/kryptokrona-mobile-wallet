@@ -4,7 +4,7 @@
 
 import BackgroundFetch from 'react-native-background-fetch';
 
-import { AppState, Platform } from 'react-native';
+import { AppState, Platform, PushNotificationIOS } from 'react-native';
 
 import { WalletBackend, LogLevel } from 'turtlecoin-wallet-backend';
 
