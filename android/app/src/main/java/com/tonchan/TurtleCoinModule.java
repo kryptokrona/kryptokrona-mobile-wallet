@@ -36,123 +36,151 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void generateKeyImage(
-        String publicEphemeral,
-        String privateEphemeral,
-        Promise promise) {
-        try {
-            String key = generateKeyImageJNI(
-                publicEphemeral,
-                privateEphemeral
-            );
+        final String publicEphemeral,
+        final String privateEphemeral,
+        final Promise promise) {
 
-            promise.resolve(key);
-        } catch (Exception e) {
-            promise.reject("Error in generate key image: ", e);
-        }
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    String key = generateKeyImageJNI(
+                        publicEphemeral,
+                        privateEphemeral
+                    );
+
+                    promise.resolve(key);
+                } catch (Exception e) {
+                    promise.reject("Error in generate key image: ", e);
+                }
+            }
+        }).start();
     }
 
     @ReactMethod
     public void deriveSecretKey(
-        String derivation,
-        ReadableMap outputIndex,
-        String privateSpendKey,
-        Promise promise) {
-        try {
-            String key = deriveSecretKeyJNI(
-                derivation,
-                (long)outputIndex.getDouble("outputIndex"),
-                privateSpendKey
-            );
+        final String derivation,
+        final ReadableMap outputIndex,
+        final String privateSpendKey,
+        final Promise promise) {
 
-            promise.resolve(key);
-        } catch (Exception e) {
-            promise.reject("Error in derive secret key: ", e);
-        }
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    String key = deriveSecretKeyJNI(
+                        derivation,
+                        (long)outputIndex.getDouble("outputIndex"),
+                        privateSpendKey
+                    );
+
+                    promise.resolve(key);
+                } catch (Exception e) {
+                    promise.reject("Error in derive secret key: ", e);
+                }
+            }
+        }).start();
     }
 
     @ReactMethod
     public void derivePublicKey(
-        String derivation,
-        ReadableMap outputIndex,
-        String publicSpendKey,
-        Promise promise) {
-        try {
-            String key = derivePublicKeyJNI(
-                derivation,
-                (long)outputIndex.getDouble("outputIndex"),
-                publicSpendKey
-            );
+        final String derivation,
+        final ReadableMap outputIndex,
+        final String publicSpendKey,
+        final Promise promise) {
 
-            promise.resolve(key);
-        } catch (Exception e) {
-            promise.reject("Error in derive public key: ", e);
-        }
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    String key = derivePublicKeyJNI(
+                        derivation,
+                        (long)outputIndex.getDouble("outputIndex"),
+                        publicSpendKey
+                    );
+
+                    promise.resolve(key);
+                } catch (Exception e) {
+                    promise.reject("Error in derive public key: ", e);
+                }
+            }
+        }).start();
     }
 
     @ReactMethod
     public void generateKeyDerivation(
-        String transactionPublicKey,
-        String privateViewKey,
-        Promise promise) {
-        try {
-            String key = generateKeyDerivationJNI(
-                transactionPublicKey,
-                privateViewKey
-            );
+        final String transactionPublicKey,
+        final String privateViewKey,
+        final Promise promise) {
 
-            promise.resolve(key);
-        } catch (Exception e) {
-            promise.reject("Error in generate key derivation: ", e);
-        }
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    String key = generateKeyDerivationJNI(
+                        transactionPublicKey,
+                        privateViewKey
+                    );
+
+                    promise.resolve(key);
+                } catch (Exception e) {
+                    promise.reject("Error in generate key derivation: ", e);
+                }
+            }
+        }).start();
     }
 
     @ReactMethod
     public void generateRingSignatures(
-        String transactionPrefixHash,
-        String keyImage,
-        ReadableArray inputKeys,
-        String privateKey,
-        ReadableMap realIndex,
-        Promise promise) {
+        final String transactionPrefixHash,
+        final String keyImage,
+        final ReadableArray inputKeys,
+        final String privateKey,
+        final ReadableMap realIndex,
+        final Promise promise) {
 
-        try {
-            String[] signatures = generateRingSignaturesJNI(
-                transactionPrefixHash,
-                keyImage,
-                arrayToInputKeys(inputKeys),
-                privateKey,
-                (long)realIndex.getDouble("realIndex")
-            );
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    String[] signatures = generateRingSignaturesJNI(
+                        transactionPrefixHash,
+                        keyImage,
+                        arrayToInputKeys(inputKeys),
+                        privateKey,
+                        (long)realIndex.getDouble("realIndex")
+                    );
 
-            promise.resolve(signaturesToArray(signatures));
-        } catch (Exception e) {
-            promise.reject("Error in generate ring signatures: ", e);
-        }
+                    promise.resolve(signaturesToArray(signatures));
+                } catch (Exception e) {
+                    promise.reject("Error in generate ring signatures: ", e);
+                }
+            }
+        }).start();
     }
 
     @ReactMethod
     public void processBlockOutputs(
-        ReadableMap block,
-        String privateViewKey,
-        ReadableArray spendKeys,
-        boolean isViewWallet,
-        boolean processCoinbaseTransactions,
-        Promise promise) {
+        final ReadableMap block,
+        final String privateViewKey,
+        final ReadableArray spendKeys,
+        final boolean isViewWallet,
+        final boolean processCoinbaseTransactions,
+        final Promise promise) {
 
-        try {
-            InputMap[] inputs = processBlockOutputsJNI(
-                new WalletBlockInfo(block),
-                privateViewKey,
-                arrayToSpendKeys(spendKeys),
-                isViewWallet,
-                processCoinbaseTransactions
-            );
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    InputMap[] inputs = processBlockOutputsJNI(
+                        new WalletBlockInfo(block),
+                        privateViewKey,
+                        arrayToSpendKeys(spendKeys),
+                        isViewWallet,
+                        processCoinbaseTransactions
+                    );
 
-            promise.resolve(mapToArray(inputs));
+                    promise.resolve(mapToArray(inputs));
 
-        } catch (Exception e) {
-            promise.reject("Error in process block outputs: ", e);
-        }
+                } catch (Exception e) {
+                    promise.reject("Error in process block outputs: ", e);
+                }
+            }
+        }).start();
     }
 
     @ReactMethod
