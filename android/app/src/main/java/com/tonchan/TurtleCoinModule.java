@@ -158,28 +158,32 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getWalletSyncData(
         ReadableArray blockHashCheckpointsJS,
-        double startHeight,
-        double startTimestamp,
-        double blockCount,
-        boolean skipCoinbaseTransactions,
-        String url,
-        Promise promise) {
+        final double startHeight,
+        final double startTimestamp,
+        final double blockCount,
+        final boolean skipCoinbaseTransactions,
+        final String url,
+        final Promise promise) {
 
-        String[] blockHashCheckpoints = new String[blockHashCheckpointsJS.size()];
+        final String[] blockHashCheckpoints = new String[blockHashCheckpointsJS.size()];
 
         for (int i = 0; i < blockHashCheckpointsJS.size(); i++) {
             blockHashCheckpoints[i] = blockHashCheckpointsJS.getString(i);
         }
 
-        getWalletSyncDataImpl(
-            blockHashCheckpoints,
-            (long)startHeight,
-            (long)startTimestamp,
-            (long)blockCount,
-            skipCoinbaseTransactions,
-            url,
-            promise
-        );
+        new Thread(new Runnable() {
+            public void run() {
+                getWalletSyncDataImpl(
+                    blockHashCheckpoints,
+                    (long)startHeight,
+                    (long)startTimestamp,
+                    (long)blockCount,
+                    skipCoinbaseTransactions,
+                    url,
+                    promise
+                );
+            }
+        }).start();
     }
 
     private void getWalletSyncDataImpl(
