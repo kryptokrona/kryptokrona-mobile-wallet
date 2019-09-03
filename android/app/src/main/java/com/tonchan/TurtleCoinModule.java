@@ -196,6 +196,9 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
             URL obj = new URL(url);
             HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
 
+            /* 10 second timeout */
+            connection.setConnectTimeout(10000);
+
             /* We're sending a JSON post */
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
