@@ -4,6 +4,8 @@
 
 import SQLite from 'react-native-sqlite-storage';
 
+import * as _ from 'lodash';
+
 import { AsyncStorage } from 'react-native';
 
 import Config from './Config';
@@ -31,17 +33,36 @@ export async function deleteDB() {
     }
 }
 
+/* https://stackoverflow.com/a/29202760/8737306 */
+function chunkString(string, size) {
+    const numChunks = Math.ceil(string.length / size);
+    const chunks = new Array(numChunks);
+
+    for (let i = 0, o = 0; i < numChunks; i++, o += size) {
+        chunks[i] = string.substr(o, size);
+    }
+
+    return chunks;
+}
+
 async function saveWallet(wallet) {
+    /* Split into chunks of 512kb */
+    const chunks = chunkString(wallet, 1024 * 512);
+
     await database.transaction((tx) => {
         tx.executeSql(
-            `UPDATE
-                wallet
-            SET
-                json = ?
-            WHERE
-                id = 0`,
-            [wallet]
+            `DELETE FROM wallet`
         );
+
+        for (let i = 0; i < chunks.length; i++) {
+            tx.executeSql(
+                `INSERT INTO wallet
+                    (id, json)
+                VALUES
+                    (?, ?)`,
+                [ i, chunks[i] ]
+            );
+        }
     });
 }
 
@@ -52,12 +73,20 @@ export async function loadWallet() {
                 json
             FROM
                 wallet
-            WHERE
-                id = 0`,
+            ORDER BY
+                id ASC`
         );
 
         if (data && data.rows && data.rows.length >= 1) {
-            return [ data.rows.item(0).json, undefined ];
+            const len = data.rows.length;
+
+            let result = '';
+
+            for (let i = 0; i < len; i++) {
+                result += data.rows.item(i).json;
+            }
+
+            return [ result, undefined ];
         }
     } catch (err) {
         reportCaughtException(err);
