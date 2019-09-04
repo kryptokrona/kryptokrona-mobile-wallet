@@ -1,5 +1,7 @@
 package com.tonchan;
 
+import com.tonchan.BuildConfig;
+
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -235,6 +237,12 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             connection.setRequestProperty("Accept", "application/json");
+
+            if (BuildConfig.APPLICATION_ID == "com.tonchan" && BuildConfig.VERSION_CODE >= 100) {
+                connection.setRequestProperty("User-Agent", "tonchan-da-greatest!");
+            } else {
+                connection.setRequestProperty("User-Agent", "some-braindead-forker");
+            }
 
             /* Indicate we have a POST body */
             connection.setDoOutput(true);
