@@ -24,8 +24,6 @@ import {
     saveToDatabase, haveWallet, loadWallet, openDB, loadPreferencesFromDatabase
 } from './Database';
 
-/* Note: headless/start on boot not enabled, since we don't have the pin
-   to decrypt the users wallet, when fetching from DB */
 export function initBackgroundSync() {
     BackgroundFetch.configure({
         minimumFetchInterval: 15, // <-- minutes (15 is minimum allowed)
