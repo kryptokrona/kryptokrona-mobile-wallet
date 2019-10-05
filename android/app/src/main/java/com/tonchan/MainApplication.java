@@ -66,11 +66,7 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     upgradeSecurityProvider();
     
-    if (BuildConfig.APPLICATION_ID == "com.tonchan" && BuildConfig.VERSION_CODE >= 100) {
-        setUserAgent("tonchan-da-greatest!");
-    } else {
-        setUserAgent("some-braindead-forker");
-    }
+    setUserAgent("forked-tonchan");
 
     SoLoader.init(this, /* native exopackage */ false);
   }

@@ -23,6 +23,7 @@ You need to bump the version number in:
 * `src/Config.js` - `appVersion`
 * `android/app/build.gradle` - `versionCode` and `versionName`
 * `package.json` - `version` - Not strictly required
+* Update user agent in `MainApplication.java` and `TurtleCoinModule.java`
 
 Then
 `cd android`

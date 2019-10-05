@@ -245,11 +245,15 @@ export class DisableDozeScreen extends React.Component {
                     }}>
                         Disabling Doze mode for {Config.appName} can help ensure your
                         wallet is always synced or nearly synced. Doze mode prevents
-                        background syncing from firing consistently.{'\n\n'}
+                        background syncing from firing consistently,
+                        especially if you are not using your phone, to save battery.{'\n\n'}
+
                         To disable Doze mode, simply click the link below, then
                         select 'All Apps' from the dropdown.{'\n\n'}
+
                         Next, scroll down to find {Config.appName}, click it, then
                         choose 'Don't optimize'.{'\n\n'}
+
                         Click done, and you are finished!{'\n\n'}
 
                         <Text

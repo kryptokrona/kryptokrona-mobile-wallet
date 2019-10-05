@@ -197,11 +197,6 @@ const Config = new function() {
      */
     this.appName = 'TonChan';
 
-    /** 
-     * Customer user agent string for wallet backend requests
-     */
-    this.customUserAgentString = this.appName.toLowerCase() + '-da-greatest!';
-
     /**
      * Slogan phrase during wallet CreateScreen
      */
