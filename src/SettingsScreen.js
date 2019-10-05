@@ -700,6 +700,28 @@ export class SettingsScreen extends React.Component {
                                 },
                             },
                             {
+                                title: 'Rewind Wallet',
+                                description: 'Rescan last 5000 blocks for missing transactions',
+                                icon: {
+                                    iconName: 'md-rewind',
+                                    IconType: Ionicons,
+                                },
+                                onClick: () => {
+                                    if (Globals.preferences.authConfirmation) {
+                                        Authenticate(
+                                            this.props.navigation,
+                                            'to rewind your wallet',
+                                            () => {
+                                                this.props.navigation.navigate('Settings');
+                                                rewindWallet(this.props.navigation);
+                                            }
+                                        );
+                                    } else {
+                                        rewindWallet(this.props.navigation);
+                                    }
+                                },
+                            },
+                            {
                                 title: 'Resync Wallet',
                                 description: 'Resync wallet from scratch',
                                 icon: {
@@ -820,6 +842,30 @@ function resetWallet(navigation) {
             {text: 'Resync', onPress: () => {
                 Globals.wallet.rescan();
                 toastPopUp('Wallet resync initiated');
+                navigation.navigate('Main', { reloadBalance: true } );
+            }},
+            {text: 'Cancel', style: 'cancel'},
+        ],
+    );
+}
+
+function rewindWallet(navigation) {
+    Alert.alert(
+        'Rewind Wallet?',
+        'Are you sure you want to rewind your wallet? This will take a little time.',
+        [
+            {text: 'Rewind', onPress: () => {
+                const [ walletBlockCount ] = Globals.wallet.getSyncStatus();
+
+                let rewindHeight = walletBlockCount;
+
+                if (walletBlockCount > 5000) {
+                    rewindHeight = walletBlockCount - 5000;
+                }
+
+                Globals.wallet.rewind(rewindHeight);
+
+                toastPopUp('Wallet rewind initiated');
                 navigation.navigate('Main', { reloadBalance: true } );
             }},
             {text: 'Cancel', style: 'cancel'},
