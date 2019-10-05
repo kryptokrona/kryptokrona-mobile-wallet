@@ -26,14 +26,14 @@ export function delay(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function toastPopUp(message) {
+export function toastPopUp(message, short = true) {
     /* IOS doesn't have toast support */
     /* TODO */
     if (Platform.OS === 'ios') {
         return;
     }
 
-    ToastAndroid.show(message, ToastAndroid.SHORT);
+    ToastAndroid.show(message, short ? ToastAndroid.SHORT : ToastAndroid.LONG);
 }
 
 /* Navigate to a route, resetting the stack, so the user cannot go back.
