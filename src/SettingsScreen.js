@@ -15,7 +15,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
 import {
-    View, FlatList, Alert, Text, Linking, ScrollView, Platform
+    View, FlatList, Alert, Text, Linking, ScrollView, Platform, NativeModules,
+    AppState,
 } from 'react-native';
 
 import NetInfo from "@react-native-community/netinfo";
@@ -76,10 +77,20 @@ export class FaqScreen extends React.Component {
                         Every 15 minutes, a background sync event is fired. (This is a limitation of the mobile platform){'\n\n'}
                         After that, background syncing will continue for {Platform.OS === 'ios' ? '30 seconds' : '14 minutes'}, until the next background sync event is fired.{'\n\n'}
                         However, depending upon your phone model, battery, and OS, these background syncs may occur later than expected, or not at all.{'\n\n'}
+                        To help the background syncing to fire a lot more regularly, ensure you have disabled doze mode.{' '}
+                        <Text
+                            style={{
+                                color: '#3399ff',
+                            }}
+                            onPress={() => this.props.navigation.navigate('DisableDoze')}
+                        >
+                            Click this link
+                        </Text>
+                        {' '}for instructions on this.{'\n\n'}
                         For further information, see{' '}
                         <Text
                             style={{
-                                color: '#3399ff'
+                                color: '#3399ff',
                             }}
                             onPress={() => Linking.openURL('https://dontkillmyapp.com/').catch((err) => Globals.logger.addLogMessage('Failed to open url: ' + err))}
                         >
@@ -167,6 +178,96 @@ export class FaqScreen extends React.Component {
         );
     }
 }
+
+export class DisableDozeScreen extends React.Component {
+    static navigationOptions = {
+        title: 'Disable Doze',
+    };
+
+    constructor(props) {
+        super(props);
+
+        this.updateDozeStatus = this.updateDozeStatus.bind(this);
+
+        this.state = {
+            dozeDisabled: false
+        }
+    }
+
+    async updateDozeStatus() {
+        const dozeDisabled = await NativeModules.TurtleCoin.isDozeDisabled();
+
+        this.setState({
+            dozeDisabled,
+        });
+    }
+
+    componentDidMount() {
+        this.updateDozeStatus();
+        AppState.addEventListener('change', this.updateDozeStatus);
+    }
+
+    render() {
+        let arrivalTime = getArrivalTime();
+        /* Chop the '!' off the end */
+        arrivalTime = arrivalTime.substr(0, arrivalTime.length - 1);
+
+        return(
+            <View style={{
+                backgroundColor: this.props.screenProps.theme.backgroundColour,
+                flex: 1,
+            }}>
+                <ScrollView contentContainerStyle={{
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
+                }}
+                style={{
+                    marginTop: 60,
+                    marginLeft: 30,
+                    marginRight: 15,
+                }}>
+                    <Text
+                        style={{
+                            fontSize: 24,
+                            marginBottom: 20,
+                            color: this.state.dozeDisabled ? this.props.screenProps.theme.primaryColour : 'red'
+                        }}
+                    >
+                        {this.state.dozeDisabled
+                            ? 'Great! Doze is already disabled. You don\'t need to do anything else!'
+                            : 'Doze is not yet disabled. Read on to find out how to disable it.'}
+                    </Text>
+
+                    <Text style={{
+                        color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                        marginBottom: 20,
+                        fontSize: 16,
+                    }}>
+                        Disabling Doze mode for {Config.appName} can help ensure your
+                        wallet is always synced or nearly synced. Doze mode prevents
+                        background syncing from firing consistently.{'\n\n'}
+                        To disable Doze mode, simply click the link below, then
+                        select 'All Apps' from the dropdown.{'\n\n'}
+                        Next, scroll down to find {Config.appName}, click it, then
+                        choose 'Don't optimize'.{'\n\n'}
+                        Click done, and you are finished!{'\n\n'}
+
+                        <Text
+                            style={{
+                                color: '#3399ff',
+                                fontSize: 16,
+                            }}
+                            onPress={() => NativeModules.TurtleCoin.navigateToBatteryOptimizationScreen()}
+                        >
+                            Click here to open the Battery optimization menu.
+                        </Text>
+                    </Text>
+                </ScrollView>
+            </View>
+        );
+    }
+}
+
 
 export class LoggingScreen extends React.Component {
     static navigationOptions = {
@@ -449,6 +550,17 @@ export class SettingsScreen extends React.Component {
                     <FlatList
                         data={[
                             {
+                                title: 'FAQ',
+                                description: 'Find answers to common questions',
+                                icon: {
+                                    iconName: 'question',
+                                    IconType: SimpleLineIcons,
+                                },
+                                onClick: () => {
+                                    this.props.navigation.navigate('Faq');
+                                },
+                            },
+                            {
                                 title: 'Backup Keys',
                                 description: 'Display your private keys/seed',
                                 icon: {
@@ -471,6 +583,50 @@ export class SettingsScreen extends React.Component {
                                 },
                             },
                             {
+                                title: 'View logs',
+                                description: 'View debugging information',
+                                icon: {
+                                    iconName: 'note-text',
+                                    IconType: MaterialCommunityIcons,
+                                },
+                                onClick: () => {
+                                    this.props.navigation.navigate('Logging');
+                                },
+                            },
+                            {
+                                title: 'Rewind Wallet',
+                                description: 'Rescan last 5000 blocks for missing transactions',
+                                icon: {
+                                    iconName: 'md-rewind',
+                                    IconType: Ionicons,
+                                },
+                                onClick: () => {
+                                    if (Globals.preferences.authConfirmation) {
+                                        Authenticate(
+                                            this.props.navigation,
+                                            'to rewind your wallet',
+                                            () => {
+                                                this.props.navigation.navigate('Settings');
+                                                rewindWallet(this.props.navigation);
+                                            }
+                                        );
+                                    } else {
+                                        rewindWallet(this.props.navigation);
+                                    }
+                                },
+                            },
+                            {
+                                title: 'Speed Up Background Syncing',
+                                description: 'Disable battery optimization to speed up background syncing',
+                                icon: {
+                                    iconName: 'battery-charging',
+                                    IconType: MaterialCommunityIcons,
+                                },
+                                onClick: () => {
+                                    this.props.navigation.navigate('DisableDoze');
+                                }
+                            },
+                            {
                                 title: 'Swap Currency',
                                 description: 'Swap your wallet display currency',
                                 icon: {
@@ -478,68 +634,6 @@ export class SettingsScreen extends React.Component {
                                     IconType: MaterialCommunityIcons,
                                 },
                                 onClick: () => { this.props.navigation.navigate('SwapCurrency') },
-                            },
-                            {
-                                title: 'Enable Notifications',
-                                description: 'Get notified when you are sent money',
-                                icon: {
-                                    iconName: 'ios-notifications',
-                                    IconType: Ionicons,
-                                },
-                                onClick: () => {
-                                    Globals.preferences.notificationsEnabled = !Globals.preferences.notificationsEnabled;
-
-                                    this.setState({
-                                        notifsEnabled: Globals.preferences.notificationsEnabled,
-                                    });
-
-                                    toastPopUp(Globals.preferences.notificationsEnabled ? 'Notifications enabled' : 'Notifications disabled');
-                                    savePreferencesToDatabase(Globals.preferences);
-                                },
-                                checkbox: true,
-                                checked: this.state.notifsEnabled,
-                            },
-                            {
-                                title: 'Scan Coinbase Transactions',
-                                description: 'Enable this if you have solo mined',
-                                icon: {
-                                    iconName: 'pickaxe',
-                                    IconType: MaterialCommunityIcons,
-                                },
-                                onClick: () => {
-                                    Globals.preferences.scanCoinbaseTransactions = !Globals.preferences.scanCoinbaseTransactions;
-
-                                    this.setState({
-                                        scanCoinbase: Globals.preferences.scanCoinbaseTransactions,
-                                    });
-
-                                    Globals.wallet.scanCoinbaseTransactions(Globals.preferences.scanCoinbaseTransactions);
-                                    toastPopUp(Globals.preferences.scanCoinbaseTransactions ? 'Scanning Coinbase Transactions enabled' : 'Scanning Coinbase Transactions disabled');
-                                    savePreferencesToDatabase(Globals.preferences);
-                                },
-                                checkbox: true,
-                                checked: this.state.scanCoinbase,
-                            },
-                            {
-                                title: 'Enable Auto Optimization',
-                                description: 'Helps sending large TXs (See FAQ)',
-                                icon: {
-                                    iconName: 'refresh',
-                                    IconType: SimpleLineIcons,
-                                },
-                                onClick: () => {
-                                    Globals.preferences.autoOptimize = !Globals.preferences.autoOptimize;
-
-                                    this.setState({
-                                        autoOptimize: Globals.preferences.autoOptimize,
-                                    });
-
-                                    Globals.wallet.enableAutoOptimization(Globals.preferences.autoOptimize);
-                                    toastPopUp(Globals.preferences.autoOptimize ? 'Auto Optimization enabled' : 'Auto Optimization disabled');
-                                    savePreferencesToDatabase(Globals.preferences);
-                                },
-                                checkbox: true,
-                                checked: this.state.autoOptimize,
                             },
                             {
                                 title: 'Limit data',
@@ -652,15 +746,66 @@ export class SettingsScreen extends React.Component {
                                 },
                             },
                             {
-                                title: 'FAQ',
-                                description: 'Find answers to common questions',
+                                title: 'Enable Notifications',
+                                description: 'Get notified when you are sent money',
                                 icon: {
-                                    iconName: 'question',
+                                    iconName: 'ios-notifications',
+                                    IconType: Ionicons,
+                                },
+                                onClick: () => {
+                                    Globals.preferences.notificationsEnabled = !Globals.preferences.notificationsEnabled;
+
+                                    this.setState({
+                                        notifsEnabled: Globals.preferences.notificationsEnabled,
+                                    });
+
+                                    toastPopUp(Globals.preferences.notificationsEnabled ? 'Notifications enabled' : 'Notifications disabled');
+                                    savePreferencesToDatabase(Globals.preferences);
+                                },
+                                checkbox: true,
+                                checked: this.state.notifsEnabled,
+                            },
+                            {
+                                title: 'Scan Coinbase Transactions',
+                                description: 'Enable this if you have solo mined',
+                                icon: {
+                                    iconName: 'pickaxe',
+                                    IconType: MaterialCommunityIcons,
+                                },
+                                onClick: () => {
+                                    Globals.preferences.scanCoinbaseTransactions = !Globals.preferences.scanCoinbaseTransactions;
+
+                                    this.setState({
+                                        scanCoinbase: Globals.preferences.scanCoinbaseTransactions,
+                                    });
+
+                                    Globals.wallet.scanCoinbaseTransactions(Globals.preferences.scanCoinbaseTransactions);
+                                    toastPopUp(Globals.preferences.scanCoinbaseTransactions ? 'Scanning Coinbase Transactions enabled' : 'Scanning Coinbase Transactions disabled');
+                                    savePreferencesToDatabase(Globals.preferences);
+                                },
+                                checkbox: true,
+                                checked: this.state.scanCoinbase,
+                            },
+                            {
+                                title: 'Enable Auto Optimization',
+                                description: 'Helps sending large TXs (See FAQ)',
+                                icon: {
+                                    iconName: 'refresh',
                                     IconType: SimpleLineIcons,
                                 },
                                 onClick: () => {
-                                    this.props.navigation.navigate('Faq');
+                                    Globals.preferences.autoOptimize = !Globals.preferences.autoOptimize;
+
+                                    this.setState({
+                                        autoOptimize: Globals.preferences.autoOptimize,
+                                    });
+
+                                    Globals.wallet.enableAutoOptimization(Globals.preferences.autoOptimize);
+                                    toastPopUp(Globals.preferences.autoOptimize ? 'Auto Optimization enabled' : 'Auto Optimization disabled');
+                                    savePreferencesToDatabase(Globals.preferences);
                                 },
+                                checkbox: true,
+                                checked: this.state.autoOptimize,
                             },
                             {
                                 title: `View ${Config.appName} on ${Platform.OS === 'ios' ? 'the App Store' : 'Google Play'}`,
@@ -686,39 +831,6 @@ export class SettingsScreen extends React.Component {
                                 onClick: () => { 
                                     Linking.openURL(Config.repoLink)
                                            .catch((err) => Globals.logger.addLogMessage('Failed to open url: ' + err))
-                                },
-                            },
-                            {
-                                title: 'View logs',
-                                description: 'View debugging information',
-                                icon: {
-                                    iconName: 'note-text',
-                                    IconType: MaterialCommunityIcons,
-                                },
-                                onClick: () => {
-                                    this.props.navigation.navigate('Logging');
-                                },
-                            },
-                            {
-                                title: 'Rewind Wallet',
-                                description: 'Rescan last 5000 blocks for missing transactions',
-                                icon: {
-                                    iconName: 'md-rewind',
-                                    IconType: Ionicons,
-                                },
-                                onClick: () => {
-                                    if (Globals.preferences.authConfirmation) {
-                                        Authenticate(
-                                            this.props.navigation,
-                                            'to rewind your wallet',
-                                            () => {
-                                                this.props.navigation.navigate('Settings');
-                                                rewindWallet(this.props.navigation);
-                                            }
-                                        );
-                                    } else {
-                                        rewindWallet(this.props.navigation);
-                                    }
                                 },
                             },
                             {

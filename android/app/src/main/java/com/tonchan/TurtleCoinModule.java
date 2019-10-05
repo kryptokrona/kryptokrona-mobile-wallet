@@ -1,5 +1,10 @@
 package com.tonchan;
 
+import android.content.Context;
+import android.content.Intent;
+import android.os.PowerManager;
+import android.provider.Settings;
+
 import com.tonchan.BuildConfig;
 
 import com.facebook.react.bridge.Promise;
@@ -214,6 +219,24 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
                 );
             }
         }).start();
+    }
+
+    @ReactMethod
+    public void navigateToBatteryOptimizationScreen(Promise promise) {
+        Intent myIntent = new Intent();
+
+        myIntent.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+        myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        getReactApplicationContext().startActivity(myIntent);
+
+        promise.resolve("");
+    }
+    
+    @ReactMethod
+    public void isDozeDisabled(Promise promise) {
+        PowerManager pm = (PowerManager)getReactApplicationContext().getSystemService(Context.POWER_SERVICE);
+        promise.resolve(pm.isIgnoringBatteryOptimizations(getReactApplicationContext().getPackageName()));
     }
 
     private void getWalletSyncDataImpl(

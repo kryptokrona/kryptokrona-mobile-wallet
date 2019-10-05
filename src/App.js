@@ -34,6 +34,7 @@ import {
 
 import {
     SettingsScreen, SwapCurrencyScreen, ExportKeysScreen, LoggingScreen, FaqScreen,
+    DisableDozeScreen,
 } from './SettingsScreen';
 
 import {
@@ -123,6 +124,7 @@ const SettingsNavigator = createStackNavigator(
         ExportKeys: ExportKeysScreen,
         Logging: LoggingScreen,
         Faq: FaqScreen,
+        DisableDoze: DisableDozeScreen,
         RequestPin: RequestPinScreen,
         ForgotPin: ForgotPinScreen,
         SetPin: SetPinScreen,
