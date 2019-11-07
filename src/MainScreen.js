@@ -61,9 +61,6 @@ async function init(navigation) {
     /* TODO: iOS support */
     if (Platform.OS === 'android') {
         Globals.wallet.setBlockOutputProcessFunc(processBlockOutputs);
-        /* Override with our native makePostRequest implementation which can
-           actually cancel requests part way through */
-        Config.defaultDaemon.makePostRequest = makePostRequest;
     }
 
     initGlobals();

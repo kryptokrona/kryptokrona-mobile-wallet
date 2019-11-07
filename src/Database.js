@@ -132,7 +132,7 @@ async function createTables(DB) {
             )`
         );
 
-        /* Add new autooptimize column */
+        /* Add new columns */
         if (dbVersion === 0) {
             tx.executeSql(
                 `ALTER TABLE
@@ -146,6 +146,13 @@ async function createTables(DB) {
                     preferences
                 ADD
                     authmethod TEXT`
+            );
+
+            tx.executeSql(
+                `ALTER TABLE
+                    preferences
+                ADD
+                    node TEXT`
             );
         }
 
@@ -175,6 +182,8 @@ async function createTables(DB) {
                 (0, '')`
         );
 
+        const defaultDaemonInfo = Config.defaultDaemon.getConnectionInfo();
+
         /* Setup default preference values */
         tx.executeSql(
             `INSERT OR IGNORE INTO preferences (
@@ -186,7 +195,8 @@ async function createTables(DB) {
                 theme,
                 pinconfirmation,
                 autooptimize,
-                authmethod
+                authmethod,
+                node
             )
             VALUES (
                 0,
@@ -197,8 +207,12 @@ async function createTables(DB) {
                 'darkMode',
                 0,
                 1,
-                'hardware-auth'
-            )`
+                'hardware-auth',
+                ?
+            )`,
+            [
+                defaultDaemonInfo.host + ':' + defaultDaemonInfo.port,
+            ],
         );
 
         /* Set new auto optimize column if not assigned yet */
@@ -208,9 +222,13 @@ async function createTables(DB) {
                     preferences
                 SET
                     autooptimize = 1,
-                    authmethod = 'hardware-auth'
+                    authmethod = 'hardware-auth',
+                    node = ?
                 WHERE
-                    id = 0`
+                    id = 0`,
+                [
+                    defaultDaemonInfo.host + ':' + defaultDaemonInfo.port,
+                ],
             );
         }
 
@@ -246,7 +264,8 @@ export async function savePreferencesToDatabase(preferences) {
                 theme = ?,
                 pinconfirmation = ?,
                 autooptimize = ?,
-                authmethod = ?
+                authmethod = ?,
+                node = ?
             WHERE
                 id = 0`,
             [
@@ -258,6 +277,7 @@ export async function savePreferencesToDatabase(preferences) {
                 preferences.authConfirmation ? 1 : 0,
                 preferences.autoOptimize ? 1 : 0,
                 preferences.authenticationMethod,
+                preferences.node,
             ]
         );
     });
@@ -273,7 +293,8 @@ export async function loadPreferencesFromDatabase() {
             theme,
             pinconfirmation,
             autooptimize,
-            authmethod
+            authmethod,
+            node
         FROM
             preferences
         WHERE
@@ -291,7 +312,8 @@ export async function loadPreferencesFromDatabase() {
             theme: item.theme,
             authConfirmation: item.pinconfirmation === 1,
             autoOptimize: item.autooptimize === 1,
-            authenticationMethod: item.authmethod
+            authenticationMethod: item.authmethod,
+            node: item.node,
         }
     }
 

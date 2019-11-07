@@ -218,7 +218,7 @@ export class ImportSeedScreen extends React.Component {
 
     importWallet() {
         const [wallet, error] = WalletBackend.importWalletFromSeed(
-            Config.defaultDaemon, this.scanHeight, this.state.seed.toLowerCase(), Config
+            Globals.getDaemon(), this.scanHeight, this.state.seed.toLowerCase(), Config
         );
 
         if (error) {
@@ -358,7 +358,7 @@ export class ImportKeysScreen extends React.Component {
 
     importWallet() {
         const [wallet, error] = WalletBackend.importWalletFromKeys(
-            Config.defaultDaemon, this.scanHeight, this.state.privateViewKey,
+            Globals.getDaemon(), this.scanHeight, this.state.privateViewKey,
             this.state.privateSpendKey, Config
         );
 

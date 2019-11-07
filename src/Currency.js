@@ -2,7 +2,6 @@
 //
 // Please see the included LICENSE file for more information.
 
-/* TODO: replace with node fetch */
 const request = require('request-promise-native');
 
 import Config from './Config';
@@ -28,7 +27,7 @@ export async function getCoinPriceFromAPI() {
 
         return coinData;
     } catch (error) {
-        Globals.logger.addLogMessage('Failed to get price from API: ' + error);
+        Globals.logger.addLogMessage('Failed to get price from API: ' + error.toString());
         return undefined;
     }
 }

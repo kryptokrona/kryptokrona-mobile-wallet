@@ -2,14 +2,21 @@
 //
 // Please see the included LICENSE file for more information.
 
+const request = require('request-promise-native');
+
 import * as _ from 'lodash';
+
+import { Daemon } from 'turtlecoin-wallet-backend';
 
 import { Alert } from 'react-native';
 
 import NetInfo from "@react-native-community/netinfo";
 
+import Config from './Config';
+
 import { Logger } from './Logger';
 import { getCoinPriceFromAPI } from './Currency';
+import { makePostRequest } from './NativeCode';
 
 import {
     loadPayeeDataFromDatabase, savePayeeToDatabase, removePayeeFromDatabase,
@@ -27,6 +34,8 @@ class globals {
         /* Want to cache this so we don't have to keep loading from DB/internet */
         this.coinPrice = {};
 
+        const defaultDaemonInfo = Config.defaultDaemon.getConnectionInfo();
+
         /* Preferences loaded from DB */
         this.preferences = {
             currency: 'usd',
@@ -37,6 +46,7 @@ class globals {
             authConfirmation: false,
             autoOptimize: true,
             authenticationMethod: 'hardware-auth',
+            node: defaultDaemonInfo.host + ':' + defaultDaemonInfo.port,
         };
 
         /* People in our address book */
@@ -48,6 +58,8 @@ class globals {
 
         /* Mapping of tx hash to address sent, payee name, memo */
         this.transactionDetails = [];
+
+        this.daemons = [];
     }
 
     reset() {
@@ -82,6 +94,37 @@ class globals {
         Globals.updatePayeeFunctions.forEach((f) => {
             f();
         });
+    }
+
+    getDaemon() {
+        const [ host, port ] = this.preferences.node.split(':');
+
+        const daemon = new Daemon(host, Number(port));
+
+        if (Platform.OS === 'android') {
+            /* Override with our native makePostRequest implementation which can
+               actually cancel requests part way through */
+            daemon.makePostRequest = makePostRequest;
+        }
+
+        return daemon;
+    }
+
+    async updateNodeList() {
+        try {
+            const data = await request({
+                json: true,
+                method: 'GET',
+                timeout: Config.requestTimeout,
+                url: Config.nodeListURL,
+            });
+
+            if (data.nodes) {
+                this.daemons = data.nodes;
+            }
+        } catch (error) {
+            this.logger.addLogMessage('Failed to get node list from API: ' + error.toString());
+        }
     }
 }
 
@@ -125,5 +168,7 @@ export async function initGlobals() {
         Globals.wallet.start();
     }
 
+    await Globals.updateNodeList();
+    
     this.unsubscribe = NetInfo.addEventListener(updateConnection);
 }

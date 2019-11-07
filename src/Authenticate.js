@@ -105,9 +105,6 @@ export class RequestHardwareAuthScreen extends React.Component {
             'DeviceLocked',
         ];
 
-        console.log(error.name);
-        console.log(error.message);
-
         /* Use pin instead of fingerprint scanner if a specific
            type of error is thrown */
         if (usePinInsteadErrors.includes(error.name)) {

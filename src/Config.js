@@ -222,6 +222,12 @@ const Config = new function() {
      * A link to your app on the google play store
      */
     this.googlePlayLink = 'https://play.google.com/store/apps/details?id=com.tonchan';
+
+    /**
+     * A url to fetch node info from. Should follow the turtlepay format 
+     * detailed here: https://docs.turtlepay.io/blockapi/
+     */
+    this.nodeListURL = 'https://blockapi.turtlepay.io/node/list/available';
 };
 
 module.exports = Config;

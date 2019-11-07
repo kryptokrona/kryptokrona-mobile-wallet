@@ -50,7 +50,7 @@ async function tryLoadWallet(navigation) {
         }
 
         const [wallet, walletError] = WalletBackend.loadWalletFromJSON(
-            Config.defaultDaemon, walletData, Config
+            Globals.getDaemon(), walletData, Config
         );
 
         if (walletError) {

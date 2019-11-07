@@ -130,7 +130,7 @@ async function fromHeadlessJSInit() {
     }
 
     const [wallet, walletError] = WalletBackend.loadWalletFromJSON(
-        Config.defaultDaemon, walletData, Config
+        Globals.getDaemon(), walletData, Config
     );
 
     if (walletError) {
@@ -157,9 +157,6 @@ async function fromHeadlessJSInit() {
     /* TODO: iOS support */
     if (Platform.OS === 'android') {
         Globals.wallet.setBlockOutputProcessFunc(processBlockOutputs);
-        /* Override with our native makePostRequest implementation which can
-           actually cancel requests part way through */
-        Config.defaultDaemon.makePostRequest = makePostRequest;
     }
 
     PushNotification.configure({
