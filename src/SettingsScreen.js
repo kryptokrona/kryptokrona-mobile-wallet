@@ -577,99 +577,104 @@ export class SwapNodeScreen extends React.Component {
 
     render() {
         return(
-            <ScrollView
-                style={{
-                    backgroundColor: this.props.screenProps.theme.backgroundColour,
-                    flex: 1,
-                }}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={this.state.refreshing}
-                        onRefresh={this.refresh}
-                        title='Updating node list...'
-                    />
-                }
-            >
-                {this.state.nodes.length > 0 ?
-                    <List style={{
+            <View style={{
+                backgroundColor: this.props.screenProps.theme.backgroundColour,
+                flex: 1,
+            }}>
+                <ScrollView
+                    style={{
                         backgroundColor: this.props.screenProps.theme.backgroundColour,
-                        marginTop: 50
-                    }}>
-                        <FlatList
-                            extraData={this.state.forceUpdate}
-                            data={this.state.nodes}
-                            keyExtractor={(item) => item.url + item.port}
-                            renderItem={({ item }) => (
-                                <ListItem
-                                    title={item.name}
-                                    subtitle={`Node TX fee: ${prettyPrintAmount(item.fee.amount)}, Uptime: ${item.availability}%`}
-                                    leftIcon={
-                                        <View style={{
-                                            width: 50,
-                                            height: 50,
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            backgroundColor: this.props.screenProps.theme.iconColour,
-                                            borderRadius: 45
-                                        }}>
-                                            <Text style={[Styles.centeredText, { 
-                                                fontSize: 15,
-                                                color: item.online ? '#33ff33' : '#ff0000',
-                                            }]}>
-                                                {item.online ? 'Online' : 'Offline'}
-                                            </Text>
-                                        </View>
-                                    }
-                                    titleStyle={{
-                                        color: this.state.selectedNode === item.url + ':' + item.port
-                                            ? this.props.screenProps.theme.primaryColour
-                                            : this.props.screenProps.theme.slightlyMoreVisibleColour,
-                                    }}
-                                    subtitleStyle={{
-                                        color: this.state.selectedNode === item.url + ':' + item.port
-                                            ? this.props.screenProps.theme.primaryColour
-                                            : this.props.screenProps.theme.slightlyMoreVisibleColour,
-                                    }}
-                                    onPress={async () => {
-                                        toastPopUp('Swapping node...');
-
-                                        Globals.preferences.node = item.url + ':' + item.port;
-
-                                        this.setState((prevState) => ({
-                                            selectedNode: Globals.preferences.node,
-                                            forceUpdate: prevState.forceUpdate + 1,
-                                        }));
-
-                                        await Globals.wallet.swapNode(Globals.getDaemon());
-
-                                        savePreferencesToDatabase(Globals.preferences);
-
-                                        /* Reset this stack to be on the settings screen */
-                                        this.props.navigation.dispatch(navigateWithDisabledBack('Settings'));
-
-                                        /* And go back to the main screen. */
-                                        this.props.navigation.navigate('Main', { reloadBalance: true } );
-
-                                        toastPopUp('Node swap complete.');
-                                    }}
-                                />
-                            )}
-                        />
-                    </List> :
-                    <View style={{
-                        backgroundColor: this.props.screenProps.theme.backgroundColour,
+                        flex: 1,
                         marginTop: 50,
-                        marginHorizontal: 20,
-                    }}>
-                        <Text style={{
-                            fontSize: 20,
-                            color: this.props.screenProps.theme.primaryColour,
+                    }}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={this.state.refreshing}
+                            onRefresh={this.refresh}
+                            title='Updating node list...'
+                        />
+                    }
+                >
+                    {this.state.nodes.length > 0 ?
+                        <List style={{
+                            backgroundColor: this.props.screenProps.theme.backgroundColour,
                         }}>
-                            Could not load nodes! Either the API is down, or you have no internet.
-                        </Text>
-                    </View>
-                }
-            </ScrollView>
+                            <FlatList
+                                extraData={this.state.forceUpdate}
+                                data={this.state.nodes}
+                                keyExtractor={(item) => item.url + item.port}
+                                renderItem={({ item }) => (
+                                    <ListItem
+                                        title={item.name}
+                                        subtitle={`Node TX fee: ${prettyPrintAmount(item.fee.amount)}, Uptime: ${item.availability}%`}
+                                        leftIcon={
+                                            <View style={{
+                                                width: 50,
+                                                height: 50,
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                backgroundColor: this.props.screenProps.theme.iconColour,
+                                                borderRadius: 45
+                                            }}>
+                                                <Text style={[Styles.centeredText, { 
+                                                    fontSize: 15,
+                                                    color: item.online ? '#33ff33' : '#ff0000',
+                                                }]}>
+                                                    {item.online ? 'Online' : 'Offline'}
+                                                </Text>
+                                            </View>
+                                        }
+                                        titleStyle={{
+                                            color: this.state.selectedNode === item.url + ':' + item.port
+                                                ? this.props.screenProps.theme.primaryColour
+                                                : this.props.screenProps.theme.slightlyMoreVisibleColour,
+                                        }}
+                                        subtitleStyle={{
+                                            color: this.state.selectedNode === item.url + ':' + item.port
+                                                ? this.props.screenProps.theme.primaryColour
+                                                : this.props.screenProps.theme.slightlyMoreVisibleColour,
+                                        }}
+                                        onPress={async () => {
+                                            toastPopUp('Swapping node...');
+
+                                            Globals.preferences.node = item.url + ':' + item.port;
+
+                                            this.setState((prevState) => ({
+                                                selectedNode: Globals.preferences.node,
+                                                forceUpdate: prevState.forceUpdate + 1,
+                                            }));
+
+                                            await Globals.wallet.swapNode(Globals.getDaemon());
+
+                                            savePreferencesToDatabase(Globals.preferences);
+
+                                            /* Reset this stack to be on the settings screen */
+                                            this.props.navigation.dispatch(navigateWithDisabledBack('Settings'));
+
+                                            /* And go back to the main screen. */
+                                            this.props.navigation.navigate('Main', { reloadBalance: true } );
+
+                                            toastPopUp('Node swap complete.');
+                                        }}
+                                    />
+                                )}
+                            />
+                        </List> :
+                        <View style={{
+                            backgroundColor: this.props.screenProps.theme.backgroundColour,
+                            marginHorizontal: 20,
+                        }}>
+                            <Text style={{
+                                fontSize: 20,
+                                color: this.props.screenProps.theme.primaryColour,
+                            }}>
+                                Could not load nodes! Either the API is down, or you have no internet.
+                                Pull-to-refresh to try and load the nodes again.
+                            </Text>
+                        </View>
+                    }
+                </ScrollView>
+            </View>
         );
     }
 }
