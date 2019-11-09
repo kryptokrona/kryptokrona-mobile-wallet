@@ -537,6 +537,7 @@ export class SwapNodeScreen extends React.Component {
         super(props);
 
         this.refresh = this.refresh.bind(this);
+        this.swapNode = this.swapNode.bind(this);
 
         this.state = {
             /* Sort by online nodes, then uptime (highest first), then fee
@@ -573,6 +574,29 @@ export class SwapNodeScreen extends React.Component {
 
             forceUpdate: prevState.forceUpdate + 1,
         }));
+    }
+
+    async swapNode(node) {
+        toastPopUp('Swapping node...');
+
+        Globals.preferences.node = node.url + ':' + node.port;
+
+        this.setState((prevState) => ({
+            selectedNode: Globals.preferences.node,
+            forceUpdate: prevState.forceUpdate + 1,
+        }));
+
+        await Globals.wallet.swapNode(Globals.getDaemon());
+
+        savePreferencesToDatabase(Globals.preferences);
+
+        /* Reset this stack to be on the settings screen */
+        this.props.navigation.dispatch(navigateWithDisabledBack('Settings'));
+
+        /* And go back to the main screen. */
+        this.props.navigation.navigate('Main', { reloadBalance: true } );
+
+        toastPopUp('Node swap complete.');
     }
 
     render() {
@@ -635,26 +659,20 @@ export class SwapNodeScreen extends React.Component {
                                                 : this.props.screenProps.theme.slightlyMoreVisibleColour,
                                         }}
                                         onPress={async () => {
-                                            toastPopUp('Swapping node...');
-
-                                            Globals.preferences.node = item.url + ':' + item.port;
-
-                                            this.setState((prevState) => ({
-                                                selectedNode: Globals.preferences.node,
-                                                forceUpdate: prevState.forceUpdate + 1,
-                                            }));
-
-                                            await Globals.wallet.swapNode(Globals.getDaemon());
-
-                                            savePreferencesToDatabase(Globals.preferences);
-
-                                            /* Reset this stack to be on the settings screen */
-                                            this.props.navigation.dispatch(navigateWithDisabledBack('Settings'));
-
-                                            /* And go back to the main screen. */
-                                            this.props.navigation.navigate('Main', { reloadBalance: true } );
-
-                                            toastPopUp('Node swap complete.');
+                                            if (!item.online) {
+                                                Alert.alert(
+                                                    'Use offline node?',
+                                                    'Are you sure you want to attempt to connect to a node which is reporting as offline?',
+                                                    [
+                                                        {text: 'Yes', onPress: () => {
+                                                            this.swapNode(item);
+                                                        }},
+                                                        {text: 'Cancel', style: 'cancel'},
+                                                    ],
+                                                );
+                                            } else {
+                                                this.swapNode(item);
+                                            }
                                         }}
                                     />
                                 )}
