@@ -1873,10 +1873,18 @@ buffer@^5.0.0, buffer@^5.2.1:
     base64-js "^1.0.2"
     ieee754 "^1.1.4"
 
-buffer@^5.1.0, buffer@^5.4.0:
+buffer@^5.1.0:
   version "5.4.2"
   resolved "https://registry.yarnpkg.com/buffer/-/buffer-5.4.2.tgz#2012872776206182480eccb2c0fba5f672a2efef"
   integrity sha512-iy9koArjAFCzGnx3ZvNA6Z0clIbbFgbdWQ0mKD3hO0krOrZh8UgA6qMKcZvwLJxS+D6iVR76+5/pV56yMNYTag==
+  dependencies:
+    base64-js "^1.0.2"
+    ieee754 "^1.1.4"
+
+buffer@^5.4.3:
+  version "5.4.3"
+  resolved "https://registry.yarnpkg.com/buffer/-/buffer-5.4.3.tgz#3fbc9c69eb713d323e3fc1a895eee0710c072115"
+  integrity sha512-zvj65TkFeIt3i6aj5bIvJDzjjQQGs4o/sNoezg1F1kYap9Nu2jcUdpwzRSJTHMMzG0H7bZkn4rNQpImhuxWX2A==
   dependencies:
     base64-js "^1.0.2"
     ieee754 "^1.1.4"
@@ -5504,12 +5512,12 @@ object-keys@~0.2.0:
     indexof "~0.0.1"
     is "~0.2.6"
 
-object-sizeof@^1.5.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/object-sizeof/-/object-sizeof-1.5.1.tgz#da2ed6ce9c7c0b0f7cf42e8b370f493ec41e0936"
-  integrity sha512-htKkjOdWqxZQg5V6/M0tA/yLiYaRize4MzAyzibuR9Q0Jy/WYFRmTH4FYiGTdTXi2hbzxzdnaLv4K8N4VX7YTQ==
+object-sizeof@^1.5.2:
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/object-sizeof/-/object-sizeof-1.5.2.tgz#d2db77107779e4c522a390fbf5e715d848395dc1"
+  integrity sha512-5M9MYfLX3GsUv8YVSxypUkjQvpj5p3lX5gSaZCcV5973EqcQYp576vNU/620C1V6UaCdxeYGk3/QzEWz7uLvUQ==
   dependencies:
-    buffer "^5.4.0"
+    buffer "^5.4.3"
 
 object-visit@^1.0.0:
   version "1.0.1"
@@ -6708,12 +6716,28 @@ request-promise-core@1.1.2:
   dependencies:
     lodash "^4.17.11"
 
-request-promise-native@^1.0.5, request-promise-native@^1.0.7:
+request-promise-core@1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/request-promise-core/-/request-promise-core-1.1.3.tgz#e9a3c081b51380dfea677336061fea879a829ee9"
+  integrity sha512-QIs2+ArIGQVp5ZYbWD5ZLCY29D5CfWizP8eWnm8FoGD1TX61veauETVQbrV60662V0oFBkrDOuaBI8XgtuyYAQ==
+  dependencies:
+    lodash "^4.17.15"
+
+request-promise-native@^1.0.5:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/request-promise-native/-/request-promise-native-1.0.7.tgz#a49868a624bdea5069f1251d0a836e0d89aa2c59"
   integrity sha512-rIMnbBdgNViL37nZ1b3L/VfPOpSi0TqVDQPAvO6U14lMzOLrt5nilxCQqtDKhZeDiW0/hkCXGoQjhgJd/tCh6w==
   dependencies:
     request-promise-core "1.1.2"
+    stealthy-require "^1.1.1"
+    tough-cookie "^2.3.3"
+
+request-promise-native@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/request-promise-native/-/request-promise-native-1.0.8.tgz#a455b960b826e44e2bf8999af64dff2bfe58cb36"
+  integrity sha512-dapwLGqkHtwL5AEbfenuzjTYg35Jd6KPytsC2/TLkVMz8rm+tNt72MGUWT1RP/aYawMpN6HqbNGBQaRcBtjQMQ==
+  dependencies:
+    request-promise-core "1.1.3"
     stealthy-require "^1.1.1"
     tough-cookie "^2.3.3"
 
@@ -7589,18 +7613,10 @@ turtlecoin-crypto@^3.0.5:
     bindings "^1.5.0"
     nan "^2.14.0"
 
-turtlecoin-rpc@^1.0.2:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/turtlecoin-rpc/-/turtlecoin-rpc-1.0.3.tgz#51a43f06680b4924682a8c5ab40427299c44d50f"
-  integrity sha512-cBrL4I8l8mvw8okQiw1xiH8YsbG4F2aucrPvOyQJupQxxokc1rTtgDUSMI6YNTjqt4qBPQUnPq5oKVGPsHy+dg==
-  dependencies:
-    request "^2.88.0"
-    request-promise-native "^1.0.7"
-
-turtlecoin-utils@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/turtlecoin-utils/-/turtlecoin-utils-1.0.6.tgz#0b33e945c8c05334391fcdb7dbdb65d059dd8e83"
-  integrity sha512-ldMF38Z+Nxti/Ol/pVKnsccFEUBbRE14ZknwZqoSCfmVl+pBwHSgC5Xr5oogUyUM0x0djCB+Nsv/yYlSNgAHgA==
+turtlecoin-utils@^1.0.11:
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/turtlecoin-utils/-/turtlecoin-utils-1.0.11.tgz#564533a15fdd93d7a8ac55807a0ab19f0142439a"
+  integrity sha512-7sApzny/SmjVmwQJerRYjf3tYsZ2Qr5VLH0MR6bNmbBJoh//XLfKOBBQjWQnXiIHLHQ+vsD6SWydVcK6GRD8AQ==
   dependencies:
     crc "^3.8.0"
     get-random-values "^1.2.0"
@@ -7610,17 +7626,18 @@ turtlecoin-utils@^1.0.6:
   optionalDependencies:
     turtlecoin-crypto "^3.0.5"
 
-turtlecoin-wallet-backend@^4.0.5:
-  version "4.0.5"
-  resolved "https://registry.yarnpkg.com/turtlecoin-wallet-backend/-/turtlecoin-wallet-backend-4.0.5.tgz#3caba1635f85daf9dc8e3b6c23f53d46ceebc527"
-  integrity sha512-ANNU/8WTToOQu07IdVBfKPbiPiNjRFuIBCCUjc3XWgY91bne2uGg1fG1vIb/B2SK9voejdZm91WTw4EtAQmihQ==
+turtlecoin-wallet-backend@^4.0.6:
+  version "4.0.6"
+  resolved "https://registry.yarnpkg.com/turtlecoin-wallet-backend/-/turtlecoin-wallet-backend-4.0.6.tgz#b27c5249cd9ee4e7ba30c18c8aaf33bb30d2d4c6"
+  integrity sha512-N1NQx0pdtA1SNXVEbX7NQ9bAJC5rKlUdzNZ/Vry37CW4R6kBBdjLbKlv55Ggfe4A5wLaERpMPhzxOUvg4V2JVw==
   dependencies:
     lodash "^4.17.15"
-    object-sizeof "^1.5.1"
+    object-sizeof "^1.5.2"
     pbkdf2 "^3.0.17"
-    turtlecoin-rpc "^1.0.2"
-    turtlecoin-utils "^1.0.6"
-    typescript "^3.6.2"
+    request "^2.88.0"
+    request-promise-native "^1.0.8"
+    turtlecoin-utils "^1.0.11"
+    typescript "^3.7.2"
 
 tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"
@@ -7651,10 +7668,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^3.6.2:
-  version "3.6.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.6.3.tgz#fea942fabb20f7e1ca7164ff626f1a9f3f70b4da"
-  integrity sha512-N7bceJL1CtRQ2RiG0AQME13ksR7DiuQh/QehubYcghzv20tnh+MQnQIuJddTmsbqYj+dztchykemz0zFzlvdQw==
+typescript@^3.7.2:
+  version "3.7.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.2.tgz#27e489b95fa5909445e9fef5ee48d81697ad18fb"
+  integrity sha512-ml7V7JfiN2Xwvcer+XAf2csGO1bPBdRbFCkYBczNZggrBZ9c7G3riSUeJmqEU5uOtXNPMhE3n+R4FA/3YOAWOQ==
 
 ua-parser-js@^0.7.18:
   version "0.7.20"
