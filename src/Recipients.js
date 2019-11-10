@@ -58,54 +58,55 @@ export class RecipientsScreen extends React.Component {
 
         const addressBookComponent = 
             <List style={{
+                width: '100%',
                 height: '70%',
                 marginBottom: 20,
-                backgroundColor: this.props.screenProps.theme.backgroundColour
+                backgroundColor: this.props.screenProps.theme.backgroundColour,
             }}>
-                <FlatList
-                    extraData={this.state.index}
-                    data={this.state.payees}
-                    keyExtractor={item => item.nickname}
-                    renderItem={({item}) => (
-                        <ListItem
-                            title={item.nickname}
-                            subtitle={item.address.substr(0, 15) + '...'}
-                            subtitleStyle={{
-                                fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace'
-                            }}
-                            leftIcon={
-                                <View style={{
-                                    width: 50,
-                                    height: 50,
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    backgroundColor: this.props.screenProps.theme.iconColour,
-                                    borderRadius: 45
-                                }}>
-                                    <Text style={[Styles.centeredText, { 
-                                        fontSize: 30,
-                                        color: this.props.screenProps.theme.primaryColour,
-                                    }]}>
-                                        {item.nickname[0].toUpperCase()}
-                                    </Text>
-                                </View>
-                            }
-                            titleStyle={{
-                                color: this.props.screenProps.theme.slightlyMoreVisibleColour,
-                            }}
-                            subtitleStyle={{
-                                color: this.props.screenProps.theme.slightlyMoreVisibleColour,
-                            }}
-                            onPress={() => {
-                                this.props.navigation.navigate(
-                                    'ModifyPayee', {
-                                        payee: item,
-                                    }
-                                );
-                            }}
-                        />
-                    )}
-                />
+                    <FlatList
+                        extraData={this.state.index}
+                        data={this.state.payees}
+                        keyExtractor={item => item.nickname}
+                        renderItem={({item}) => (
+                            <ListItem
+                                title={item.nickname}
+                                subtitle={item.address.substr(0, 15) + '...'}
+                                subtitleStyle={{
+                                    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace'
+                                }}
+                                leftIcon={
+                                    <View style={{
+                                        width: 50,
+                                        height: 50,
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        backgroundColor: this.props.screenProps.theme.iconColour,
+                                        borderRadius: 45
+                                    }}>
+                                        <Text style={[Styles.centeredText, { 
+                                            fontSize: 30,
+                                            color: this.props.screenProps.theme.primaryColour,
+                                        }]}>
+                                            {item.nickname[0].toUpperCase()}
+                                        </Text>
+                                    </View>
+                                }
+                                titleStyle={{
+                                    color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                                }}
+                                subtitleStyle={{
+                                    color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                                }}
+                                onPress={() => {
+                                    this.props.navigation.navigate(
+                                        'ModifyPayee', {
+                                            payee: item,
+                                        }
+                                    );
+                                }}
+                            />
+                        )}
+                    />
             </List>;
 
         return(
@@ -115,17 +116,12 @@ export class RecipientsScreen extends React.Component {
                 alignItems: 'flex-start',
                 justifyContent: 'flex-start',
             }}>
-                <ScrollView
-                    style={{
-                        flex: 1,
-                        marginLeft: 30,
-                        marginTop: 60,
-                    }}
-                    contentContainerStyle={{
-                        alignItems: 'flex-start',
-                        justifyContent: 'flex-start',
-                    }}
-                >
+                <View style={{
+                    flex: 1,
+                    marginLeft: 30,
+                    marginTop: 60,
+                    width: '85%'
+                }}>
                     <TouchableWithoutFeedback
                         onPress={() => {
                             this.props.navigation.navigate('NewPayee', {
@@ -139,7 +135,7 @@ export class RecipientsScreen extends React.Component {
                             flexDirection: 'row',
                             alignItems: 'flex-start',
                             justifyContent: 'flex-start',
-                            flex: 1,
+                            height: 40,
                         }}>
                             <View style={{
                                 height: 37,
@@ -168,12 +164,14 @@ export class RecipientsScreen extends React.Component {
                         </View>
                     </TouchableWithoutFeedback>
 
-                    <Hr width={'100%'}/>
+                    <Hr width={'95%'}/>
 
                     <View style={{
                         backgroundColor: this.props.screenProps.theme.backgroundColour,
                         flex: 1,
                         marginRight: 15,
+                        alignItems: 'flex-start',
+                        justifyContent: 'flex-start',
                     }}>
                         <Text style={{
                             color: this.props.screenProps.theme.primaryColour,
@@ -186,7 +184,7 @@ export class RecipientsScreen extends React.Component {
                         {this.state.payees.length > 0 ? addressBookComponent : noPayeesComponent}
 
                     </View>
-                </ScrollView>
+                </View>
             </View>
         );
     }

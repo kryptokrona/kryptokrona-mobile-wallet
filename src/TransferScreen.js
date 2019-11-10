@@ -357,50 +357,52 @@ class AddressBook extends React.Component {
                 marginBottom: 20,
                 backgroundColor: this.props.screenProps.theme.backgroundColour
             }}>
-                <FlatList
-                    extraData={this.state.index}
-                    data={this.state.payees}
-                    keyExtractor={item => item.nickname}
-                    renderItem={({item}) => (
-                        <ListItem
-                            title={item.nickname}
-                            subtitle={item.address.substr(0, 15) + '...'}
-                            subtitleStyle={{
-                                fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace'
-                            }}
-                            leftIcon={
-                                <View style={{
-                                    width: 50,
-                                    height: 50,
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    backgroundColor: this.props.screenProps.theme.iconColour,
-                                    borderRadius: 45
-                                }}>
-                                    <Text style={[Styles.centeredText, { 
-                                        fontSize: 30,
-                                        color: this.props.screenProps.theme.primaryColour,
-                                    }]}>
-                                        {item.nickname[0].toUpperCase()}
-                                    </Text>
-                                </View>
-                            }
-                            titleStyle={{
-                                color: this.props.screenProps.theme.slightlyMoreVisibleColour,
-                            }}
-                            subtitleStyle={{
-                                color: this.props.screenProps.theme.slightlyMoreVisibleColour,
-                            }}
-                            onPress={() => {
-                                this.props.navigation.navigate(
-                                    'Transfer', {
-                                        payee: item,
-                                    }
-                                );
-                            }}
-                        />
-                    )}
-                />
+                <ScrollView>
+                    <FlatList
+                        extraData={this.state.index}
+                        data={this.state.payees}
+                        keyExtractor={item => item.nickname}
+                        renderItem={({item}) => (
+                            <ListItem
+                                title={item.nickname}
+                                subtitle={item.address.substr(0, 15) + '...'}
+                                subtitleStyle={{
+                                    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace'
+                                }}
+                                leftIcon={
+                                    <View style={{
+                                        width: 50,
+                                        height: 50,
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        backgroundColor: this.props.screenProps.theme.iconColour,
+                                        borderRadius: 45
+                                    }}>
+                                        <Text style={[Styles.centeredText, { 
+                                            fontSize: 30,
+                                            color: this.props.screenProps.theme.primaryColour,
+                                        }]}>
+                                            {item.nickname[0].toUpperCase()}
+                                        </Text>
+                                    </View>
+                                }
+                                titleStyle={{
+                                    color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                                }}
+                                subtitleStyle={{
+                                    color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                                }}
+                                onPress={() => {
+                                    this.props.navigation.navigate(
+                                        'Transfer', {
+                                            payee: item,
+                                        }
+                                    );
+                                }}
+                            />
+                        )}
+                    />
+                </ScrollView>
             </List>
         );
     }
@@ -427,16 +429,19 @@ class ExistingPayees extends React.Component {
         return(
             <View style={{
                 width: '90%',
-                maxHeight: 385,
+                maxHeight: '70%',
             }}>
-                <Text style={{
-                    color: this.props.screenProps.theme.primaryColour,
-                    marginTop: 40
+                <View style={{
                 }}>
-                    Address Book
-                </Text>
+                    <Text style={{
+                        color: this.props.screenProps.theme.primaryColour,
+                        marginTop: 40
+                    }}>
+                        Address Book
+                    </Text>
 
-                {Globals.payees.length > 0 ? <AddressBook {...this.props}/> : noPayeesComponent}
+                    {Globals.payees.length > 0 ? <AddressBook {...this.props}/> : noPayeesComponent}
+                </View>
             </View>
         );
     }
