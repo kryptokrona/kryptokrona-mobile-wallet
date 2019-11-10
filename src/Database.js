@@ -20,6 +20,8 @@ SQLite.enablePromise(true);
 
 let database;
 
+const databaseRowLimit = 1024 * 512;
+
 export async function deleteDB() {
     try {
         await setHaveWallet(false);
@@ -47,7 +49,7 @@ function chunkString(string, size) {
 
 async function saveWallet(wallet) {
     /* Split into chunks of 512kb */
-    const chunks = chunkString(wallet, 1024 * 512);
+    const chunks = chunkString(wallet, databaseRowLimit);
 
     await database.transaction((tx) => {
         tx.executeSql(
@@ -68,7 +70,40 @@ async function saveWallet(wallet) {
 
 export async function loadWallet() {
     try {
-        const [data] = await database.executeSql(
+        let [data] = await database.executeSql(
+            `SELECT
+                LENGTH(json) AS jsonLength
+            FROM
+                wallet`
+        );
+
+        if (data && data.rows && data.rows.length === 1) {
+            const len = data.rows.item(0).jsonLength;
+            let result = '';
+
+            if (len > databaseRowLimit) {
+                for (let i = 1; i <= len; i += databaseRowLimit) {
+                    const [chunk] = await database.executeSql(
+                        `SELECT
+                            SUBSTR(json, ?, ?) AS data
+                        FROM
+                            wallet`,
+                        [
+                            i,
+                            databaseRowLimit
+                        ]
+                    );
+
+                    if (chunk && chunk.rows && chunk.rows.length === 1) {
+                        result += chunk.rows.item(0).data;
+                    }
+                }
+
+                return [ result, undefined ];
+            }
+        }
+
+        [data] = await database.executeSql(
             `SELECT
                 json
             FROM
