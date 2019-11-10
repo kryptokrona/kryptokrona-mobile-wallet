@@ -69,7 +69,7 @@ const Config = new function() {
      * high a value will cause the event loop to be blocked, and your interaction
      * to be laggy.
      */
-    this.blocksPerTick = 1;
+    this.blocksPerTick = 100;
 
     /**
      * Your coins 'ticker', generally used to refer to the coin, i.e. 123 TRTL
@@ -205,7 +205,7 @@ const Config = new function() {
     /**
      * Displayed in the settings screen
      */
-    this.appVersion = 'v1.0.0';
+    this.appVersion = 'v1.0.1';
 
     /**
      * Base URL for us to chuck a hash on the end, and find a transaction
