@@ -147,7 +147,9 @@ async function createTables(DB) {
                 ADD
                     authmethod TEXT`
             );
+        }
 
+        if (dbVersion === 0 || dbVersion === 1) {
             tx.executeSql(
                 `ALTER TABLE
                     preferences
@@ -230,10 +232,22 @@ async function createTables(DB) {
                     defaultDaemonInfo.host + ':' + defaultDaemonInfo.port,
                 ],
             );
+        } else if (dbVersion === 1) {
+            tx.executeSql(
+                `UPDATE
+                    preferences
+                SET
+                    node = ?
+                WHERE
+                    id = 0`,
+                [
+                    defaultDaemonInfo.host + ':' + defaultDaemonInfo.port,
+                ],
+            );
         }
 
         tx.executeSql(
-            `PRAGMA user_version = 1`
+            `PRAGMA user_version = 2`
         );
     });
 }
