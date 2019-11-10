@@ -219,8 +219,6 @@ async function createTables(DB) {
                 (0, '')`
         );
 
-        const defaultDaemonInfo = Config.defaultDaemon.getConnectionInfo();
-
         /* Setup default preference values */
         tx.executeSql(
             `INSERT OR IGNORE INTO preferences (
@@ -248,7 +246,7 @@ async function createTables(DB) {
                 ?
             )`,
             [
-                defaultDaemonInfo.host + ':' + defaultDaemonInfo.port,
+                Config.defaultDaemon.getConnectionString(),
             ],
         );
 

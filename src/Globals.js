@@ -34,8 +34,6 @@ class globals {
         /* Want to cache this so we don't have to keep loading from DB/internet */
         this.coinPrice = {};
 
-        const defaultDaemonInfo = Config.defaultDaemon.getConnectionInfo();
-
         /* Preferences loaded from DB */
         this.preferences = {
             currency: 'usd',
@@ -46,7 +44,7 @@ class globals {
             authConfirmation: false,
             autoOptimize: true,
             authenticationMethod: 'hardware-auth',
-            node: defaultDaemonInfo.host + ':' + defaultDaemonInfo.port,
+            node: Config.defaultDaemon.getConnectionString(),
         };
 
         /* People in our address book */
