@@ -19,6 +19,8 @@ import {
     AppState, Platform, Linking, ScrollView, RefreshControl, Dimensions,
 } from 'react-native';
 
+import NetInfo from "@react-native-community/netinfo";
+
 import { prettyPrintAmount, LogLevel } from 'turtlecoin-wallet-backend';
 
 import Config from './Config';
@@ -176,10 +178,22 @@ export class MainScreen extends React.Component {
         handleURI(url, this.props.navigation);
     }
 
+    async resumeSyncing() {
+        const netInfo = await NetInfo.fetch();
+
+        if (Globals.preferences.limitData && netInfo.type === 'cellular') {
+            return;
+        }
+
+        /* Note: start() is a no-op when already started */
+        Globals.wallet.start();
+    }
+
     /* Update coin price on coming to foreground */
-    handleAppStateChange(appState) {
+    async handleAppStateChange(appState) {
         if (appState === 'active') {
             this.updateBalance();
+            this.resumeSyncing();
         }
     }
 
