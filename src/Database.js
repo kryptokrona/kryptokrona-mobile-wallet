@@ -262,7 +262,7 @@ async function createTables(DB) {
                 WHERE
                     id = 0`,
                 [
-                    defaultDaemonInfo.host + ':' + defaultDaemonInfo.port,
+                    Config.defaultDaemon.getConnectionString(),
                 ],
             );
         } else if (dbVersion === 1) {
@@ -274,7 +274,7 @@ async function createTables(DB) {
                 WHERE
                     id = 0`,
                 [
-                    defaultDaemonInfo.host + ':' + defaultDaemonInfo.port,
+                    Config.defaultDaemon.getConnectionString(),
                 ],
             );
         }
