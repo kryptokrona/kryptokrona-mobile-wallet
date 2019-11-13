@@ -45,7 +45,9 @@ export class RecipientsScreen extends React.Component {
 
     render() {
         const noPayeesComponent =
-            <View>
+            <View style={{
+                width: '100%',
+            }}>
                 <Hr/>
                 <Text style={{
                     color: this.props.screenProps.theme.primaryColour,
