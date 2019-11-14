@@ -8,6 +8,8 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved);
 
 std::vector<Crypto::PublicKey> makeNativePublicKeys(JNIEnv *env, jobjectArray jPublicKeys);
 
+std::vector<Crypto::Signature> makeNativeSignatures(JNIEnv *env, jobjectArray jSignatures);
+
 WalletBlockInfo makeNativeWalletBlockInfo(JNIEnv *env, jobject jWalletBlockInfo);
 
 std::string makeNativeString(JNIEnv *env, jstring jStr);
@@ -54,6 +56,16 @@ T makeNative32ByteKey(JNIEnv *env, jstring jKey)
     T result;
     const char *nativeString = env->GetStringUTFChars(jKey, nullptr);
     hexStringToByteArray(nativeString, result.data, 32);
+    env->ReleaseStringUTFChars(jKey, nativeString);
+    return result;
+}
+
+template<typename T>
+T makeNative64ByteKey(JNIEnv *env, jstring jKey)
+{
+    T result;
+    const char *nativeString = env->GetStringUTFChars(jKey, nullptr);
+    hexStringToByteArray(nativeString, result.data, 64);
     env->ReleaseStringUTFChars(jKey, nativeString);
     return result;
 }

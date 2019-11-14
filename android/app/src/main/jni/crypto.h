@@ -31,6 +31,12 @@ namespace Crypto
         const Crypto::SecretKey transactionSecretKey,
         uint64_t realOutput);
 
+    bool checkRingSignature(
+        const Hash &prefix_hash,
+        const KeyImage &image,
+        const std::vector<PublicKey> pubs,
+        const std::vector<Signature> signatures);
+
     bool underive_public_key(
         const KeyDerivation &derivation,
         const size_t output_index,

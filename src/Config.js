@@ -8,7 +8,7 @@ import { MixinLimit, MixinLimits, Daemon } from 'turtlecoin-wallet-backend';
 
 import {
     derivePublicKey, generateKeyDerivation, generateRingSignatures,
-    deriveSecretKey, generateKeyImage,
+    deriveSecretKey, generateKeyImage, checkRingSignature,
 } from './NativeCode';
 
 const Config = new function() {
@@ -139,6 +139,11 @@ const Config = new function() {
      * Use our native func instead of JS slowness
      */
     this.generateKeyImage = Platform.OS === 'ios' ? undefined : generateKeyImage;
+
+    /**
+     * Use our native func instead of JS slowness
+     */
+    this.checkRingSignatures = Platform.OS === 'ios' ? undefined: checkRingSignature;
 
     /**
      * Memory to use for storing downloaded blocks - 3MB

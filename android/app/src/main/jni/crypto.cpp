@@ -266,4 +266,89 @@ namespace Crypto
 
         return {true, signatures};
     }
+
+    bool checkRingSignature(
+        const Hash &prefix_hash,
+        const KeyImage &image,
+        const std::vector<PublicKey> pubs,
+        const std::vector<Signature> signatures)
+    {
+        ge_p3 image_unp;
+
+        ge_dsmp image_pre;
+
+        EllipticCurveScalar sum, h;
+
+        rs_comm *const buf = reinterpret_cast<rs_comm *>(alloca(rs_comm_size(pubs.size())));
+
+        if (ge_frombytes_vartime(&image_unp, reinterpret_cast<const unsigned char*>(&image)) != 0)
+        {
+            return false;
+        }
+
+        ge_dsm_precomp(image_pre, &image_unp);
+
+        if (ge_check_subgroup_precomp_vartime(image_pre) != 0)
+        {
+            return false;
+        }
+
+        sc_0(reinterpret_cast<unsigned char*>(&sum));
+
+        buf->h = prefix_hash;
+
+        for (size_t i = 0; i < pubs.size(); i++)
+        {
+            ge_p2 tmp2;
+            ge_p3 tmp3;
+
+            if (sc_check(reinterpret_cast<const unsigned char*>(&signatures[i])) != 0 
+             || sc_check(reinterpret_cast<const unsigned char*>(&signatures[i]) + 32) != 0)
+            {
+                return false;
+            }
+
+            if (ge_frombytes_vartime(&tmp3, reinterpret_cast<const unsigned char*>(&pubs[i])) != 0)
+            {
+                return false;
+            }
+
+            ge_double_scalarmult_base_vartime(
+                &tmp2,
+                reinterpret_cast<const unsigned char*>(&signatures[i]),
+                &tmp3,
+                reinterpret_cast<const unsigned char*>(&signatures[i]) + 32
+            );
+
+            ge_tobytes(reinterpret_cast<unsigned char*>(&buf->ab[i].a), &tmp2);
+
+            hash_to_ec(pubs[i], tmp3);
+
+            ge_double_scalarmult_precomp_vartime(
+                &tmp2,
+                reinterpret_cast<const unsigned char*>(&signatures[i]) + 32,
+                &tmp3,
+                reinterpret_cast<const unsigned char*>(&signatures[i]),
+                image_pre
+            );
+
+            ge_tobytes(reinterpret_cast<unsigned char*>(&buf->ab[i].b), &tmp2);
+
+            sc_add(
+                reinterpret_cast<unsigned char*>(&sum),
+                reinterpret_cast<unsigned char*>(&sum),
+                reinterpret_cast<const unsigned char*>(&signatures[i])
+            );
+        }
+
+        hash_to_scalar(buf, rs_comm_size(pubs.size()), h);
+
+        sc_sub(
+            reinterpret_cast<unsigned char*>(&h),
+            reinterpret_cast<unsigned char*>(&h),
+            reinterpret_cast<unsigned char*>(&sum)
+        );
+
+        return sc_isnonzero(reinterpret_cast<unsigned char*>(&h)) == 0;
+    }
 }

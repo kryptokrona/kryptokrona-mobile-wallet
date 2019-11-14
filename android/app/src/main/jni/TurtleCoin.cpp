@@ -128,6 +128,27 @@ Java_com_tonchan_TurtleCoinModule_generateRingSignaturesJNI(
     return makeJNISignatures(env, signatures);
 }
 
+extern "C" JNIEXPORT jboolean JNICALL
+Java_com_tonchan_TurtleCoinModule_checkRingSignatureJNI(
+    JNIEnv *env,
+    jobject instance,
+    jstring jPrefixHash,
+    jstring jKeyImage,
+    jobjectArray jPublicKeys,
+    jobjectArray jSignatures)
+{
+    const Crypto::Hash prefixHash = makeNative32ByteKey<Crypto::Hash>(env, jPrefixHash);
+    const Crypto::KeyImage keyImage = makeNative32ByteKey<Crypto::KeyImage>(env, jKeyImage);
+    const std::vector<Crypto::PublicKey> publicKeys = makeNativePublicKeys(env, jPublicKeys);
+    const std::vector<Crypto::Signature> signatures = makeNativeSignatures(env, jSignatures);
+
+    const auto success = Crypto::checkRingSignature(
+        prefixHash, keyImage, publicKeys, signatures
+    );
+
+    return static_cast<jboolean>(success);
+}
+
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_tonchan_TurtleCoinModule_generateKeyDerivationJNI(
     JNIEnv *env,
@@ -212,6 +233,22 @@ std::vector<Crypto::PublicKey> makeNativePublicKeys(JNIEnv *env, jobjectArray jP
     }
 
     return publicKeys;
+}
+
+std::vector<Crypto::Signature> makeNativeSignatures(JNIEnv *env, jobjectArray jSignatures)
+{
+    std::vector<Crypto::Signature> signatures;
+
+    int len = env->GetArrayLength(jSignatures);
+
+    for (int i = 0; i < len; i++)
+    {
+        jstring jSignature = (jstring)env->GetObjectArrayElement(jSignatures, i);
+        signatures.push_back(makeNative64ByteKey<Crypto::Signature>(env, jSignature));
+        env->DeleteLocalRef(jSignature);
+    }
+
+    return signatures;
 }
 
 WalletBlockInfo makeNativeWalletBlockInfo(JNIEnv *env, jobject jWalletBlockInfo)

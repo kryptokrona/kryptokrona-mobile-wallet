@@ -37,7 +37,7 @@ export async function generateKeyDerivation(
     transactionPublicKey,
     privateViewKey) {
     
-    return await NativeModules.TurtleCoin.generateKeyDerivation(
+    return NativeModules.TurtleCoin.generateKeyDerivation(
         transactionPublicKey, privateViewKey,
     );
 }
@@ -50,6 +50,16 @@ export async function generateRingSignatures(
     realIndex) {
     return NativeModules.TurtleCoin.generateRingSignatures(
         transactionPrefixHash, keyImage, inputKeys, privateKey, { realIndex }
+    );
+}
+
+export async function checkRingSignature(
+    transactionPrefixHash,
+    keyImage,
+    publicKeys,
+    signatures) {
+    return NativeModules.TurtleCoin.checkRingSignature(
+        transactionPrefixHash, keyImage, publicKeys, signatures
     );
 }
 

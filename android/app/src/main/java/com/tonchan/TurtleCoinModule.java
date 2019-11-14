@@ -162,6 +162,31 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void checkRingSignature(
+        final String transactionPrefixHash,
+        final String keyImage,
+        final ReadableArray inputKeys,
+        final ReadableArray signatures,
+        final Promise promise) {
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    boolean success = checkRingSignatureJNI(
+                        transactionPrefixHash,
+                        keyImage,
+                        arrayToInputKeys(inputKeys),
+                        arrayToInputKeys(signatures)
+                    );
+
+                    promise.resolve(success);
+                } catch (Exception e) {
+                    promise.reject("Error in generate ring signatures: ", e);
+                }
+            }
+        }).start();
+    }
+
+    @ReactMethod
     public void processBlockOutputs(
         final ReadableMap block,
         final String privateViewKey,
@@ -420,6 +445,13 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
         String[] inputKeys,
         String privateKey,
         long realIndex
+    );
+
+    public native boolean checkRingSignatureJNI(
+        String transactionPrefixHash,
+        String keyImage,
+        String[] publicKeys,
+        String[] signatures
     );
 
     public native InputMap[] processBlockOutputsJNI(
