@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.util.Log;
 
 import com.tonchan.BuildConfig;
 
@@ -264,6 +265,8 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
         promise.resolve(pm.isIgnoringBatteryOptimizations(getReactApplicationContext().getPackageName()));
     }
 
+    private static long BLOCK_COUNT = 100;
+
     private void getWalletSyncDataImpl(
         String[] blockHashCheckpoints,
         long startHeight,
@@ -272,6 +275,16 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
         boolean skipCoinbaseTransactions,
         String url,
         Promise promise) {
+
+        /* If the user has specified < 100 per request */
+        if (blockCount < BLOCK_COUNT)
+        {
+            BLOCK_COUNT = blockCount;
+        }
+        else if (BLOCK_COUNT < 1)
+        {
+            BLOCK_COUNT = 1;
+        }
 
         try
         {
@@ -309,7 +322,11 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
             json.put("blockCount", blockCount);
             json.put("skipCoinbaseTransactions", skipCoinbaseTransactions);
 
-            wr.writeBytes(json.toString());
+            String params = json.toString();
+
+            Log.d("ReactNative", "Making request to /getwalletsyncdata with params " + params);
+
+            wr.writeBytes(params);
             wr.flush();
             wr.close();
 
@@ -317,6 +334,7 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
 
             if (responseCode != 200)
             {
+                Log.i("ReactNative", "Failed to fetch, response code: " + responseCode);
                 throw new Exception("Failed to fetch, response code: " + responseCode);
             }
 
@@ -336,11 +354,18 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
             while ((len = in.read(inputBuffer)) != -1)
             {
                 /* Need block count to be > 1 otherwise we will never sync a single block > 1MB */
-                if (blockCount > 1 && (response.length() >= oneMegaByte || len >= oneMegaByte))
+                if (BLOCK_COUNT > 1 && (response.length() >= oneMegaByte || len >= oneMegaByte))
                 {
                     in.close();
 
-                    blockCount /= 2;
+                    BLOCK_COUNT /= 4;
+
+                    if (BLOCK_COUNT == 0)
+                    {
+                        BLOCK_COUNT = 1;
+                    }
+
+                    Log.i("ReactNative", "Response too large, trying again with block count of " + BLOCK_COUNT);
 
                     /* Response is too large, and will likely cause us to go OOM
                        and crash. Lets half the block count and try again. */
@@ -348,7 +373,7 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
                         blockHashCheckpoints,
                         startHeight,
                         startTimestamp,
-                        blockCount,
+                        BLOCK_COUNT,
                         skipCoinbaseTransactions,
                         url,
                         promise
@@ -360,14 +385,31 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
                 response.append(new String(inputBuffer, 0, len));
             }
 
+            if (BLOCK_COUNT * 2 > 100)
+            {
+                BLOCK_COUNT = 100;
+            }
+            else
+            {
+                BLOCK_COUNT *= 2;
+            }
+
+            Log.d("ReactNative", "Updating block count to " + BLOCK_COUNT);
+
             in.close();
 
-            promise.resolve(response.toString());
+            String responseData = response.toString();
+
+            Log.d("ReactNative", "Got response from /getwalletsyncdata with body " + responseData);
+
+            promise.resolve(responseData);
         }
         catch (Exception e)
         {
             WritableMap map = Arguments.createMap();
             map.putString("error", e.getMessage());
+
+            Log.i("ReactNative", "Failed to fetch, error: " + e.getMessage());
 
             promise.resolve(map);
         }
