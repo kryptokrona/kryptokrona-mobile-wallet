@@ -54,6 +54,7 @@ export class QrScannerScreen extends React.Component {
                 <QRCodeScanner
                     onRead={(code) => {
                         this.props.navigation.goBack();
+
                         this.props.navigation.state.params.setAddress(code.data);
                     }}
                     cameraProps={{captureAudio: false}}
@@ -645,7 +646,19 @@ export class NewPayeeScreen extends React.Component {
                         <Button
                             title='Scan QR Code'
                             onPress={() => {
-                                this.props.navigation.navigate('QrScanner', { setAddress: this.setAddressFromQrCode.bind(this) } );
+                                const func = (data) => {
+                                    if (data.startsWith(Config.uriPrefix)) {
+                                        handleURI(data, this.props.navigation);
+                                    } else {
+                                        this.setState({
+                                            address: data,
+                                        }, () => this.checkErrors());
+                                    }
+                                };
+
+                                this.props.navigation.navigate('QrScanner', {
+                                    setAddress: func
+                                });
                             }}
                             titleStyle={{
                                 color: this.props.screenProps.theme.primaryColour,
