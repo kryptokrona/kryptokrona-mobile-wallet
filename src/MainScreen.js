@@ -132,6 +132,7 @@ export class MainScreen extends React.Component {
         this.refresh = this.refresh.bind(this);
         this.handleURI = this.handleURI.bind(this);
         this.handleAppStateChange = this.handleAppStateChange.bind(this);
+        this.handleNetInfoChange = this.handleNetInfoChange.bind(this);
 
         const [unlockedBalance, lockedBalance] = Globals.wallet.getBalance();
 
@@ -197,13 +198,28 @@ export class MainScreen extends React.Component {
         }
     }
 
+    async handleNetInfoChange({ type, effectiveType }) {
+        if (Globals.preferences.limitData && type === 'cellular') {
+            Globals.logger.addLogMessage("Network connection changed to cellular, and we are limiting data. Stopping sync.");
+            Globals.wallet.stop();
+        } else {
+            /* Note: start() is a no-op when already started
+             * That said.. it is possible for us to not want to restart here,
+            * for example, if we are in the middle of a node swap. Need investigation */
+            Globals.logger.addLogMessage("Network connection changed. Restarting sync process if needed.");
+            Globals.wallet.start();
+        }
+    }
+
     componentDidMount() {
+        NetInfo.addEventListener('connectionChange', this.handleNetInfoChange);
         AppState.addEventListener('change', this.handleAppStateChange);
         Linking.addEventListener('url', this.handleURI);
         initBackgroundSync();
     }
 
     componentWillUnmount() {
+        NetInfo.removeEventListener('connectionChange', this.handleNetInfoChange);
         AppState.removeEventListener('change', this.handleAppStateChange);
         Linking.removeEventListener('url', this.handleURI);
     }

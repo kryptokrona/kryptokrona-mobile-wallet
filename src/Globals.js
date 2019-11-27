@@ -65,10 +65,6 @@ class globals {
         this.pinCode = undefined;
         this.backgroundSaveTimer = undefined;
         this.logger = new Logger();
-
-        if (this.unsubscribe) {
-            this.unsubscribe();
-        }
     }
 
     addTransactionDetails(txDetails) {
@@ -167,6 +163,4 @@ export async function initGlobals() {
     }
 
     await Globals.updateNodeList();
-    
-    this.unsubscribe = NetInfo.addEventListener(updateConnection);
 }

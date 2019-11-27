@@ -50,6 +50,13 @@ function onStateChange(state) {
     }
 }
 
+async function handleNetInfoChange({ type, effectiveType }) {
+    if (Globals.preferences.limitData && type === 'cellular') {
+        Globals.logger.addLogMessage("[Background Sync] Network connection changed to cellular, and we are limiting data. Stopping sync.");
+        State.shouldStop = true;
+    }
+}
+
 /**
  * Check background syncing is all good and setup a few vars
  */
@@ -82,6 +89,8 @@ async function setupBackgroundSync() {
         return false;
     }
 
+    NetInfo.addEventListener('connectionChange', handleNetInfoChange);
+
     AppState.addEventListener('change', onStateChange);
 
     State.shouldStop = false;
@@ -96,6 +105,7 @@ async function setupBackgroundSync() {
  */
 function finishBackgroundSync() {
     AppState.removeEventListener('change', onStateChange);
+    NetInfo.removeEventListener('connectionChange', handleNetInfoChange);
 
     BackgroundFetch.finish(BackgroundFetch.FETCH_RESULT_NEW_DATA);
 
