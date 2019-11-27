@@ -42,6 +42,7 @@ export function initBackgroundSync() {
 let State = {
     shouldStop: false,
     running: false,
+    unsubscribe: () => {},
 }
 
 function onStateChange(state) {
@@ -50,7 +51,7 @@ function onStateChange(state) {
     }
 }
 
-async function handleNetInfoChange({ type, effectiveType }) {
+async function handleNetInfoChange({ type }) {
     if (Globals.preferences.limitData && type === 'cellular') {
         Globals.logger.addLogMessage("[Background Sync] Network connection changed to cellular, and we are limiting data. Stopping sync.");
         State.shouldStop = true;
@@ -89,7 +90,7 @@ async function setupBackgroundSync() {
         return false;
     }
 
-    NetInfo.addEventListener('connectionChange', handleNetInfoChange);
+    State.unsubscribe = NetInfo.addEventListener(handleNetInfoChange);
 
     AppState.addEventListener('change', onStateChange);
 
@@ -105,7 +106,8 @@ async function setupBackgroundSync() {
  */
 function finishBackgroundSync() {
     AppState.removeEventListener('change', onStateChange);
-    NetInfo.removeEventListener('connectionChange', handleNetInfoChange);
+
+    State.unsubscribe();
 
     BackgroundFetch.finish(BackgroundFetch.FETCH_RESULT_NEW_DATA);
 
