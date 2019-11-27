@@ -586,15 +586,9 @@ export class SwapNodeScreen extends React.Component {
             forceUpdate: prevState.forceUpdate + 1,
         }));
 
-        await Globals.wallet.swapNode(Globals.getDaemon());
-
         savePreferencesToDatabase(Globals.preferences);
 
-        /* Reset this stack to be on the settings screen */
-        this.props.navigation.dispatch(navigateWithDisabledBack('Settings'));
-
-        /* And go back to the main screen. */
-        this.props.navigation.navigate('Main', { reloadBalance: true } );
+        await Globals.wallet.swapNode(Globals.getDaemon());
 
         toastPopUp('Node swap complete.');
     }
