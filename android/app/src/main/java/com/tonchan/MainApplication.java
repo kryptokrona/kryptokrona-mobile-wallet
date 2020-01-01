@@ -66,7 +66,8 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     upgradeSecurityProvider();
     
-    setUserAgent("forked-tonchan");
+    /* tonchan-vx.x.x */
+    setUserAgent("tonchan-v1.0.2");
 
     SoLoader.init(this, /* native exopackage */ false);
   }

@@ -299,7 +299,8 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
             connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             connection.setRequestProperty("Accept", "application/json");
 
-            connection.setRequestProperty("User-Agent", "forked-tonchan");
+            /* tonchan-vx.x.x */
+            connection.setRequestProperty("User-Agent", "tonchan-v1.0.2");
 
             /* Indicate we have a POST body */
             connection.setDoOutput(true);
