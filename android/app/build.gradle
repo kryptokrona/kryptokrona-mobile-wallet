@@ -211,7 +211,6 @@ android {
 
 dependencies {
     implementation project(':react-native-fingerprint-scanner')
-    implementation project(':react-native-sentry')
     implementation project(':react-native-background-fetch')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.facebook.react:react-native:+"  // From node_modules

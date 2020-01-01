@@ -1,8 +1,6 @@
 rootProject.name = 'TonChan'
 include ':react-native-fingerprint-scanner'
 project(':react-native-fingerprint-scanner').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-fingerprint-scanner/android')
-include ':react-native-sentry'
-project(':react-native-sentry').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-sentry/android')
 include ':react-native-background-fetch'
 project(':react-native-background-fetch').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-background-fetch/android')
 

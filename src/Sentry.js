@@ -2,7 +2,7 @@
 //
 // Please see the included LICENSE file for more information.
 
-import { Sentry } from 'react-native-sentry';
+import * as Sentry from '@sentry/react-native';
 
 import * as _ from 'lodash';
 
@@ -31,10 +31,10 @@ export function reportCaughtException(err) {
 export function initSentry() {
     if (sentryIsEnabled) {
         /* CHANGE THIS IF YOU ARE FORKING! */
-        Sentry.config('https://8ecf138e1d1e4d558178be3f2b5e1925@sentry.io/1411753').install();
-        Sentry.setVersion(Config.appVersion);
-        Sentry.setDataCallback((event) => {
-            console.log(event);
+        Sentry.init({ 
+          dsn: 'https://8ecf138e1d1e4d558178be3f2b5e1925@sentry.io/1411753', 
         });
+
+        Sentry.setRelease('com.tonchan-' + Config.appVersion);
     }
 }
