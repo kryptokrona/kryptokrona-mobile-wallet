@@ -89,14 +89,19 @@ class AmountInput extends React.Component {
                     color: this.props.screenProps.theme.slightlyMoreVisibleColour,
                 }}
                 rightIcon={
-                    <Text style={{ fontSize: 30, marginRight: 10, color: this.props.screenProps.theme.primaryColour }}>
+                    <Text style={{
+                        fontSize: this.props.fontSize || 30,
+                        marginRight: 10,
+                        color: this.props.screenProps.theme.primaryColour
+                    }}
+                >
                         {Config.ticker}
                     </Text>
                 }
                 keyboardType={'number-pad'}
                 inputStyle={{
                     color: this.props.screenProps.theme.primaryColour,
-                    fontSize: 30,
+                    fontSize: this.props.fontSize || 30,
                     marginLeft: 5
                 }}
                 errorMessage={this.props.errorMessage}
@@ -157,9 +162,8 @@ export class TransferScreen extends React.Component {
             errMsg: '',
             continueEnabled: false,
             unlockedBalanceHuman: fromAtomic(unlockedBalance),
-            youSendAmount: '',
-            recipientGetsAmount: '',
-            feeInfo: {},
+            sendAll: false,
+            amountFontSize: 30,
         }
     }
     
@@ -174,54 +178,26 @@ export class TransferScreen extends React.Component {
     }
 
     checkErrors(amount) {
-        const [valid, error] = validAmount(amount, this.state.unlockedBalance);
+        if (this.state.sendAll) {
+            if (this.state.unlockedBalance > 1) {
+                this.setState({
+                    continueEnabled: true,
+                    amountAtomic: this.state.unlockedBalance,
+                });
+            } else {
+                this.setState({
+                    continueEnabled: false,
+                    errMsg: 'Not enough funds available!',
+                });
+            }
+        } else {
+            const [valid, error] = validAmount(amount, this.state.unlockedBalance);
 
-        this.setState({
-            continueEnabled: valid,
-            errMsg: error,
-        });
-    }
-
-    convertSentToReceived(amount) {
-        if (amount !== undefined && amount !== null) {
-            amount = amount.replace(/,/g, '');
+            this.setState({
+                continueEnabled: valid,
+                errMsg: error,
+            });
         }
-
-        let numAmount = Number(amount);
-
-        let result = '';
-        let feeInfo = {};
-
-        if (!isNaN(numAmount) && numAmount > 0) {
-            feeInfo = removeFee(numAmount);
-            result = feeInfo.remaining;
-        }
-
-        this.setState({
-            recipientGetsAmount: result,
-            feeInfo,
-        }, () => { this.checkErrors(this.state.recipientGetsAmount) });
-    }
-
-    convertReceivedToSent(amount) {
-        if (amount !== undefined && amount !== null) {
-            amount = amount.replace(/,/g, '');
-        }
-
-        let numAmount = Number(amount);
-
-        let result = '';
-        let feeInfo = {};
-
-        if (!isNaN(numAmount) && numAmount > 0) {
-            feeInfo = addFee(numAmount);
-            result = feeInfo.original;
-        }
-
-        this.setState({
-            youSendAmount: result,
-            feeInfo
-        }, () => { this.checkErrors(this.state.youSendAmount) });
     }
 
     componentDidMount() {
@@ -256,33 +232,20 @@ export class TransferScreen extends React.Component {
                     </Text>
 
                     <AmountInput
-                        label={'You send'}
-                        value={this.state.youSendAmount}
+                        label={'Recipient gets'}
+                        value={this.state.amount}
+                        fontSize={this.state.amountFontSize}
                         onChangeText={(text) => {
                             this.setState({
-                                youSendAmount: text,
+                                amount: text,
+                                amountAtomic: toAtomic(text),
+                                sendAll: false,
+                                amountFontSize: 30,
+                            }, () => {
+                                this.checkErrors(this.state.amount);
                             });
-
-                            this.convertSentToReceived(text);
-
-                            this.checkErrors(text);
                         }}
                         errorMessage={this.state.errMsg}
-                        marginBottom={40}
-                        {...this.props}
-                    />
-
-                    <AmountInput
-                        label={'Recipient gets'}
-                        value={this.state.recipientGetsAmount}
-                        onChangeText={(text) => {
-                            this.setState({
-                                recipientGetsAmount: text,
-                            });
-
-                            this.convertReceivedToSent(text);
-                            this.checkErrors(text);
-                        }}
                         {...this.props}
                     />
 
@@ -291,12 +254,12 @@ export class TransferScreen extends React.Component {
                             title="Send Max"
                             onPress={() => {
                                 this.setState({
-                                    youSendAmount: this.state.unlockedBalanceHuman,
+                                    sendAll: true,
+                                    amount: 'Entire Balance Minus Fees',
+                                    amountFontSize: 20,
+                                }, () => {
+                                    this.checkErrors(this.state.unlockedBalanceHuman);
                                 });
-
-                                this.convertSentToReceived(this.state.unlockedBalanceHuman);
-
-                                this.checkErrors(this.state.unlockedBalanceHuman);
                             }}
                             titleStyle={{
                                 color: this.props.screenProps.theme.primaryColour,
@@ -321,7 +284,8 @@ export class TransferScreen extends React.Component {
                             this.props.navigation.navigate(
                                 'Confirm', {
                                     payee: this.props.navigation.state.params.payee,
-                                    amount: this.state.feeInfo,
+                                    sendAll: this.state.sendAll,
+                                    amount: this.state.amountAtomic,
                                 }
                             );
                         }} 
@@ -725,7 +689,7 @@ export class NewPayeeScreen extends React.Component {
                                     this.props.navigation.navigate(
                                         'Confirm', {
                                             payee,
-                                            amount: addFee(Number(amount)),
+                                            amount,
                                         }
                                     );
 
@@ -792,13 +756,167 @@ export class ConfirmScreen extends React.Component {
     constructor(props) {
         super(props);
 
+        const [unlockedBalance, lockedBalance] = Globals.wallet.getBalance();
+
+        const { payee, amount, sendAll } = this.props.navigation.state.params;
+
+        const fullAmount = sendAll ? unlockedBalance : amount;
+
+        const devFee = Math.floor((fullAmount * Config.devFeePercentage) / 100);
+
+        const [feeAddress, nodeFee] = Globals.wallet.getNodeFee();
+
         this.state = {
             memo: '',
             modifyMemo: false,
+            preparedTransaction: false,
+            haveError: false,
+            payee,
+            amount,
+            sendAll,
+            unlockedBalance,
+            devFee,
+            nodeFee,
+        }
+
+        this.prepareTransaction();
+    }
+
+    async prepareTransaction() {
+        const payments = [];
+
+        /* User payment */
+        if (this.state.sendAll) {
+            payments.push([
+                this.state.payee.address,
+                1, /* Amount does not matter for sendAll destination */
+            ]);
+        } else {
+            payments.push([
+                this.state.payee.address,
+                this.state.amount,
+            ]);
+        }
+
+        if (this.state.devFee > 0) {
+            /* Dev payment */
+            payments.push([
+                Config.devFeeAddress,
+                this.state.devFee,
+            ]);
+        }
+
+        const result = await Globals.wallet.sendTransactionAdvanced(
+            payments, // destinations,
+            undefined, // mixin
+            undefined, // fee
+            this.state.payee.paymentID,
+            undefined, // subWalletsToTakeFrom
+            undefined, // changeAddress
+            false, // relayToNetwork
+            this.state.sendAll,
+        );
+
+        if (result.success) {
+            let actualAmount = this.state.amount;
+
+            if (this.state.sendAll) {
+                let transactionSum = 0;
+
+                /* We could just get the sum by calling getBalance.. but it's
+                 * possibly just changed. Safest to iterate over prepared
+                 * transaction and calculate it. */
+                for (const input of result.preparedTransaction.inputs) {
+                    transactionSum += input.input.amount;
+                }
+
+                actualAmount = transactionSum
+                             - result.fee
+                             - this.state.devFee
+                             - this.state.nodeFee;
+            }
+
+            this.setState({
+                preparedTransaction: true,
+                haveError: false,
+                fee: result.fee,
+                hash: result.transactionHash,
+                recipientAmount: actualAmount,
+                feeTotal: result.fee + this.state.devFee + this.state.nodeFee,
+            });
+        } else {
+            this.setState({
+                preparedTransaction: true,
+                haveError: true,
+                error: result.error,
+            });
         }
     }
 
-    render() {
+    preparingScreen() {
+        return(
+            <View style={{
+                flex: 1,
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                marginTop: 60,
+                marginHorizontal: 30,
+            }}>
+                <Animatable.Text
+                    style={{
+                        color: this.props.screenProps.theme.primaryColour,
+                        fontSize: 25,
+                    }}
+                    animation='pulse'
+                    iterationCount='infinite'
+                >
+                    Estimating transaction fee, please wait...
+                </Animatable.Text>
+            </View>
+        );
+    }
+
+    errorScreen() {
+        let errorMessage = this.state.error.toString();
+
+        if (this.state.error.errorCode === WalletErrorCode.NOT_ENOUGH_BALANCE) {
+            if (this.state.sendAll) {
+                errorMessage = 'Unfortunately, your balance is too low to cover the network fee required to send your funds.';
+            } else {
+                errorMessage = 'Not enough balance to cover amount including fees!\n' +
+                    'Either reduce the amount you are sending, or use the "send all" option to send the max possible.\n\n';
+            }
+        }
+
+        return(
+            <View style={{
+                flex: 1,
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                marginTop: 60,
+                marginHorizontal: 30,
+            }}>
+                <Animatable.Text
+                    style={{
+                        color: 'red',
+                        fontSize: 25,
+                        marginBottom: 25,
+                        fontWeight: 'bold',
+                    }}
+                    animation='shake'
+                    delay={1000}
+                >
+                    Estimating fee and preparing transaction failed!
+                </Animatable.Text>
+
+                <Text style={{ fontSize: 13 }}>
+                    {errorMessage}
+                </Text>
+            </View>
+        );
+    }
+
+    confirmScreen() {
         return(
             <View style={{ flex: 1, backgroundColor: this.props.screenProps.theme.backgroundColour }}>
                 <View style={{
@@ -822,11 +940,11 @@ export class ConfirmScreen extends React.Component {
                     }}>
                         <Text style={{ fontSize: 13, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                             <Text style={{ color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
-                                {prettyPrintAmount(this.props.navigation.state.params.amount.remainingAtomic, Config)}{' '}
+                                {prettyPrintAmount(this.state.recipientAmount, Config)}{' '}
                             </Text>
                             will reach{' '}
                             <Text style={{ color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
-                                {this.props.navigation.state.params.payee.nickname}'s{' '}
+                                {this.state.payee.nickname}'s{' '}
                             </Text>
                             account, in {getArrivalTime()}
                         </Text>
@@ -904,7 +1022,7 @@ export class ConfirmScreen extends React.Component {
                             justifyContent: 'space-between'
                         }}>
                             <Text style={{ fontSize: 15, color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
-                                {this.props.navigation.state.params.payee.nickname}'s details
+                                {this.state.payee.nickname}'s details
                             </Text>
 
                             <Button
@@ -927,17 +1045,17 @@ export class ConfirmScreen extends React.Component {
                         </Text>
 
                         <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                            {this.props.navigation.state.params.payee.address}
+                            {this.state.payee.address}
                         </Text>
 
-                        {this.props.navigation.state.params.payee.paymentID !== '' &&
+                        {this.state.payee.paymentID !== '' &&
                         <View>
                             <Text style={{ marginBottom: 5, marginTop: 20 }}>
                                 Payment ID
                             </Text>
 
                             <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                                {this.props.navigation.state.params.payee.paymentID}
+                                {this.state.payee.paymentID}
                             </Text>
                         </View>}
 
@@ -957,7 +1075,7 @@ export class ConfirmScreen extends React.Component {
                                 onPress={() => {
                                     this.props.navigation.navigate(
                                         'Transfer', {
-                                            payee: this.props.navigation.state.params.payee,
+                                            payee: this.state.payee,
                                         }
                                     );
                                 }}
@@ -976,15 +1094,15 @@ export class ConfirmScreen extends React.Component {
                         </Text>
 
                         <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                            {prettyPrintAmount(this.props.navigation.state.params.amount.originalAtomic, Config)}
+                            {prettyPrintAmount(this.state.sendAll ? this.state.unlockedBalance : this.state.recipientAmount + this.state.feeTotal, Config)}
                         </Text>
 
                         <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
-                            {this.props.navigation.state.params.payee.nickname} gets
+                            {this.state.payee.nickname} gets
                         </Text>
 
                         <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                            {prettyPrintAmount(this.props.navigation.state.params.amount.remainingAtomic, Config)}
+                            {prettyPrintAmount(this.state.recipientAmount, Config)}
                         </Text>
 
                         <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
@@ -992,42 +1110,40 @@ export class ConfirmScreen extends React.Component {
                         </Text>
 
                         <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                            {prettyPrintAmount(this.props.navigation.state.params.amount.networkFeeAtomic, Config)}
+                            {prettyPrintAmount(this.state.fee, Config)}
                         </Text>
 
-                        {this.props.navigation.state.params.amount.devFeeAtomic > 0 &&
+                        {this.state.devFee > 0 &&
                         <View>
                             <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                                 Developer fee
                             </Text>
 
                             <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                                {prettyPrintAmount(this.props.navigation.state.params.amount.devFeeAtomic, Config)}
+                                {prettyPrintAmount(this.state.devFee, Config)}
                             </Text>
                         </View>}
 
-                        {this.props.navigation.state.params.amount.nodeFeeAtomic > 0 &&
+                        {this.state.nodeFee > 0 &&
                         <View>
                             <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                                 Node fee
                             </Text>
 
                             <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                                {prettyPrintAmount(this.props.navigation.state.params.amount.nodeFeeAtomic, Config)}
+                                {prettyPrintAmount(this.state.nodeFee, Config)}
                             </Text>
                         </View>}
 
-                        {this.props.navigation.state.params.amount.totalFeeAtomic > this.props.navigation.state.params.amount.networkFeeAtomic &&
                         <View>
                             <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                                 Total fee
                             </Text>
 
                             <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                                {prettyPrintAmount(this.props.navigation.state.params.amount.totalFeeAtomic, Config)}
+                                {prettyPrintAmount(this.state.feeTotal, Config)}
                             </Text>
-                        </View>}
-
+                        </View>
                     </View>
                 </ScrollView>
 
@@ -1035,11 +1151,12 @@ export class ConfirmScreen extends React.Component {
                     title="Send Transaction"
                     onPress={() => {
                         const params = {
-                            amount: this.props.navigation.state.params.amount,
-                            address: this.props.navigation.state.params.payee.address,
-                            paymentID: this.props.navigation.state.params.payee.paymentID,
-                            nickname: this.props.navigation.state.params.payee.nickname,
+                            amount: this.state.recipientAmount,
+                            address: this.state.payee.address,
+                            paymentID: this.state.payee.paymentID,
+                            nickname: this.state.payee.nickname,
                             memo: this.state.memo,
+                            hash: this.state.hash,
                         };
 
                         if (Globals.preferences.authConfirmation) {
@@ -1062,6 +1179,18 @@ export class ConfirmScreen extends React.Component {
                     }}
                     {...this.props}
                 />
+            </View>
+        );
+    }
+
+    render() {
+        return(
+            <View style={{ flex: 1, backgroundColor: this.props.screenProps.theme.backgroundColour }}>
+                { this.state.preparedTransaction
+                    ? this.state.haveError
+                        ? this.errorScreen()
+                        : this.confirmScreen()
+                    : this.preparingScreen() }
             </View>
         );
     }
@@ -1190,13 +1319,13 @@ export class SendTransactionScreen extends React.Component {
         this.state = {
             txInfo: 'Sending transaction, please wait...',
             errMsg: '',
-            hash: '',
+            hash: this.props.navigation.state.params.hash,
             amount: this.props.navigation.state.params.amount,
             address: this.props.navigation.state.params.address,
-            paymentID: this.props.navigation.state.params.paymentID,
             nickname: this.props.navigation.state.params.nickname,
             memo: this.props.navigation.state.params.memo,
             homeEnabled: false,
+            sent: false,
         }
 
         /* Send the tx in the background (it's async) */
@@ -1207,35 +1336,26 @@ export class SendTransactionScreen extends React.Component {
         /* Wait for UI to load before blocking thread */
         await delay(500);
 
-        const payments = [];
-
-        /* User payment */
-        payments.push([this.state.address, this.state.amount.remainingAtomic]);
-
-        /* Dev payment */
-        if (this.state.amount.devFeeAtomic > 0) {
-            payments.push([Config.devFeeAddress, this.state.amount.devFeeAtomic]);
-        }
-
-        /* Leaving everything else as default, minus payments and paymentID */
-        const [hash, error] = await Globals.wallet.sendTransactionAdvanced(
-            payments, undefined, undefined, this.state.paymentID, undefined,
-            undefined,
+        const result = await Globals.wallet.sendPreparedTransaction(
+            this.state.hash,
         );
 
-        if (error) {
+        if (!result.success) {
+            /* TODO: Optionally allow retries in case of network error? */
+            Globals.wallet.deletePreparedTransaction(this.state.hash);
+
             this.setState({
-                errMsg: error.toString(),
+                errMsg: result.error.toString(),
                 homeEnabled: true,
             });
         } else {
             this.setState({
-                hash,
                 homeEnabled: true,
+                sent: true,
             });
 
             Globals.addTransactionDetails({
-                hash: hash,
+                hash: this.state.hash,
                 memo: this.state.memo,
                 address: this.state.address,
                 payee: this.state.nickname,
@@ -1294,7 +1414,7 @@ export class SendTransactionScreen extends React.Component {
 
                 <Text style={{ fontSize: 13, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                     <Text style={{ color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
-                        {prettyPrintAmount(this.state.amount.remainingAtomic, Config)}{' '}
+                        {prettyPrintAmount(this.state.amount, Config)}{' '}
                     </Text>
                     was sent to{' '}
                     <Text style={{ color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
@@ -1346,7 +1466,7 @@ export class SendTransactionScreen extends React.Component {
                     marginTop: 60,
                     marginHorizontal: 30,
                 }}>
-                    {this.state.hash !== '' ? success : this.state.errMsg === '' ? sending : fail}
+                    {this.state.sent ? success : this.state.errMsg === '' ? sending : fail}
                 </View>
 
                 <BottomButton

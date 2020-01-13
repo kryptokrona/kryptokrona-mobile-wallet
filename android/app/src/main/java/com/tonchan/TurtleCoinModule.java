@@ -354,8 +354,8 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
 
             while ((len = in.read(inputBuffer)) != -1)
             {
-                /* Need block count to be > 1 otherwise we will never sync a single block > 1MB */
-                if (BLOCK_COUNT > 1 && (response.length() >= oneMegaByte || len >= oneMegaByte))
+                /* Need block count to be > 1 otherwise we will never sync a single block > 2MB */
+                if (BLOCK_COUNT > 1 && (response.length() >= (2 * oneMegaByte) || len >= 2 * oneMegaByte))
                 {
                     in.close();
 

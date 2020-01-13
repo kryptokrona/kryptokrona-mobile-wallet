@@ -7826,10 +7826,10 @@ turtlecoin-utils@1.0.19:
   optionalDependencies:
     turtlecoin-crypto "^3.1.3"
 
-turtlecoin-wallet-backend@5.0.1:
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/turtlecoin-wallet-backend/-/turtlecoin-wallet-backend-5.0.1.tgz#3c4d5e490ab33ecb60646657d700630fe7189537"
-  integrity sha512-rBxAMFA6vimyEsICHMzErSzqoeJgSFpOFAJiTGx2Rry28z3BT16swGGXmaHwFFzGzaQbglaFUhxxy3WkFWD7xg==
+turtlecoin-wallet-backend@5.0.3:
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/turtlecoin-wallet-backend/-/turtlecoin-wallet-backend-5.0.3.tgz#55d41c67ab9a176340201850aa4547141a40bcf4"
+  integrity sha512-cBlmN503rqKn1RNffLIr28lcdvgDYZ+tT+GNTPvyirHoMwbeHboWAAU+Ad/XNESmteF180Sv8mhhZ6v/xrj8hg==
   dependencies:
     lodash "^4.17.15"
     object-sizeof "^1.5.2"

@@ -175,39 +175,13 @@ export function parseURI(qrData) {
         }
 
         const amountAtomic = Number(amount);
-        let feeInfo = undefined;
-        let amountNonAtomic = undefined;
 
-        if (!isNaN(amountAtomic)) {
-            amountNonAtomic = amountAtomic / (10 ** Config.decimalPlaces);
-
-            /* Got an amount, can go straight to confirmation, if we have enough balance */
-            const [unlockedBalance, lockedBalance] = Globals.wallet.getBalance();
-
-            feeInfo = addFee(amountNonAtomic);
-
-            let [valid, error] = validAmount(feeInfo.original, unlockedBalance);
-
-            if (feeInfo.originalAtomic > unlockedBalance) {
-                error = 'Not enough funds available! Needed (including fees): ' +
-                        `${prettyPrintAmount(feeInfo.originalAtomic)}, Available: ` +
-                        prettyPrintAmount(unlockedBalance);
-            }
-
-            if (!valid) {
-                return {
-                    valid: false,
-                    error,
-                };
-            }
-        }
-        
         /* No name, need to pick one.. */
         if (!name) {
             return {
                 paymentID: paymentID || '',
                 address,
-                amount: amountNonAtomic ? amountNonAtomic.toString() : undefined,
+                amount: !isNaN(amountAtomic) ? amountAtomic : undefined,
                 suggestedAction: 'NewPayee',
                 valid: true,
             }
@@ -229,7 +203,7 @@ export function parseURI(qrData) {
                 return {
                     paymentID: paymentID || '',
                     address,
-                    amount: amountNonAtomic.toString(),
+                    amount: amountAtomic,
                     suggestedAction: 'NewPayee',
                     valid: true,
                 };
@@ -248,7 +222,7 @@ export function parseURI(qrData) {
         } else {
             return {
                 payee: newPayee,
-                amount: feeInfo,
+                amount: amountAtomic,
                 suggestedAction: 'Confirm',
                 valid: true,
             };
