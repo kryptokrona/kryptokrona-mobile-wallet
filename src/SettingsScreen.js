@@ -773,19 +773,19 @@ export class OptimizeScreen extends React.Component {
                         Optimizing wallet, please wait...
                     </Animatable.Text>}
 
-                    {this.state.sent > 0 && !this.state.completed && <Text style={{ fontSize: 20 }}>
+                    {this.state.sent > 0 && !this.state.completed && <Text style={{ fontSize: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                         {`Sent ${this.state.sent} fusion transaction${this.state.sent >= 2 ? 's' : ''}.`}
                     </Text>}
 
-                    {this.state.sent > 0 && this.state.completed && <Text style={{ fontSize: 20, marginTop: 10 }}>
+                    {this.state.sent > 0 && this.state.completed && <Text style={{ fontSize: 20, marginTop: 10, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                         {`${this.state.sent} fusion transaction${this.state.sent >= 2 ? 's were' : ' was'} sent. It may take some time for ${this.state.sent >= 2 ? 'them' : 'it'} to be included in a block. Once this is complete, your balance will unlock for spending.`}
                     </Text>}
 
-                    {this.state.completed && this.state.fullyOptimized && <Text style={{ fontSize: 20, marginTop: 10 }}>
+                    {this.state.completed && this.state.fullyOptimized && <Text style={{ fontSize: 20, marginTop: 10, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                         {this.state.sent > 0 ? 'Your wallet is now fully optimized!' : 'Wow, your wallet is already fully optimized! Nice!'}
                     </Text>}
 
-                    {this.state.completed && !this.state.fullyOptimized && <Text style={{ fontSize: 20, marginTop: 10 }}>
+                    {this.state.completed && !this.state.fullyOptimized && <Text style={{ fontSize: 20, marginTop: 10, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                         {`We were not able to completely optimize your wallet. Error sending fusion transaction: ${this.state.error}`}
                     </Text>}
                 </View>
