@@ -164,7 +164,7 @@ export function parseURI(qrData) {
             }
         }
 
-        const addressError = validateAddresses([address], true);
+        const addressError = validateAddresses([address], true, Config);
 
         /* Address isn't valid */
         if (addressError.errorCode !== WalletErrorCode.SUCCESS) {
@@ -229,7 +229,7 @@ export function parseURI(qrData) {
         }
     /* It's a standard address, try and parse it (or something else) */
     } else {
-        const addressError = validateAddresses([qrData], true);
+        const addressError = validateAddresses([qrData], true, Config);
 
         if (addressError.errorCode !== WalletErrorCode.SUCCESS) {
             return {
