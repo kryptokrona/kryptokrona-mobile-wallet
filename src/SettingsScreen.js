@@ -625,7 +625,7 @@ export class SwapNodeScreen extends React.Component {
                                 renderItem={({ item }) => (
                                     <ListItem
                                         title={item.name}
-                                        subtitle={`Node TX fee: ${prettyPrintAmount(item.fee.amount)}, Uptime: ${item.availability}%`}
+                                        subtitle={`Node TX fee: ${prettyPrintAmount(item.fee.amount, Config)}, Uptime: ${item.availability}%`}
                                         leftIcon={
                                             <View style={{
                                                 width: 50,
