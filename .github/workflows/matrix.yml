@@ -37,7 +37,7 @@ jobs:
         run: |
           yarn --network-concurrency 1 --network-timeout 120000
 
-      - name: Build Android Release APK
+      - name: Build Android Debug APK
         if: matrix.build_name == 'apk'
         run: |
           perl -pi -e 's/YOUR_SENTRY_TOKEN/$ENV{TOKEN}/' android/sentry.properties
@@ -46,7 +46,7 @@ jobs:
         env:
           TOKEN: ${{ secrets.SENTRY_TOKEN }}
 
-      - name: Build Android Release AAB
+      - name: Build Android Debug AAB
         if: matrix.build_name == 'bundle'
         run: |
           perl -pi -e 's/YOUR_SENTRY_TOKEN/$ENV{TOKEN}/' android/sentry.properties
