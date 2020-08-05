@@ -7,12 +7,12 @@ export const Themes = {
         /**
          * Background colour for every component
          */
-        backgroundColour: 'white',
+        backgroundColour: '#F4F3F6',
 
         /**
          * The primary colour used by the wallet, for TurtleCoin this is green
          */
-        primaryColour: '#000000',
+        primaryColour: 'rgb(83,86,92)',
 
         buttonColour: '#888888',
 
@@ -21,18 +21,18 @@ export const Themes = {
         /**
          * Colour for the background circles on the pin page
          */
-        pinCodeBackgroundColour: '#000000',
+        pinCodeBackgroundColour: '#ffffff',
 
         /**
          * Colour for the pin code numbers
          * Note that when you click them, a different theme is applied.
          */
-        pinCodeForegroundColour: '#000000',
+        pinCodeForegroundColour: 'rgb(83,86,92)',
 
         /**
          * We chose to use a darker green here. It is very rarely used.
          */
-        secondaryColour: '#000000',
+        secondaryColour: '#FBBF2E',
 
         /**
          * Terrible name, lol. This is used things which shouldn't pop out
@@ -59,34 +59,38 @@ export const Themes = {
         /**
          * Filepath of the logo to use.
          */
-        logo: require('../assets/img/logo.png'),
+        logo: require('../assets/img/logo-dark.png'),
 
         spinnerLogo: require('../assets/img/logo-dark.png'),
+
+        animatedLogo: require('../assets/img/xkr-logo-light.gif'),
+
+        balanceBackground: require('../assets/img/balance-bg.gif'),
 
         qrCode: {
             /**
              * Your foreground colour needs to be a darkish colour, or the
              * code will not scan.
              */
-            foregroundColour: 'gray',
+            foregroundColour: 'rgb(83,86,92)',
 
             /**
              * Your background colour needs to be a lightish colour, or the
              * code will not scan.
              */
-            backgroundColour: 'white',
+            backgroundColour: '#F4F3F6',
         },
     },
     darkMode: {
         /**
          * Background colour for every component
          */
-        backgroundColour: '#272527',
+        backgroundColour: '#212121',
 
         /**
          * The primary colour used by the wallet, for TurtleCoin this is green
          */
-        primaryColour: 'white',
+        primaryColour: 'rgba(255,255,255,0.8)',
 
         buttonColour: '#353535',
 
@@ -95,18 +99,18 @@ export const Themes = {
         /**
          * Colour for the background circles on the pin page
          */
-        pinCodeBackgroundColour: 'gray',
+        pinCodeBackgroundColour: '#171416',
 
         /**
          * Colour for the pin code numbers
          * Note that when you click them, a different theme is applied.
          */
-        pinCodeForegroundColour: 'white',
+        pinCodeForegroundColour: 'rgba(255,255,255,0.5)',
 
         /**
          * We chose to use a darker green here. It is very rarely used.
          */
-        secondaryColour: '#00853D',
+        secondaryColour: '#FBBF2E',
 
         /**
          * Terrible name, lol. This is used things which shouldn't pop out
@@ -137,18 +141,22 @@ export const Themes = {
 
         spinnerLogo: require('../assets/img/logo-white-shadow.png'),
 
+        animatedLogo: require('../assets/img/xkr-logo-dark.gif'),
+
+        balanceBackground: require('../assets/img/balance-bg.gif'),
+
         qrCode: {
             /**
              * Your foreground colour needs to be a darkish colour, or the
              * code will not scan.
              */
-            foregroundColour: '#2C2F33',
+            foregroundColour: '#ffffff',
 
             /**
              * Your background colour needs to be a lightish colour, or the
              * code will not scan.
              */
-            backgroundColour: 'lightgray',
+            backgroundColour: '#212121',
         },
     },
 }

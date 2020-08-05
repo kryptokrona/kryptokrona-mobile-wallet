@@ -108,7 +108,7 @@ export class SplashScreen extends React.Component {
                 flex: 1,
                 alignItems: 'stretch',
                 justifyContent: 'center',
-                backgroundColor: this.props.screenProps.theme.backgroundColour
+                backgroundColor: '#212121'
             }}>
                 <FadeView
                     startValue={1}

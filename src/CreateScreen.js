@@ -36,7 +36,7 @@ export class WalletOptionScreen extends React.Component {
             <View style={{ flex: 1, justifyContent: 'flex-start', backgroundColor: this.props.screenProps.theme.backgroundColour }}>
                 <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 50}}>
                     <Image
-                        source={this.props.screenProps.theme.logo}
+                        source={this.props.screenProps.theme.animatedLogo}
                         style={Styles.logo}
                     />
                     <Text style={{

@@ -62,7 +62,7 @@ const Config = new function() {
     /**
      * How often to check on locked transactions
      */
-    this.lockedTransactionsCheckInterval = 10 * 3000;
+    this.lockedTransactionsCheckInterval = 10 * 1000;
 
     /**
      * The amount of blocks to process per 'tick' of the mainloop. Note: too
@@ -195,22 +195,22 @@ const Config = new function() {
      * this if you are forking, so we don't get reported bugs for your wallet...
      *
      */
-    this.repoLink = 'https://github.com/turtlecoin/turtlecoin-mobile-wallet/issues';
+    this.repoLink = 'https://github.com/kryptokron a/kryptokrona-mobile-wallet/issues';
 
     /**
      * This only controls the name in the settings screen.
      */
-    this.appName = 'Swoosh';
+    this.appName = 'Kryptokrona Mobile Wallet';
 
     /**
      * Slogan phrase during wallet CreateScreen
      */
-    this.sloganCreateScreen = 'A nordic cryptocurrency loltt';
+    this.sloganCreateScreen = 'A nordic cryptocurrency';
 
     /**
      * Displayed in the settings screen
      */
-    this.appVersion = 'v1.0.0';
+    this.appVersion = 'v1.0.1';
 
     /**
      * Base URL for us to chuck a hash on the end, and find a transaction
@@ -226,7 +226,7 @@ const Config = new function() {
     /**
      * A link to your app on the google play store
      */
-    this.googlePlayLink = 'https://play.google.com/store/apps/details?id=com.tonchan';
+    this.googlePlayLink = 'https://play.google.com/store/apps/details?id=com.xkr';
 
     /**
      * A url to fetch node info from. Should follow the turtlepay format

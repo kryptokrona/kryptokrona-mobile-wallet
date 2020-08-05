@@ -1,6 +1,6 @@
 {
-  "name": "Swoosh",
-  "version": "0.0.1",
+  "name": "Kryptokrona Mobile Wallet",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "start": "react-native start",

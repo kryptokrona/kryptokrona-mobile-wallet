@@ -8,7 +8,7 @@ export const Styles = StyleSheet.create({
     logo: {
         resizeMode: 'contain',
         width: 300,
-        height: 150
+        height: 300
     },
     buttonContainer: {
         borderRadius: 10,

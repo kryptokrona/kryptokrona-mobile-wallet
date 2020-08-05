@@ -46,8 +46,8 @@ import {
     QrScannerScreen, SendTransactionScreen,
 } from './TransferScreen';
 
-import { 
-    ImportWalletScreen, ImportKeysOrSeedScreen, ImportSeedScreen, 
+import {
+    ImportWalletScreen, ImportKeysOrSeedScreen, ImportSeedScreen,
     ImportKeysScreen,
 } from './ImportScreen';
 
@@ -192,12 +192,13 @@ const HomeNavigator = createBottomTabNavigator(
         Transactions: TransactionNavigator,
         Transfer: TransferNavigator,
         Recipients: RecipientNavigator,
-        Settings: SettingsNavigator, 
+        Settings: SettingsNavigator,
     },
     {
         initialRouteName: 'Main',
         tabBarOptions: {
-            activeTintColor: Themes.darkMode.primaryColour,
+            activeTintColor: "Themes.darkMode.primaryColour",
+
         },
         defaultNavigationOptions: ({ navigation }) => ({
             tabBarIcon: ({focused, horizontal, tintColor}) => {
@@ -347,6 +348,7 @@ export default class App extends React.Component {
             });
         };
     }
+
 
     render() {
         const loadedComponent = <AppContainer screenProps={this.state.screenProps}/>;

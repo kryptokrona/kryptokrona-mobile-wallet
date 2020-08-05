@@ -67,7 +67,7 @@ public class MainApplication extends Application implements ReactApplication {
     upgradeSecurityProvider();
 
     /* tonchan-vx.x.x */
-    setUserAgent("swoosh-v1.0.0");
+    setUserAgent("xkr-mobile-v1.0.1");
 
     SoLoader.init(this, /* native exopackage */ false);
   }

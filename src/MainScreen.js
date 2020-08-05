@@ -15,7 +15,7 @@ import PushNotification from 'react-native-push-notification';
 import { NavigationActions, NavigationEvents } from 'react-navigation';
 
 import {
-    Text, View, Image, TouchableOpacity, PushNotificationIOS,
+    Text, View, Image, ImageBackground, TouchableOpacity, PushNotificationIOS,
     AppState, Platform, Linking, ScrollView, RefreshControl, Dimensions,
 } from 'react-native';
 
@@ -282,19 +282,33 @@ export class MainScreen extends React.Component {
                     height: Dimensions.get('window').height - 73,
                 }}>
                     <View style={{
-                        height: '20%',
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        margin: 10,
-                        borderRadius: 10,
-                        opacity: this.state.addressOnly ? 0 : 100,
+                      height: '14%',
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      marginBottom: 30,
+                      padding: 0,
+                      opacity: this.state.addressOnly ? 0 : 100,
+                      shadowColor: "#000",
+                      shadowOffset: {
+                      	width: 0,
+                      	height: 7,
+                      },
+                      shadowOpacity: 0.43,
+                      shadowRadius: 9.51,
+
+                      elevation: 15,
                     }}>
+                    <ImageBackground source={this.props.screenProps.theme.balanceBackground} style={{flex: 1, borderRadius: 25}} >
+
                         <BalanceComponent
                             unlockedBalance={this.state.unlockedBalance}
                             lockedBalance={this.state.lockedBalance}
                             coinValue={this.state.coinValue}
                             {...this.props}
                         />
+
+                        </ImageBackground>
+
                     </View>
 
                     <TouchableOpacity onPress={() => this.setState({ addressOnly: !this.state.addressOnly })}>
@@ -388,17 +402,18 @@ class BalanceComponent extends React.Component {
 
     render() {
         const compactBalance = <OneLineText
-                                     style={{ fontFamily: 'courier', fontWeight: 'bold', color: this.props.lockedBalance === 0 ? this.props.screenProps.theme.primaryColour : 'orange', fontSize: 35}}
+                                     style={{ fontFamily: 'courier', fontWeight: 'bolder', color: this.props.lockedBalance === 0 ? 'black' : 'black', fontSize: 35}}
                                      onPress={() => this.setState({
                                          expandedBalance: !this.state.expandedBalance
                                      })}
                                 >
+
                                      {prettyPrintAmount(this.props.unlockedBalance + this.props.lockedBalance, Config)}
                                </OneLineText>;
 
         const lockedBalance = <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                                    <FontAwesome name={'lock'} size={22} color={'orange'} style={{marginRight: 7}}/>
-                                    <OneLineText style={{ fontFamily: 'courier', fontWeight: 'bold', color: 'orange', fontSize: 25}}
+                                    <FontAwesome name={'lock'} size={22} color={'black'} style={{marginRight: 7}}/>
+                                    <OneLineText style={{ fontFamily: 'courier', fontWeight: 'bold', color: 'black', fontSize: 25}}
                                           onPress={() => this.setState({
                                              expandedBalance: !this.state.expandedBalance
                                           })}>
@@ -407,8 +422,8 @@ class BalanceComponent extends React.Component {
                               </View>;
 
         const unlockedBalance = <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                                    <FontAwesome name={'unlock'} size={22} color={this.props.screenProps.theme.primaryColour} style={{marginRight: 7}}/>
-                                    <OneLineText style={{ fontFamily: 'courier', fontWeight: 'bold', color: this.props.screenProps.theme.primaryColour, fontSize: 25}}
+                                    <FontAwesome name={'unlock'} size={22} color={'black'} style={{marginRight: 7}}/>
+                                    <OneLineText style={{ fontFamily: 'courier', fontWeight: 'bold', color: 'black', fontSize: 25}}
                                           onPress={() => this.setState({
                                              expandedBalance: !this.props.expandedBalance
                                           })}>
@@ -416,16 +431,14 @@ class BalanceComponent extends React.Component {
                                     </OneLineText>
                                 </View>;
 
-        const expandedBalance = <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+        const expandedBalance = <View style={{ textAlignVertical: 'bottom', alignItems: 'center', justifyContent: 'center' }}>
                                     {unlockedBalance}
                                     {lockedBalance}
                                 </View>;
 
         return(
-            <View style={{flex: 1, padding: 20, justifyContent: 'center', alignItems: 'center'}}>
-                    <Text style={{ color: this.props.screenProps.theme.notVeryVisibleColour, fontSize: 15 }}>
-                        TOTAL X
-                    </Text>
+            <View style={{flex: 1, padding: 20, paddingBottom: 10, paddingTop: 40, justifyContent: 'center', alignItems: 'center'}}>
+
 
                     <Animatable.View ref={this.balanceRef}>
                         {this.state.expandedBalance ? expandedBalance : compactBalance}

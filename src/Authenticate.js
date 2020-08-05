@@ -157,11 +157,11 @@ export class RequestHardwareAuthScreen extends React.Component {
                     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                             <Image
-                                source={require('../assets/img/spinner.png')}
+                                source={this.props.screenProps.theme.animatedLogo}
                                 style={{
                                     resizeMode: 'contain',
-                                    width: 170,
-                                    height: 170,
+                                    width: 250,
+                                    height: 250,
                                     marginBottom: 10,
                                     justifyContent: 'flex-start',
                                 }}
@@ -363,7 +363,7 @@ export class SetPinScreen extends React.Component {
     constructor(props) {
         super(props);
     }
-    
+
     continue(pinCode) {
         /* Continue on to create or import a wallet */
         this.props.navigation.navigate(this.props.navigation.state.params.nextRoute);

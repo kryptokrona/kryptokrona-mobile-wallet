@@ -21,14 +21,14 @@ export class Spinner extends React.Component {
     render() {
         const rotation = this.animation.interpolate({
             inputRange: [0, 1],
-            outputRange: ['0deg', '360deg']
+            outputRange: ['0deg', '0deg']
         });
 
         return(
             <Animated.View style={{transform: [{rotate: rotation}], justifyContent: 'center', alignItems: 'center'}}>
                 <Image
-                    source={require('../assets/img/logo-white-shadow.png')}
-                    style={{resizeMode: 'contain', width: 200, height: 200}}
+                    source={require('../assets/img/xkr-logo-dark.gif')}
+                    style={{resizeMode: 'contain', width: 300, height: 300}}
                 />
             </Animated.View>
         );
