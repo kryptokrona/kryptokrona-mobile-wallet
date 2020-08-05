@@ -144,7 +144,7 @@ export class BottomButton extends React.Component {
             <View style={Styles.alignBottom}>
                 <Button
                     buttonStyle={{
-                        backgroundColor: this.props.screenProps.theme.primaryColour,
+                        backgroundColor: this.props.screenProps.theme.buttonColour,
                         height: 50,
                         borderRadius: 0,
                     }}

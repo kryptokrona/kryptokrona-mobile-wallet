@@ -52,7 +52,7 @@ export class WalletOptionScreen extends React.Component {
                         title='Create New Wallet'
                         /* Request a pin for the new wallet */
                         onPress={() => this.props.navigation.navigate('Disclaimer', { nextRoute: 'CreateWallet' })}
-                        color={this.props.screenProps.theme.primaryColour}
+                        color={this.props.screenProps.theme.buttonColour}
                     />
                 </View>
 
@@ -61,7 +61,7 @@ export class WalletOptionScreen extends React.Component {
                         title='Recover Wallet'
                         /* Get the import data */
                         onPress={() => this.props.navigation.navigate('Disclaimer', { nextRoute: 'ImportWallet' })}
-                        color={this.props.screenProps.theme.primaryColour}
+                        color={this.props.screenProps.theme.buttonColour}
                     />
                 </View>
 
@@ -121,7 +121,7 @@ export class CreateWalletScreen extends React.Component {
 
                     <BottomButton
                         title="Continue"
-                        onPress={() => this.props.navigation.navigate('Home')} 
+                        onPress={() => this.props.navigation.navigate('Home')}
                         {...this.props}
                     />
                 </View>

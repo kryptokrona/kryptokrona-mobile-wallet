@@ -15,12 +15,12 @@ const Config = new function() {
     /**
      * If you can't figure this one out, I don't have high hopes
      */
-    this.coinName = 'TurtleCoin';
+    this.coinName = 'Kryptokrona';
 
     /**
      * Prefix for URI encoded addresses
      */
-    this.uriPrefix = 'turtlecoin://';
+    this.uriPrefix = 'xkr://';
 
     /**
      * How often to save the wallet, in milliseconds
@@ -37,7 +37,7 @@ const Config = new function() {
      * The address prefix your coin uses - you can find this in CryptoNoteConfig.h.
      * In TurtleCoin, this converts to TRTL
      */
-    this.addressPrefix = 3914525;
+    this.addressPrefix = 2239254;
 
     /**
      * Request timeout for daemon operations in milliseconds
@@ -47,7 +47,7 @@ const Config = new function() {
     /**
      * The block time of your coin, in seconds
      */
-    this.blockTargetTime = 30;
+    this.blockTargetTime = 90;
 
     /**
      * How often to process blocks, in millseconds
@@ -74,7 +74,7 @@ const Config = new function() {
     /**
      * Your coins 'ticker', generally used to refer to the coin, i.e. 123 TRTL
      */
-    this.ticker = 'TRTL';
+    this.ticker = 'XKR';
 
     /**
      * Most people haven't mined any blocks, so lets not waste time scanning
@@ -168,12 +168,12 @@ const Config = new function() {
     /**
      * Fee to take on all transactions, in percentage
      */
-    this.devFeePercentage = 0.5;
+    this.devFeePercentage = 0;
 
     /**
      * Address to send dev fee to
      */
-    this.devFeeAddress = 'TRTLv1E3ThL66fHthRHyzPSDqeUazPA9eBQYkuRnp8svKgvdoecQtqhSRaD59CEuH8XnYsw3YGtw1RWsQSqtHLqUXu4tvk9LryR';
+    this.devFeeAddress = 'SEKReZ4pekEQHXy6iNMfy5EpurwrVNKgJHuokcyPbdTgQ7UwPanewoC1PmoGDUiYrDB1yLemoLEjTR5yueGXN67TKFXYYhtRgBM';
 
     /**
      * Base url for price API
@@ -188,7 +188,7 @@ const Config = new function() {
      * Default daemon to use. Can either be a BlockchainCacheApi(baseURL, SSL),
      * or a ConventionalDaemon(url, port).
      */
-    this.defaultDaemon = new Daemon('blockapi.turtlepay.io', 443);
+    this.defaultDaemon = new Daemon('gota.kryptokrona.se', 11898);
 
     /**
      * A link to where a bug can be reported for your wallet. Please update
@@ -200,22 +200,22 @@ const Config = new function() {
     /**
      * This only controls the name in the settings screen.
      */
-    this.appName = 'TonChan';
+    this.appName = 'Swoosh';
 
     /**
      * Slogan phrase during wallet CreateScreen
      */
-    this.sloganCreateScreen = 'Fast. Safe. Easy.';
+    this.sloganCreateScreen = 'A nordic cryptocurrency loltt';
 
     /**
      * Displayed in the settings screen
      */
-    this.appVersion = 'v1.1.2';
+    this.appVersion = 'v1.0.0';
 
     /**
      * Base URL for us to chuck a hash on the end, and find a transaction
      */
-    this.explorerBaseURL = 'https://explorer.turtlecoin.lol/?search=';
+    this.explorerBaseURL = 'https://explorer.kryptokrona.se/?hash=';
 
     /**
      * A link to your app on the Apple app store. Currently blank because we
@@ -229,10 +229,10 @@ const Config = new function() {
     this.googlePlayLink = 'https://play.google.com/store/apps/details?id=com.tonchan';
 
     /**
-     * A url to fetch node info from. Should follow the turtlepay format 
+     * A url to fetch node info from. Should follow the turtlepay format
      * detailed here: https://docs.turtlepay.io/blockapi/
      */
-    this.nodeListURL = 'https://blockapi.turtlepay.io/node/list';
+    this.nodeListURL = 'https://kryptokrona.se/nodelist.json';
 };
 
 module.exports = Config;

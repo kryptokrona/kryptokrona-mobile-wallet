@@ -1,4 +1,4 @@
-package com.tonchan;
+package com.xkr;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;

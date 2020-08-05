@@ -1,4 +1,4 @@
-package com.tonchan;
+package com.xkr;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,7 +6,7 @@ import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Log;
 
-import com.tonchan.BuildConfig;
+import com.xkr.BuildConfig;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -258,7 +258,7 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
 
         promise.resolve("");
     }
-    
+
     @ReactMethod
     public void isDozeDisabled(Promise promise) {
         PowerManager pm = (PowerManager)getReactApplicationContext().getSystemService(Context.POWER_SERVICE);
@@ -300,7 +300,7 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
             connection.setRequestProperty("Accept", "application/json");
 
             /* tonchan-vx.x.x */
-            connection.setRequestProperty("User-Agent", "tonchan-v1.2.2");
+            connection.setRequestProperty("User-Agent", "swoosh-v1.0.0");
 
             /* Indicate we have a POST body */
             connection.setDoOutput(true);
@@ -428,7 +428,7 @@ public class TurtleCoinModule extends ReactContextBaseJavaModule {
 
     private SpendKey[] arrayToSpendKeys(ReadableArray spendKeys) {
         SpendKey[] keys = new SpendKey[spendKeys.size()];
-        
+
         for (int i = 0; i < spendKeys.size(); i++) {
             keys[i] = new SpendKey(spendKeys.getMap(i));
         }

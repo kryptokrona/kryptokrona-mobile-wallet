@@ -1,6 +1,6 @@
-package com.tonchan;
+package com.xkr;
 
-import com.tonchan.BuildConfig;
+import com.xkr.BuildConfig;
 
 import android.app.Application;
 import android.content.Intent;
@@ -65,9 +65,9 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     upgradeSecurityProvider();
-    
+
     /* tonchan-vx.x.x */
-    setUserAgent("tonchan-v1.2.2");
+    setUserAgent("swoosh-v1.0.0");
 
     SoLoader.init(this, /* native exopackage */ false);
   }

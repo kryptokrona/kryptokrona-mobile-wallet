@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         paddingRight: 10,
         paddingBottom: 10,
-        borderBottomColor: legacyRNElementsColors.greyOutline,
+        borderBottomColor: 'rgba(125,125,125,0.3)',
         borderBottomWidth: 1,
         backgroundColor: "transparent",
     },

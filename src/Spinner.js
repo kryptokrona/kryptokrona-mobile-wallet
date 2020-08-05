@@ -27,7 +27,7 @@ export class Spinner extends React.Component {
         return(
             <Animated.View style={{transform: [{rotate: rotation}], justifyContent: 'center', alignItems: 'center'}}>
                 <Image
-                    source={require('../assets/img/spinner.png')}
+                    source={require('../assets/img/logo-white-shadow.png')}
                     style={{resizeMode: 'contain', width: 200, height: 200}}
                 />
             </Animated.View>

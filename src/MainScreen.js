@@ -281,8 +281,8 @@ export class MainScreen extends React.Component {
                     justifyContent: 'space-around',
                     height: Dimensions.get('window').height - 73,
                 }}>
-                    <View style={{ 
-                        height: '20%', 
+                    <View style={{
+                        height: '20%',
                         flexDirection: 'row',
                         justifyContent: 'space-between',
                         margin: 10,
@@ -323,7 +323,7 @@ class AddressComponent extends React.Component {
     render() {
         return(
             <View style={{ alignItems: 'center' }}>
-                <Text style={[Styles.centeredText, {
+                <Text style={ [Styles.centeredText, {
                     color: this.props.screenProps.theme.primaryColour,
                     fontSize: 20,
                     marginBottom: 15,
@@ -388,7 +388,7 @@ class BalanceComponent extends React.Component {
 
     render() {
         const compactBalance = <OneLineText
-                                     style={{ color: this.props.lockedBalance === 0 ? this.props.screenProps.theme.primaryColour : 'orange', fontSize: 35}}
+                                     style={{ fontFamily: 'courier', fontWeight: 'bold', color: this.props.lockedBalance === 0 ? this.props.screenProps.theme.primaryColour : 'orange', fontSize: 35}}
                                      onPress={() => this.setState({
                                          expandedBalance: !this.state.expandedBalance
                                      })}
@@ -398,7 +398,7 @@ class BalanceComponent extends React.Component {
 
         const lockedBalance = <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                                     <FontAwesome name={'lock'} size={22} color={'orange'} style={{marginRight: 7}}/>
-                                    <OneLineText style={{ color: 'orange', fontSize: 25}}
+                                    <OneLineText style={{ fontFamily: 'courier', fontWeight: 'bold', color: 'orange', fontSize: 25}}
                                           onPress={() => this.setState({
                                              expandedBalance: !this.state.expandedBalance
                                           })}>
@@ -408,7 +408,7 @@ class BalanceComponent extends React.Component {
 
         const unlockedBalance = <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                                     <FontAwesome name={'unlock'} size={22} color={this.props.screenProps.theme.primaryColour} style={{marginRight: 7}}/>
-                                    <OneLineText style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25}}
+                                    <OneLineText style={{ fontFamily: 'courier', fontWeight: 'bold', color: this.props.screenProps.theme.primaryColour, fontSize: 25}}
                                           onPress={() => this.setState({
                                              expandedBalance: !this.props.expandedBalance
                                           })}>
@@ -424,7 +424,7 @@ class BalanceComponent extends React.Component {
         return(
             <View style={{flex: 1, padding: 20, justifyContent: 'center', alignItems: 'center'}}>
                     <Text style={{ color: this.props.screenProps.theme.notVeryVisibleColour, fontSize: 15 }}>
-                        TOTAL BALANCE
+                        TOTAL X
                     </Text>
 
                     <Animatable.View ref={this.balanceRef}>

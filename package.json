@@ -1,6 +1,6 @@
 {
-  "name": "TonChan",
-  "version": "1.1.2",
+  "name": "Swoosh",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "react-native start",
