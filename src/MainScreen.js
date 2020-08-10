@@ -345,7 +345,7 @@ class AddressComponent extends React.Component {
                     Your Wallet Address:
                 </Text>
 
-                <View style={{ padding: 5, backgroundColor: this.props.screenProps.theme.qrCode.backgroundColour }}>
+                <View style={{ borderRadius: 5, borderWidth: 1, borderColor: this.props.screenProps.theme.borderColour, padding: 8, backgroundColor: this.props.screenProps.theme.qrCode.backgroundColour }}>
                     <QRCode
                         value={this.state.address}
                         size={200}
@@ -356,6 +356,7 @@ class AddressComponent extends React.Component {
 
                 <Text style={[Styles.centeredText, {
                     color: this.props.screenProps.theme.primaryColour,
+                    width: 215,
                     fontSize: 15,
                     marginTop: 10,
                     marginRight: 20,
@@ -529,7 +530,7 @@ class SyncComponent extends React.Component {
 
     render() {
         return(
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', bottom: 20, position: 'absolute', left: 0, right: 0 }}>
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', bottom: 0, position: 'absolute', left: 0, right: 0 }}>
                 <Animatable.Text ref={this.syncRef} style={{
                     color: this.props.screenProps.theme.slightlyMoreVisibleColour,
                 }}>

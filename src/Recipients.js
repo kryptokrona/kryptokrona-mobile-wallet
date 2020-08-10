@@ -48,7 +48,7 @@ export class RecipientsScreen extends React.Component {
             <View style={{
                 width: '100%',
             }}>
-                <Hr/>
+
                 <Text style={{
                     color: this.props.screenProps.theme.primaryColour,
                     marginTop: 10,
@@ -58,12 +58,14 @@ export class RecipientsScreen extends React.Component {
                 </Text>
             </View>;
 
-        const addressBookComponent = 
+        const addressBookComponent =
             <List style={{
                 width: '100%',
                 height: '70%',
                 marginBottom: 20,
                 backgroundColor: this.props.screenProps.theme.backgroundColour,
+                borderWidth: 0,
+                borderColor: 'transparent'
             }}>
                     <FlatList
                         extraData={this.state.index}
@@ -85,7 +87,7 @@ export class RecipientsScreen extends React.Component {
                                         backgroundColor: this.props.screenProps.theme.iconColour,
                                         borderRadius: 45
                                     }}>
-                                        <Text style={[Styles.centeredText, { 
+                                        <Text style={[Styles.centeredText, {
                                             fontSize: 30,
                                             color: this.props.screenProps.theme.primaryColour,
                                         }]}>
@@ -166,7 +168,6 @@ export class RecipientsScreen extends React.Component {
                         </View>
                     </TouchableWithoutFeedback>
 
-                    <Hr width={'95%'}/>
 
                     <View style={{
                         backgroundColor: this.props.screenProps.theme.backgroundColour,
@@ -235,8 +236,8 @@ class ModifyPaymentID extends React.Component {
                 inputStyle={{
                     color: this.props.screenProps.theme.primaryColour,
                     fontSize: 14,
-                    backgroundColor: this.props.disabled ? 
-                                     this.props.screenProps.theme.disabledColour : 
+                    backgroundColor: this.props.disabled ?
+                                     this.props.screenProps.theme.disabledColour :
                                      this.props.screenProps.theme.backgroundColor,
                 }}
                 maxLength={64}
@@ -440,7 +441,7 @@ export class ModifyPayeeScreen extends React.Component {
                     width: '100%',
                     alignItems: 'center',
                 }}>
-                    <Hr width={'85%'}/>
+
                 </View>
 
                 <ScrollView
@@ -495,7 +496,7 @@ export class ModifyPayeeScreen extends React.Component {
                         justifyContent: 'flex-start',
                         marginHorizontal: this.state.modifyNickname ? 20 : 30,
                     }}>
-                        {this.state.modifyNickname ? 
+                        {this.state.modifyNickname ?
                             <ModifyNickname
                                 nickname={this.state.nickname}
                                 error={this.state.nicknameError}
@@ -519,7 +520,7 @@ export class ModifyPayeeScreen extends React.Component {
                                 }}
                                 {...this.props}
                             />
-                            : 
+                            :
                             <Text style={{ color: this.props.screenProps.theme.slightlyMoreVisibleColour, fontSize: 16 }}>
                                 {this.state.nickname}
                             </Text>
@@ -566,10 +567,10 @@ export class ModifyPayeeScreen extends React.Component {
                         justifyContent: 'flex-start',
                         marginHorizontal: this.state.modifyAddress ? 20 : 30,
                     }}>
-                        {this.state.modifyAddress ? 
+                        {this.state.modifyAddress ?
                             <ModifyAddress
                                 address={this.state.address}
-                                error={this.state.addressError} 
+                                error={this.state.addressError}
                                 onChange={(text) => {
                                     const [valid, error] = isAddressValid(text);
 
@@ -596,7 +597,7 @@ export class ModifyPayeeScreen extends React.Component {
                                 }}
                                 {...this.props}
                             />
-                            : 
+                            :
                             <Text style={{ color: this.props.screenProps.theme.slightlyMoreVisibleColour, fontSize: 16 }}>
                                 {this.state.address}
                             </Text>
@@ -643,7 +644,7 @@ export class ModifyPayeeScreen extends React.Component {
                         justifyContent: 'flex-start',
                         marginHorizontal: this.state.modifyPaymentID ? 20 : 30,
                     }}>
-                        {this.state.modifyPaymentID ? 
+                        {this.state.modifyPaymentID ?
                             <ModifyPaymentID
                                 paymentID={this.state.paymentID}
                                 error={this.state.paymentIDError}
@@ -668,7 +669,7 @@ export class ModifyPayeeScreen extends React.Component {
                                 disabled={!this.state.paymentIDEnabled}
                                 {...this.props}
                             />
-                            : 
+                            :
                             <Text style={{ color: this.props.screenProps.theme.slightlyMoreVisibleColour, fontSize: 16 }}>
                                 {this.state.paymentID || 'None'}
                             </Text>

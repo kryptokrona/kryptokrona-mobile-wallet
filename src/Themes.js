@@ -90,7 +90,7 @@ export const Themes = {
         /**
          * The primary colour used by the wallet, for TurtleCoin this is green
          */
-        primaryColour: 'rgba(255,255,255,0.8)',
+        primaryColour: 'rgba(255,255,255,0.6)',
 
         buttonColour: '#353535',
 
@@ -116,13 +116,13 @@ export const Themes = {
          * Terrible name, lol. This is used things which shouldn't pop out
          * much, like the 'TOTAL BALANCE' text.
          */
-        notVeryVisibleColour: 'gray',
+        notVeryVisibleColour: 'rgba(255,255,255,0.1)',
 
         /**
          * This is used for the same sort of things as notVeryVisibleColour,
          * but pops out a little more. Used for things like the $ balance value.
          */
-        slightlyMoreVisibleColour: 'white',
+        slightlyMoreVisibleColour: 'rgba(255,255,255,0.3)',
 
         /**
          * Colour for disabled bottom buttons
@@ -150,7 +150,7 @@ export const Themes = {
              * Your foreground colour needs to be a darkish colour, or the
              * code will not scan.
              */
-            foregroundColour: '#ffffff',
+            foregroundColour: '#dddddd',
 
             /**
              * Your background colour needs to be a lightish colour, or the

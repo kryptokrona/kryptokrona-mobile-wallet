@@ -8,7 +8,7 @@ import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
 import React from 'react';
 
-import { View } from 'react-native';
+import { View, StatusBar } from 'react-native';
 
 import {
     createStackNavigator, createAppContainer, createBottomTabNavigator,
@@ -63,7 +63,7 @@ const TransactionNavigator = createStackNavigator(
         defaultNavigationOptions: {
             headerTitleStyle: {
                 fontWeight: 'bold',
-                color: Themes.darkMode.primaryColour,
+                color: 'Themes.darkMode.primaryColour',
             },
             headerTransparent: true,
             headerTintColor: Themes.darkMode.primaryColour,
@@ -356,6 +356,7 @@ export default class App extends React.Component {
 
         return(
             <View style={{ flex: 1 }}>
+            <StatusBar hidden />
                 {this.state.loaded ? loadedComponent : notLoadedComponent}
             </View>
         );

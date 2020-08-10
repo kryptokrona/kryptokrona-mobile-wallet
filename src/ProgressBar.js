@@ -12,7 +12,7 @@ export class ProgressBar extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = { 
+        this.state = {
             progress: new Animated.Value(this.props.initialProgress || 0),
         };
     }
@@ -34,18 +34,21 @@ export class ProgressBar extends React.Component {
         return(
             <View style={[
                 {
-                    backgroundColor: '#BBBBBB',
+                    backgroundColor: 'rgba(0,0,0,0.2)',
                     height: 5,
                     overflow: 'hidden',
-                    alignItems: 'center',
+                    alignItems: 'left',
                     justifyContent: 'flex-end',
+                    borderRadius: 2
                 },
                 this.props.style
             ]}>
                 <Animated.View style={{
                     height: 5,
                     backgroundColor: this.props.screenProps.theme.primaryColour,
-                    width: fillWidth
+                    width: fillWidth,
+                    borderRadius: 2,
+                    alignSelf: 'flex-start'
                 }}/>
             </View>
         );

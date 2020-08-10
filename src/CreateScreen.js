@@ -42,8 +42,10 @@ export class WalletOptionScreen extends React.Component {
                     <Text style={{
                         fontSize: 20,
                         color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                        textAlign: 'center'
                     }}>
-                        {Config.sloganCreateScreen}
+                        kryptokrona {'\n'}
+                         a nordic cryptocurrency
                     </Text>
                 </View>
 

@@ -9,7 +9,7 @@ import React from 'react';
 import { Platform, View, Clipboard, Text } from 'react-native';
 
 import { Button } from 'react-native-elements';
-
+import Icon from 'react-native-vector-icons/dist/FontAwesome';
 import Config from './Config';
 
 import { Styles } from './Styles';
@@ -92,7 +92,12 @@ export class CopyButton extends React.Component {
     render() {
         return(
             <View style={[{...this.props.style}, {
+                marginTop: 10,
                 alignItems: 'flex-start',
+                borderRadius: 3,
+                borderColor: this.props.screenProps.theme.borderColour,
+                borderWidth: 1,
+                paddingTop: 0
             }]}>
                 <Button
                     title='Copy'
@@ -102,7 +107,8 @@ export class CopyButton extends React.Component {
                     }}
                     titleStyle={{
                         color: this.props.screenProps.theme.primaryColour,
-                        textDecorationLine: 'underline',
+                        textDecorationLine: 'none',
+                        marginTop: -3
                     }}
                     type='clear'
                 />

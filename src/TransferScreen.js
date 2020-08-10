@@ -166,7 +166,7 @@ export class TransferScreen extends React.Component {
             amountFontSize: 30,
         }
     }
-    
+
     tick() {
         const [unlockedBalance, lockedBalance] = Globals.wallet.getBalance();
 
@@ -288,7 +288,7 @@ export class TransferScreen extends React.Component {
                                     amount: this.state.amountAtomic,
                                 }
                             );
-                        }} 
+                        }}
                         disabled={!this.state.continueEnabled}
                         {...this.props}
                     />
@@ -320,7 +320,9 @@ class AddressBook extends React.Component {
         return(
             <List style={{
                 marginBottom: 20,
-                backgroundColor: this.props.screenProps.theme.backgroundColour
+                backgroundColor: this.props.screenProps.theme.backgroundColour,
+                borderColor: 'transparent',
+                borderWidth: 0
             }}>
                 <ScrollView>
                     <FlatList
@@ -343,7 +345,7 @@ class AddressBook extends React.Component {
                                         backgroundColor: this.props.screenProps.theme.iconColour,
                                         borderRadius: 45
                                     }}>
-                                        <Text style={[Styles.centeredText, { 
+                                        <Text style={[Styles.centeredText, {
                                             fontSize: 30,
                                             color: this.props.screenProps.theme.primaryColour,
                                         }]}>
@@ -381,7 +383,6 @@ class ExistingPayees extends React.Component {
     render() {
         const noPayeesComponent =
             <View>
-                <Hr/>
                 <Text style={{
                     color: this.props.screenProps.theme.primaryColour,
                     marginTop: 10,
@@ -395,12 +396,13 @@ class ExistingPayees extends React.Component {
             <View style={{
                 width: '90%',
                 maxHeight: '70%',
+                borderWidth: 0
             }}>
                 <View style={{
                 }}>
                     <Text style={{
                         color: this.props.screenProps.theme.primaryColour,
-                        marginTop: 40
+                        marginTop: 40,
                     }}>
                         Address Book
                     </Text>
@@ -606,7 +608,9 @@ export class NewPayeeScreen extends React.Component {
                         errorMessage={this.state.addressError}
                     />
 
-                    <View style={{ marginLeft: '63%' }}>
+                    <View style={{ marginLeft: '63%', marginTop: 8, borderRadius: 3, paddingTop: 0,
+                                    borderColor: this.props.screenProps.theme.borderColour,
+                                    borderWidth: 1,}}>
                         <Button
                             title='Scan QR Code'
                             onPress={() => {
@@ -625,8 +629,8 @@ export class NewPayeeScreen extends React.Component {
                                 });
                             }}
                             titleStyle={{
-                                color: this.props.screenProps.theme.primaryColour,
-                                textDecorationLine: 'underline',
+                                color: this.props.screenProps.theme.primaryColour
+
                             }}
                             type="clear"
                         />
@@ -676,7 +680,7 @@ export class NewPayeeScreen extends React.Component {
 
                             /* Add payee to global payee store */
                             Globals.addPayee(payee);
-                            
+
                             const finishFunction = this.props.navigation.getParam('finishFunction', undefined);
 
                             if (finishFunction) {
@@ -992,7 +996,7 @@ export class ConfirmScreen extends React.Component {
                         marginHorizontal: this.state.modifyMemo ? 20 : 30,
                         marginTop: 20,
                     }}>
-                        {this.state.modifyMemo ? 
+                        {this.state.modifyMemo ?
                             <ModifyMemo
                                 memo={this.state.memo}
                                 onChange={(text) => {
@@ -1002,7 +1006,7 @@ export class ConfirmScreen extends React.Component {
                                 }}
                                 {...this.props}
                             />
-                            : 
+                            :
                             <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
                                 {this.state.memo === '' ? 'None' : this.state.memo}
                             </Text>
@@ -1221,7 +1225,7 @@ export class ChoosePayeeScreen extends React.Component {
                 backgroundColor: this.props.screenProps.theme.backgroundColour,
                 flex: 1,
             }}>
-                <View style={{ 
+                <View style={{
                     alignItems: 'flex-start',
                     justifyContent: 'flex-start',
                     marginLeft: 30,
@@ -1234,9 +1238,13 @@ export class ChoosePayeeScreen extends React.Component {
                 </View>
 
                 <View style={{
-                    marginLeft: 22,
+                    marginLeft: 24,
+                    width: 120,
                     alignItems: 'flex-start',
                     justifyContent: 'flex-start',
+                    borderRadius: 3, paddingTop: 0,
+                                    borderColor: this.props.screenProps.theme.borderColour,
+                                    borderWidth: 1
                 }}>
                     <Button
                         title='Scan QR Code'
@@ -1251,19 +1259,18 @@ export class ChoosePayeeScreen extends React.Component {
                         }}
                         titleStyle={{
                             color: this.props.screenProps.theme.primaryColour,
-                            textDecorationLine: 'underline',
                         }}
                         type="clear"
                     />
                 </View>
 
-                <View style={{ 
+                <View style={{
                     alignItems: 'flex-start',
                     justifyContent: 'flex-start',
                     marginLeft: 30,
                     marginRight: 10,
                 }}>
-                    <Hr/>
+
 
                     <TouchableWithoutFeedback
                         onPress={() => {
@@ -1275,12 +1282,13 @@ export class ChoosePayeeScreen extends React.Component {
                             alignItems: 'center',
                             justifyContent: 'center',
                             marginTop: 10,
+
                         }}>
                             <View style={{
                                 height: 37,
                                 width: 37,
                                 borderWidth: 1,
-                                borderColor: this.props.screenProps.theme.notVeryVisibleColour,
+                                borderColor: this.props.screenProps.theme.borderColour,
                                 borderRadius: 45,
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -1299,7 +1307,7 @@ export class ChoosePayeeScreen extends React.Component {
                         </View>
                     </TouchableWithoutFeedback>
 
-                    <Hr/>
+
 
                     <ExistingPayees {...this.props}/>
                 </View>
@@ -1474,7 +1482,7 @@ export class SendTransactionScreen extends React.Component {
                     onPress={() => {
                         this.props.navigation.dispatch(navigateWithDisabledBack('ChoosePayee'));
                         this.props.navigation.navigate('Main');
-                    }} 
+                    }}
                     disabled={!this.state.homeEnabled}
                     {...this.props}
                 />

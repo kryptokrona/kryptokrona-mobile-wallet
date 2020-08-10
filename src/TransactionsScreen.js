@@ -168,7 +168,7 @@ export class TransactionDetailsScreen extends React.Component {
                             item={this.state.transaction.blockHeight.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                             {...this.props}
                         />}
-                        
+
                         <ItemDescription
                             title='Hash'
                             item={this.state.transaction.hash}
@@ -199,7 +199,7 @@ export class TransactionDetailsScreen extends React.Component {
 }
 
 /**
- * List of transactions sent + received 
+ * List of transactions sent + received
  */
 export class TransactionsScreen extends React.Component {
     static navigationOptions = {
@@ -286,23 +286,25 @@ export class TransactionsScreen extends React.Component {
             pageNum,
         }, this.updateTransactions);
     }
-    
+
     render() {
-        const syncedMsg = this.state.walletHeight + 10 >= this.state.networkHeight ? 
-            '' 
+        const syncedMsg = this.state.walletHeight + 10 >= this.state.networkHeight ?
+            ''
           : "\nYour wallet isn't fully synced. If you're expecting some transactions, please wait.";
 
-        const noTransactions = 
+        const noTransactions =
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: this.props.screenProps.theme.backgroundColour }}>
-                <Text style={{ fontSize: 20, color: this.props.screenProps.theme.primaryColour, justifyContent: 'center', textAlign: 'center' }}>
-                    Looks like you haven't sent{"\n"}or received any transactions yet!{"\n"}
+                <Text style={{ borderRadius: 5,
+                borderColor: this.props.screenProps.theme.borderColour,
+                borderWidth: 1, padding: 10, paddingBottom: 0, fontSize: 15, width: 200, color: this.props.screenProps.theme.primaryColour, justifyContent: 'center', textAlign: 'center' }}>
+                    Looks like you haven't sent{"\n"}or received any transactions yet!{"\n"} {"\n"} 😥 {"\n"}
                     {syncedMsg}
                 </Text>
             </View>;
 
         return(
             this.state.numTransactions === 0 ?
-                noTransactions 
+                noTransactions
              : <TransactionList
                 {...this.props}
                 pageNum={this.state.pageNum}
@@ -360,6 +362,7 @@ class TransactionList extends React.Component {
                 flex: 1,
             }}>
                 <Header
+                    containerStyle={{ borderBottomWidth:0, borderBottomColor:'transparent' }}
                     leftComponent={{
                         icon: 'navigate-before',
                         color: this.props.pageNum === 0 ? this.props.screenProps.theme.notVeryVisibleColour : this.props.screenProps.theme.primaryColour,
@@ -394,6 +397,7 @@ class TransactionList extends React.Component {
 
                 <List style={{
                     backgroundColor: this.props.screenProps.theme.backgroundColour,
+                    borderTopWidth: 0
                 }}>
                     <FlatList
                         extraData={this.state.index}
