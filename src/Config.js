@@ -195,7 +195,7 @@ const Config = new function() {
      * this if you are forking, so we don't get reported bugs for your wallet...
      *
      */
-    this.repoLink = 'https://github.com/kryptokron a/kryptokrona-mobile-wallet/issues';
+    this.repoLink = 'https://github.com/kryptokrona/kryptokrona-mobile-wallet/issues';
 
     /**
      * This only controls the name in the settings screen.
