@@ -40,16 +40,24 @@ export class WalletOptionScreen extends React.Component {
                         style={Styles.logo}
                     />
                     <Text style={{
-                        fontSize: 20,
+                        fontSize: 28,
+                        fontFamily: "Montserrat-Bold",
                         color: this.props.screenProps.theme.slightlyMoreVisibleColour,
                         textAlign: 'center'
                     }}>
                         kryptokrona {'\n'}
+                    </Text>
+                    <Text style={{
+                        fontSize: 20,
+                        fontFamily: "Montserrat-BoldItalic",
+                        color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                        textAlign: 'center'
+                    }}>
                          a nordic cryptocurrency
                     </Text>
                 </View>
 
-                <View style={[Styles.buttonContainer, {bottom: 100, position: 'absolute', alignItems: 'stretch', justifyContent: 'center', width: '100%'}]}>
+                <View style={[Styles.buttonContainer, {fontFamily: "Montserrat-Regular", bottom: 100, position: 'absolute', alignItems: 'stretch', justifyContent: 'center', width: '100%'}]}>
                     <Button
                         title='Create New Wallet'
                         /* Request a pin for the new wallet */

@@ -21,6 +21,7 @@ import Config from './Config';
 import { Styles } from './Styles';
 import { Globals } from './Globals';
 import { FadeView } from './FadeView';
+import { XKRLogo } from './XKRLogo';
 import { setHaveWallet, savePreferencesToDatabase } from './Database';
 import { BottomButton } from './SharedComponents';
 import { navigateWithDisabledBack } from './Utilities';
@@ -156,16 +157,7 @@ export class RequestHardwareAuthScreen extends React.Component {
                 {Platform.OS === 'android' &&
                     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                            <Image
-                                source={this.props.screenProps.theme.animatedLogo}
-                                style={{
-                                    resizeMode: 'contain',
-                                    width: 250,
-                                    height: 250,
-                                    marginBottom: 10,
-                                    justifyContent: 'flex-start',
-                                }}
-                            />
+                        <XKRLogo />
 
                             <Text style={[Styles.centeredText, {
                                 fontSize: 22,

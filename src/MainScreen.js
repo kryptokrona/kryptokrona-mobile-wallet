@@ -2,7 +2,7 @@
 //
 // Please see the included LICENSE file for more information.
 
-import React from 'react';
+import React, { useState } from "react";
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 
@@ -15,7 +15,7 @@ import PushNotification from 'react-native-push-notification';
 import { NavigationActions, NavigationEvents } from 'react-navigation';
 
 import {
-    Text, View, Image, ImageBackground, TouchableOpacity, PushNotificationIOS,
+    Animated, Text, View, Image, ImageBackground, TouchableOpacity, PushNotificationIOS,
     AppState, Platform, Linking, ScrollView, RefreshControl, Dimensions,
 } from 'react-native';
 
@@ -224,11 +224,25 @@ export class MainScreen extends React.Component {
         }
     }
 
+    componentWillMount() {
+      this.animatedValue = new Animated.Value(0);
+    }
+
+
     componentDidMount() {
         this.unsubscribe = NetInfo.addEventListener(this.handleNetInfoChange);
         AppState.addEventListener('change', this.handleAppStateChange);
         Linking.addEventListener('url', this.handleURI);
         initBackgroundSync();
+        Animated.timing(this.animatedValue, {
+          toValue: 224,
+          duration: 30000
+        }).start(() => {
+          Animated.timing(this.animatedValue,{
+            toValue:0,
+            duration: 30000
+          }).start()
+        });
     }
 
     componentWillUnmount() {
@@ -254,6 +268,12 @@ export class MainScreen extends React.Component {
         /* If you touch the address component, it will hide the other stuff.
            This is nice if you want someone to scan the QR code, but don't
            want to display your balance. */
+
+           const interpolateColor =  this.animatedValue.interpolate({
+           inputRange: [0, 32, 64, 96, 128, 160, 192, 224],
+           outputRange:['#5f86f2','#a65ff2','#f25fd0','#f25f61','#f2cb5f','#abf25f','#5ff281','#5ff2f0']
+           })
+
         return(
             <ScrollView
                 refreshControl={
@@ -298,8 +318,7 @@ export class MainScreen extends React.Component {
 
                       elevation: 15,
                     }}>
-                    <ImageBackground source={this.props.screenProps.theme.balanceBackground} style={{flex: 1, borderRadius: 25}} >
-
+                    <Animated.View style={{backgroundColor: interpolateColor, flex: 1, borderRadius: 25}}>
                         <BalanceComponent
                             unlockedBalance={this.state.unlockedBalance}
                             lockedBalance={this.state.lockedBalance}
@@ -307,7 +326,7 @@ export class MainScreen extends React.Component {
                             {...this.props}
                         />
 
-                        </ImageBackground>
+                    </Animated.View>
 
                     </View>
 
@@ -390,6 +409,8 @@ class BalanceComponent extends React.Component {
         this.valueRef = (ref) => this.value = ref;
     }
 
+
+
     componentWillReceiveProps(nextProps) {
         if (nextProps.unlockedBalance !== this.props.unlockedBalance ||
             nextProps.lockedBalance !== this.props.lockedBalance) {
@@ -403,32 +424,32 @@ class BalanceComponent extends React.Component {
 
     render() {
         const compactBalance = <OneLineText
-                                     style={{ fontFamily: 'courier', fontWeight: 'bolder', color: this.props.lockedBalance === 0 ? 'black' : 'black', fontSize: 35}}
+                                     style={{marginTop: 20, fontFamily: 'MajorMonoDisplay-Regular', fontWeight: 'bolder', color: this.props.lockedBalance === 0 ? 'black' : 'black', fontSize: 32}}
                                      onPress={() => this.setState({
                                          expandedBalance: !this.state.expandedBalance
                                      })}
                                 >
 
-                                     {prettyPrintAmount(this.props.unlockedBalance + this.props.lockedBalance, Config)}
+                                     {prettyPrintAmount(this.props.unlockedBalance + this.props.lockedBalance, Config).slice(0,-4)}
                                </OneLineText>;
 
         const lockedBalance = <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                                    <FontAwesome name={'lock'} size={22} color={'black'} style={{marginRight: 7}}/>
-                                    <OneLineText style={{ fontFamily: 'courier', fontWeight: 'bold', color: 'black', fontSize: 25}}
+                                    <FontAwesome name={'lock'} size={16} color={'black'} style={{marginRight: 7, marginTop: 3}}/>
+                                    <OneLineText style={{ fontFamily: 'MajorMonoDisplay-Regular', color: 'black', fontSize: 25}}
                                           onPress={() => this.setState({
                                              expandedBalance: !this.state.expandedBalance
                                           })}>
-                                        {prettyPrintAmount(this.props.lockedBalance, Config)}
+                                        {prettyPrintAmount(this.props.lockedBalance, Config).slice(0,-4)}
                                     </OneLineText>
                               </View>;
 
         const unlockedBalance = <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                                    <FontAwesome name={'unlock'} size={22} color={'black'} style={{marginRight: 7}}/>
-                                    <OneLineText style={{ fontFamily: 'courier', fontWeight: 'bold', color: 'black', fontSize: 25}}
+                                    <FontAwesome name={'unlock'} size={16} color={'black'} style={{marginRight: 7, marginTop: 3}}/>
+                                    <OneLineText style={{ fontFamily: 'MajorMonoDisplay-Regular', color: 'black', fontSize: 25}}
                                           onPress={() => this.setState({
                                              expandedBalance: !this.props.expandedBalance
                                           })}>
-                                        {prettyPrintAmount(this.props.unlockedBalance, Config)}
+                                        {prettyPrintAmount(this.props.unlockedBalance, Config).slice(0,-4)}
                                     </OneLineText>
                                 </View>;
 
@@ -436,6 +457,7 @@ class BalanceComponent extends React.Component {
                                     {unlockedBalance}
                                     {lockedBalance}
                                 </View>;
+
 
         return(
             <View style={{flex: 1, padding: 20, paddingBottom: 10, paddingTop: 40, justifyContent: 'center', alignItems: 'center'}}>
@@ -447,7 +469,7 @@ class BalanceComponent extends React.Component {
 
                     <Animatable.Text
                         ref={this.valueRef}
-                        style={{ color: this.props.screenProps.theme.slightlyMoreVisibleColour, fontSize: 20 }}
+                        style={{ color: this.props.screenProps.theme.slightlyMoreVisibleColour, fontSize: 20, marginTop: 30 }}
                     >
                         {this.props.coinValue}
                     </Animatable.Text>

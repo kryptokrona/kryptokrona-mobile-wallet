@@ -85,14 +85,14 @@ export const Themes = {
         /**
          * Background colour for every component
          */
-        backgroundColour: '#212121',
+        backgroundColour: '#1B1B1B',
 
         /**
          * The primary colour used by the wallet, for TurtleCoin this is green
          */
-        primaryColour: 'rgba(255,255,255,0.6)',
+        primaryColour: 'rgba(255,255,255,0.8)',
 
-        buttonColour: '#353535',
+        buttonColour: '#161616',
 
         borderColour: 'rgba(255,255,255,0.1)',
 
