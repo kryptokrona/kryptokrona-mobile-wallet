@@ -3,11 +3,12 @@
 // Please see the included LICENSE file for more information.
 
 import React from 'react';
+import Identicon from 'identicon.js';
 
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
 import {
-    View, Text, ScrollView, FlatList, Platform, TouchableWithoutFeedback
+    View, Text, ScrollView, FlatList, Platform, TouchableWithoutFeedback, Image
 } from 'react-native';
 
 import {
@@ -25,6 +26,65 @@ import List from './ListContainer';
 import { Styles } from './Styles';
 import { Globals } from './Globals';
 import { Hr, BottomButton } from './SharedComponents';
+
+const intToRGB = (int) => {
+
+  if (typeof int !== 'number') throw new Error(errorMessage);
+  if (Math.floor(int) !== int) throw new Error(errorMessage);
+  if (int < 0 || int > 16777215) throw new Error(errorMessage);
+
+  var red = int >> 16;
+  var green = int - (red << 16) >> 8;
+  var blue = int - (red << 16) - (green << 8);
+
+  return {
+    red: red,
+    green: green,
+    blue: blue
+  }
+}
+
+
+String.prototype.hashCode = function() {
+    var hash = 0;
+    if (this.length == 0) {
+        return hash;
+    }
+    for (var i = 0; i < this.length; i++) {
+        var char = this.charCodeAt(i);
+        hash = ((hash<<5)-hash)+char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
+}
+
+const hashCode = (str) => {
+		let hash = Math.abs(str.hashCode())*0.007812499538;
+    return Math.floor(hash);
+
+}
+
+
+            function get_avatar(hash) {
+              // Displays a fixed identicon until user adds new contact address in the input field
+              if (hash.length < 15) {
+                hash = 'SEKReYanL2qEQF2HA8tu9wTpKBqoCA8TNb2mNRL5ZDyeFpxsoGNgBto3s3KJtt5PPrRH36tF7DBEJdjUn5v8eaESN2T5DPgRLVY';
+              }
+              // Get custom color scheme based on address
+              let rgb = intToRGB(hashCode(hash));
+
+              // Options for avatar
+              var options = {
+                    foreground: [rgb.red, rgb.green, rgb.blue, 255],               // rgba black
+                    background: [parseInt(rgb.red/10), parseInt(rgb.green/10), parseInt(rgb.blue/10), 0],         // rgba white
+                    margin: 0.2,                              // 20% margin
+                    size: 50,                                // 420px square
+                    format: 'png'                           // use SVG instead of PNG
+                  };
+
+              // create a base64 encoded SVG
+              return 'data:image/png;base64,' + new Identicon(hash, options).toString();
+            }
 
 export class RecipientsScreen extends React.Component {
     constructor(props) {
@@ -58,6 +118,7 @@ export class RecipientsScreen extends React.Component {
                 </Text>
             </View>;
 
+
         const addressBookComponent =
             <List style={{
                 width: '100%',
@@ -76,30 +137,37 @@ export class RecipientsScreen extends React.Component {
                                 title={item.nickname}
                                 subtitle={item.address.substr(0, 15) + '...'}
                                 subtitleStyle={{
-                                    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace'
+                                    fontFamily: "Montserrat-Regular"
                                 }}
                                 leftIcon={
-                                    <View style={{
-                                        width: 50,
-                                        height: 50,
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        backgroundColor: this.props.screenProps.theme.iconColour,
-                                        borderRadius: 45
-                                    }}>
-                                        <Text style={[Styles.centeredText, {
-                                            fontSize: 30,
-                                            color: this.props.screenProps.theme.primaryColour,
-                                        }]}>
-                                            {item.nickname[0].toUpperCase()}
-                                        </Text>
-                                    </View>
+                                    <Image
+                                      style={{width: 50, height: 50}}
+                                      source={{uri: get_avatar(item.address)}}
+                                    />
+                                    // <View style={{
+                                    //     width: 50,
+                                    //     height: 50,
+                                    //     alignItems: 'center',
+                                    //     justifyContent: 'center',
+                                    //     backgroundColor: this.props.screenProps.theme.iconColour,
+                                    //     borderRadius: 45
+                                    // }}>
+                                    //     <Text style={[Styles.centeredText, {
+                                    //         fontSize: 30,
+                                    //         color: this.props.screenProps.theme.primaryColour,
+                                    //     }]}>
+                                    //         {item.nickname[0].toUpperCase()}
+                                    //     </Text>
+                                    //
+                                    // </View>
                                 }
                                 titleStyle={{
-                                    color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                                    color: this.props.screenProps.theme.primaryColour,
+                                    fontFamily: 'Montserrat-SemiBold'
                                 }}
                                 subtitleStyle={{
                                     color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                                    fontFamily: 'Montserrat-Regular'
                                 }}
                                 onPress={() => {
                                     this.props.navigation.navigate(
@@ -161,7 +229,8 @@ export class RecipientsScreen extends React.Component {
                             <Text style={{
                                 marginLeft: 15,
                                 color: this.props.screenProps.theme.primaryColour,
-                                fontSize: 24
+                                fontSize: 24,
+                                fontFamily: "Montserrat-SemiBold"
                             }}>
                                 Add a new recipient
                             </Text>
@@ -180,6 +249,7 @@ export class RecipientsScreen extends React.Component {
                             color: this.props.screenProps.theme.primaryColour,
                             fontSize: 24,
                             marginTop: 30,
+                            fontFamily: "Montserrat-SemiBold"
                         }}>
                             Modify an existing recipient
                         </Text>
@@ -414,6 +484,7 @@ export class ModifyPayeeScreen extends React.Component {
                         fontSize: 25,
                         marginBottom: 25,
                         fontWeight: 'bold',
+                        fontFamily: 'Montserrat-SemiBold'
                     }}>
                         Modify Recipient
                     </Text>
@@ -431,7 +502,11 @@ export class ModifyPayeeScreen extends React.Component {
                         width: '100%',
                         justifyContent: 'space-between'
                     }}>
-                        <Text style={{ fontSize: 15, color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
+                        <Image
+                          style={{width: 50, height: 50}}
+                          source={{uri: get_avatar(this.state.address)}}
+                        />
+                        <Text style={{ fontSize: 15, color: this.props.screenProps.theme.primaryColour, fontFamily: 'Montserrat-SemiBold' }}>
                             {this.state.nickname}'s details
                         </Text>
                     </View>
@@ -470,7 +545,7 @@ export class ModifyPayeeScreen extends React.Component {
                         }}>
                             <Text style={{
                                 color: this.props.screenProps.theme.primaryColour,
-                                fontWeight: 'bold',
+                                fontFamily: 'Montserrat-SemiBold'
                             }}>
                                 Name
                             </Text>
@@ -521,7 +596,7 @@ export class ModifyPayeeScreen extends React.Component {
                                 {...this.props}
                             />
                             :
-                            <Text style={{ color: this.props.screenProps.theme.slightlyMoreVisibleColour, fontSize: 16 }}>
+                            <Text style={{ fontFamily: 'Montserrat-Regular', color: this.props.screenProps.theme.slightlyMoreVisibleColour, fontSize: 16 }}>
                                 {this.state.nickname}
                             </Text>
                         }
@@ -541,7 +616,7 @@ export class ModifyPayeeScreen extends React.Component {
                         }}>
                             <Text style={{
                                 color: this.props.screenProps.theme.primaryColour,
-                                fontWeight: 'bold',
+                                fontFamily: 'Montserrat-SemiBold'
                             }}>
                                 Address
                             </Text>
@@ -598,7 +673,7 @@ export class ModifyPayeeScreen extends React.Component {
                                 {...this.props}
                             />
                             :
-                            <Text style={{ color: this.props.screenProps.theme.slightlyMoreVisibleColour, fontSize: 16 }}>
+                            <Text style={{fontFamily: 'Montserrat-Regular',  color: this.props.screenProps.theme.slightlyMoreVisibleColour, fontSize: 16 }}>
                                 {this.state.address}
                             </Text>
                         }
@@ -618,7 +693,7 @@ export class ModifyPayeeScreen extends React.Component {
                         }}>
                             <Text style={{
                                 color: this.props.screenProps.theme.primaryColour,
-                                fontWeight: 'bold',
+                                fontFamily: 'Montserrat-SemiBold'
                             }}>
                                 Payment ID
                             </Text>
@@ -670,7 +745,7 @@ export class ModifyPayeeScreen extends React.Component {
                                 {...this.props}
                             />
                             :
-                            <Text style={{ color: this.props.screenProps.theme.slightlyMoreVisibleColour, fontSize: 16 }}>
+                            <Text style={{ fontFamily: 'Montserrat-Regular', color: this.props.screenProps.theme.slightlyMoreVisibleColour, fontSize: 16 }}>
                                 {this.state.paymentID || 'None'}
                             </Text>
                         }
@@ -733,7 +808,7 @@ export class ModifyPayeeScreen extends React.Component {
                                     ],
                                 );
                             }}
-                            color='red'
+                            color='#DD3344'
                         />
                     </View>
                 </View>

@@ -15,7 +15,7 @@ const Config = new function() {
     /**
      * If you can't figure this one out, I don't have high hopes
      */
-    this.coinName = 'Kryptokrona';
+    this.coinName = 'kryptokrona';
 
     /**
      * Prefix for URI encoded addresses
@@ -163,7 +163,7 @@ const Config = new function() {
      * should be equal to your current block count. If it's significantly different,
      * you can offset your timestamp to fix the discrepancy
      */
-    this.chainLaunchTimestamp = new Date(1000 * 1513031505);
+    this.chainLaunchTimestamp = new Date(1557530788000);
 
     /**
      * Fee to take on all transactions, in percentage
@@ -210,7 +210,7 @@ const Config = new function() {
     /**
      * Displayed in the settings screen
      */
-    this.appVersion = 'v1.0.2';
+    this.appVersion = 'v1.1.0';
 
     /**
      * Base URL for us to chuck a hash on the end, and find a transaction

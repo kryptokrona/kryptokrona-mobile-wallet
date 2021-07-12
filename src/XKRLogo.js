@@ -18,14 +18,27 @@ export class XKRLogo extends React.Component {
     }
 
     componentDidMount() {
+
+      let flipFlop = false;
+
+      let keepAnimating = () => {
+
+        Animated.timing(this.animatedValue, {
+          toValue: flipFlop ? 0 : 224,
+          duration: 3000
+        }).start(() => {
+          flipFlop = flipFlop ? false : true;
+          keepAnimating();
+        });
+
+      }
+
         Animated.timing(this.animatedValue, {
           toValue: 224,
           duration: 3000
         }).start(() => {
-        Animated.timing(this.animatedValue,{
-          toValue:0,
-          duration: 3000
-        }).start()
+          keepAnimating();
+
     });
     }
 

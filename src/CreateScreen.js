@@ -15,6 +15,7 @@ import Config from './Config';
 import { Styles } from './Styles';
 import { Globals } from './Globals';
 import { saveToDatabase } from './Database';
+import { XKRLogo } from './XKRLogo';
 import { updateCoinPrice } from './Currency';
 import { navigateWithDisabledBack } from './Utilities';
 import { BottomButton, SeedComponent } from './SharedComponents';
@@ -34,15 +35,12 @@ export class WalletOptionScreen extends React.Component {
     render() {
         return(
             <View style={{ flex: 1, justifyContent: 'flex-start', backgroundColor: this.props.screenProps.theme.backgroundColour }}>
-                <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 50}}>
-                    <Image
-                        source={this.props.screenProps.theme.animatedLogo}
-                        style={Styles.logo}
-                    />
+                <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 250}}>
+                    <XKRLogo />
                     <Text style={{
                         fontSize: 28,
                         fontFamily: "Montserrat-Bold",
-                        color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                        color: this.props.screenProps.theme.primaryColour,
                         textAlign: 'center'
                     }}>
                         kryptokrona {'\n'}
@@ -108,15 +106,15 @@ export class CreateWalletScreen extends React.Component {
                     marginLeft: 30,
                     marginRight: 10,
                 }}>
-                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 40 }}>
+                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 40, fontFamily: "Montserrat-SemiBold", }}>
                         Your wallet has been created!
                     </Text>
 
-                    <Text style={{ fontSize: 15, marginBottom: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
+                    <Text style={{ fontFamily: "Montserrat-Regular",fontSize: 15, marginBottom: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                         Please save the following backup words somewhere safe.
                     </Text>
 
-                    <Text style={{ fontWeight: 'bold', color: 'red', marginBottom: 20 }}>
+                    <Text style={{ fontFamily: "Montserrat-SemiBold", color: '#BB4433', marginBottom: 20 }}>
                         Without this seed, if your phone gets lost, or your wallet gets corrupted,
                         you cannot restore your wallet, and your funds will be lost forever!
                     </Text>
@@ -125,7 +123,7 @@ export class CreateWalletScreen extends React.Component {
                 <View style={{ alignItems: 'center', flex: 1, justifyContent: 'flex-start' }}>
                     <SeedComponent
                         seed={Globals.wallet.getMnemonicSeed()[0]}
-                        borderColour={'red'}
+                        borderColour={'#BB4433'}
                         {...this.props}
                     />
 

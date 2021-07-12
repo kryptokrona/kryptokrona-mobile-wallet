@@ -131,6 +131,14 @@ export class MainScreen extends React.Component {
             inactiveBackgroundColor: screenProps.theme.backgroundColour,
             activeTintColor: screenProps.theme.primaryColour,
             inactiveTintColor: screenProps.theme.slightlyMoreVisibleColour,
+            showLabel: false,
+            style: {
+                borderTopWidth: 0,
+                height: 64,
+                textAlignVertical: "top",
+                backgroundColor: "#FF00FF",
+                marginBottom: 33
+            }
         }
     });
 
@@ -234,15 +242,27 @@ export class MainScreen extends React.Component {
         AppState.addEventListener('change', this.handleAppStateChange);
         Linking.addEventListener('url', this.handleURI);
         initBackgroundSync();
-        Animated.timing(this.animatedValue, {
-          toValue: 224,
-          duration: 30000
-        }).start(() => {
-          Animated.timing(this.animatedValue,{
-            toValue:0,
+        let flipFlop = false;
+
+        let keepAnimating = () => {
+
+          Animated.timing(this.animatedValue, {
+            toValue: flipFlop ? 0 : 224,
             duration: 30000
-          }).start()
-        });
+          }).start(() => {
+            flipFlop = flipFlop ? false : true;
+            keepAnimating();
+          });
+
+        }
+
+          Animated.timing(this.animatedValue, {
+            toValue: 224,
+            duration: 30000
+          }).start(() => {
+            keepAnimating();
+
+      });
     }
 
     componentWillUnmount() {
@@ -318,7 +338,7 @@ export class MainScreen extends React.Component {
 
                       elevation: 15,
                     }}>
-                    <Animated.View style={{backgroundColor: interpolateColor, flex: 1, borderRadius: 25}}>
+                    <Animated.View style={{backgroundColor: interpolateColor, flex: 1, borderBottomLeftRadius: 25, borderBottomRightRadius: 25}}>
                         <BalanceComponent
                             unlockedBalance={this.state.unlockedBalance}
                             lockedBalance={this.state.lockedBalance}
@@ -360,6 +380,7 @@ class AddressComponent extends React.Component {
                     color: this.props.screenProps.theme.primaryColour,
                     fontSize: 20,
                     marginBottom: 15,
+                    fontFamily: 'Montserrat-Regular'
                 }]}>
                     Your Wallet Address:
                 </Text>
@@ -380,6 +401,7 @@ class AddressComponent extends React.Component {
                     marginTop: 10,
                     marginRight: 20,
                     marginLeft: 20,
+                    fontFamily: 'Montserrat-Regular'
                 }]}>
                     {this.state.address}
                 </Text>
@@ -469,7 +491,7 @@ class BalanceComponent extends React.Component {
 
                     <Animatable.Text
                         ref={this.valueRef}
-                        style={{ color: this.props.screenProps.theme.slightlyMoreVisibleColour, fontSize: 20, marginTop: 30 }}
+                        style={{ color: this.props.screenProps.theme.slightlyMoreVisibleColour, fontSize: 20, marginTop: 30, fontFamily: 'Montserrat-Regular' }}
                     >
                         {this.props.coinValue}
                     </Animatable.Text>
@@ -554,6 +576,7 @@ class SyncComponent extends React.Component {
         return(
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', bottom: 0, position: 'absolute', left: 0, right: 0 }}>
                 <Animatable.Text ref={this.syncRef} style={{
+                    fontFamily: 'Montserrat-Regular',
                     color: this.props.screenProps.theme.slightlyMoreVisibleColour,
                 }}>
                     {this.state.walletHeight} / {this.state.networkHeight} - {this.state.percent}%

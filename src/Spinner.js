@@ -18,18 +18,33 @@ export class Spinner extends React.Component {
     }
 
     componentDidMount() {
+
+            let flipFlop = false;
+
+            let keepAnimating = () => {
+
+              Animated.timing(this.animatedValue, {
+                toValue: flipFlop ? 0 : 224,
+                duration: 3000
+              }).start(() => {
+                flipFlop = flipFlop ? false : true;
+                keepAnimating();
+              });
+
+            }
+
+              Animated.timing(this.animatedValue, {
+                toValue: 224,
+                duration: 3000
+              }).start(() => {
+                keepAnimating();
+
+          });
+
         Animated.loop(
             Animated.timing(this.animation, {toValue: 1, duration: 2000, useNativeDriver: true})
         ).start();
-        Animated.timing(this.animatedValue, {
-          toValue: 224,
-          duration: 3000
-        }).start(() => {
-      Animated.timing(this.animatedValue,{
-        toValue:0,
-        duration: 3000
-      }).start()
-    });
+
     }
 
     render() {

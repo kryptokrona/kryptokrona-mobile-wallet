@@ -48,7 +48,8 @@ export class DisclaimerScreen extends React.Component {
                         fontSize: 25,
                         marginBottom: 40,
                         marginLeft: 30,
-                        marginRight: 20
+                        marginRight: 20,
+                        fontFamily: "Montserrat-SemiBold",
                     }}>
                         Before we continue, please take a minute to read and agree to the below statements.
                     </Text>
@@ -89,6 +90,7 @@ export class DisclaimerScreen extends React.Component {
                             <Text style={{
                                 fontSize: 15,
                                 color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                                fontFamily: "Montserrat-Regular",
                             }}>
                                 I understand that I am the sole owner of my private keys/seed, and if I lose them, my wallet cannot be recovered.
                             </Text>
@@ -111,6 +113,7 @@ export class DisclaimerScreen extends React.Component {
                             <Text style={{
                                 fontSize: 15,
                                 color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                                fontFamily: "Montserrat-Regular",
                             }}>
                                 I understand that no warranty or guarantee is provided, expressed, or implied when using this app and any funds lost in using this app are not the responsibility of the application creator, publisher, or distributor.
                             </Text>

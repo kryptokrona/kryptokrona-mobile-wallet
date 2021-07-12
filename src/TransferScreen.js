@@ -23,7 +23,7 @@ import {
 
 import {
     View, Text, TextInput, TouchableWithoutFeedback, FlatList, Platform,
-    ScrollView, Clipboard,
+    ScrollView, Clipboard, Image
 } from 'react-native';
 
 import { Input, Button } from 'react-native-elements';
@@ -42,6 +42,45 @@ import {
     getArrivalTime, navigateWithDisabledBack, delay, toastPopUp, handleURI,
     validAmount,
 } from './Utilities';
+
+import Identicon from 'identicon.js';
+
+const intToRGB = (int) => {
+
+  if (typeof int !== 'number') throw new Error(errorMessage);
+  if (Math.floor(int) !== int) throw new Error(errorMessage);
+  if (int < 0 || int > 16777215) throw new Error(errorMessage);
+
+  var red = int >> 16;
+  var green = int - (red << 16) >> 8;
+  var blue = int - (red << 16) - (green << 8);
+
+  return {
+    red: red,
+    green: green,
+    blue: blue
+  }
+}
+
+
+String.prototype.hashCode = function() {
+    var hash = 0;
+    if (this.length == 0) {
+        return hash;
+    }
+    for (var i = 0; i < this.length; i++) {
+        var char = this.charCodeAt(i);
+        hash = ((hash<<5)-hash)+char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
+}
+
+const hashCode = (str) => {
+		let hash = Math.abs(str.hashCode())*0.007812499538;
+    return Math.floor(hash);
+
+}
 
 export class QrScannerScreen extends React.Component {
     constructor(props) {
@@ -226,7 +265,8 @@ export class TransferScreen extends React.Component {
                         color: this.props.screenProps.theme.primaryColour,
                         fontSize: 25,
                         marginBottom: 40,
-                        marginLeft: 30
+                        marginLeft: 30,
+                        fontFamily: 'Montserrat-SemiBold'
                     }}>
                         How much {Config.coinName} do you want to send?
                     </Text>
@@ -263,7 +303,6 @@ export class TransferScreen extends React.Component {
                             }}
                             titleStyle={{
                                 color: this.props.screenProps.theme.primaryColour,
-                                textDecorationLine: 'underline',
                             }}
                             type="clear"
                         />
@@ -274,6 +313,7 @@ export class TransferScreen extends React.Component {
                         fontSize: 18,
                         marginLeft: 30,
                         marginTop: 20,
+                        fontFamily: 'Montserrat-Regular'
                     }}>
                         Should arrive in {getArrivalTime()}
                     </Text>
@@ -317,6 +357,29 @@ class AddressBook extends React.Component {
     }
 
     render() {
+
+                  function get_avatar(hash) {
+                    // Displays a fixed identicon until user adds new contact address in the input field
+                    if (hash.length < 15) {
+                      hash = 'SEKReYanL2qEQF2HA8tu9wTpKBqoCA8TNb2mNRL5ZDyeFpxsoGNgBto3s3KJtt5PPrRH36tF7DBEJdjUn5v8eaESN2T5DPgRLVY';
+                    }
+                    // Get custom color scheme based on address
+                    let rgb = intToRGB(hashCode(hash));
+
+                    // Options for avatar
+                    var options = {
+                          foreground: [rgb.red, rgb.green, rgb.blue, 255],               // rgba black
+                          background: [parseInt(rgb.red/10), parseInt(rgb.green/10), parseInt(rgb.blue/10), 0],         // rgba white
+                          margin: 0.2,                              // 20% margin
+                          size: 50,                                // 420px square
+                          format: 'png'                           // use SVG instead of PNG
+                        };
+
+                    // create a base64 encoded SVG
+                    return 'data:image/png;base64,' + new Identicon(hash, options).toString();
+                  }
+
+
         return(
             <List style={{
                 marginBottom: 20,
@@ -337,27 +400,18 @@ class AddressBook extends React.Component {
                                     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace'
                                 }}
                                 leftIcon={
-                                    <View style={{
-                                        width: 50,
-                                        height: 50,
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        backgroundColor: this.props.screenProps.theme.iconColour,
-                                        borderRadius: 45
-                                    }}>
-                                        <Text style={[Styles.centeredText, {
-                                            fontSize: 30,
-                                            color: this.props.screenProps.theme.primaryColour,
-                                        }]}>
-                                            {item.nickname[0].toUpperCase()}
-                                        </Text>
-                                    </View>
+                                  <Image
+                                    style={{width: 50, height: 50}}
+                                    source={{uri: get_avatar(item.address)}}
+                                  />
                                 }
                                 titleStyle={{
-                                    color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                                    color: this.props.screenProps.theme.primaryColour,
+                                    fontFamily: 'Montserrat-SemiBold'
                                 }}
                                 subtitleStyle={{
                                     color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                                    fontFamily: 'Montserrat-Regular'
                                 }}
                                 onPress={() => {
                                     this.props.navigation.navigate(
@@ -386,7 +440,8 @@ class ExistingPayees extends React.Component {
                 <Text style={{
                     color: this.props.screenProps.theme.primaryColour,
                     marginTop: 10,
-                    fontSize: 16
+                    fontSize: 16,
+                    fontFamily: 'Montserrat-Regular'
                 }}>
                     Your address book is empty! Add a new recipient above to populate it.
                 </Text>
@@ -403,6 +458,7 @@ class ExistingPayees extends React.Component {
                     <Text style={{
                         color: this.props.screenProps.theme.primaryColour,
                         marginTop: 40,
+                        fontFamily: 'Montserrat-SemiBold'
                     }}>
                         Address Book
                     </Text>
@@ -542,8 +598,8 @@ export class NewPayeeScreen extends React.Component {
                     flex: 1,
                     marginTop: 60,
                 }}>
-                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 40, marginLeft: 30 }}>
-                        New Payee
+                    <Text style={{ fontFamily: "Montserrat-SemiBold", color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 40, marginLeft: 30 }}>
+                        New contact
                     </Text>
 
                     <Input
@@ -551,14 +607,16 @@ export class NewPayeeScreen extends React.Component {
                             width: '90%',
                             marginLeft: 20,
                             marginBottom: 30,
+                            fontFamily: 'Montserrat-Regular',
                         }}
                         inputContainerStyle={{
                             borderColor: this.props.screenProps.theme.notVeryVisibleColour,
                             borderWidth: 1,
                             borderRadius: 2,
                         }}
-                        label={'Name of recipient'}
+                        label={'Name'}
                         labelStyle={{
+                            fontFamily: 'Montserrat-Regular',
                             marginBottom: 5,
                             marginRight: 2,
                             color: this.props.screenProps.theme.slightlyMoreVisibleColour,
@@ -566,7 +624,8 @@ export class NewPayeeScreen extends React.Component {
                         inputStyle={{
                             color: this.props.screenProps.theme.primaryColour,
                             fontSize: 30,
-                            marginLeft: 5
+                            marginLeft: 5,
+                            fontFamily: 'Montserrat-SemiBold',
                         }}
                         value={this.state.nickname}
                         onChangeText={(text) => {
@@ -590,6 +649,7 @@ export class NewPayeeScreen extends React.Component {
                         maxLength={Config.integratedAddressLength}
                         label={'Recipient\'s address'}
                         labelStyle={{
+                            fontFamily: 'Montserrat-Regular',
                             marginBottom: 5,
                             marginRight: 2,
                             color: this.props.screenProps.theme.slightlyMoreVisibleColour,
@@ -629,7 +689,8 @@ export class NewPayeeScreen extends React.Component {
                                 });
                             }}
                             titleStyle={{
-                                color: this.props.screenProps.theme.primaryColour
+                                color: this.props.screenProps.theme.primaryColour,
+                                fontFamily: 'Montserrat-SemiBold'
 
                             }}
                             type="clear"
@@ -652,6 +713,7 @@ export class NewPayeeScreen extends React.Component {
                             marginBottom: 5,
                             marginRight: 2,
                             color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                            fontFamily: 'Montserrat-Regular'
                         }}
                         inputStyle={{
                             color: this.props.screenProps.theme.primaryColour,
@@ -929,7 +991,7 @@ export class ConfirmScreen extends React.Component {
                     marginTop: 60,
                     marginHorizontal: 30,
                 }}>
-                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 25, fontWeight: 'bold' }}>
+                    <Text style={{ fontFamily: 'Montserrat-SemiBold', color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 25 }}>
                         Review your transfer
                     </Text>
                 </View>
@@ -942,7 +1004,7 @@ export class ConfirmScreen extends React.Component {
                         alignItems: 'flex-start',
                         justifyContent: 'flex-start',
                     }}>
-                        <Text style={{ fontSize: 13, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
+                        <Text style={{ fontFamily: 'Montserrat-Regular',fontSize: 13, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                             <Text style={{ color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
                                 {prettyPrintAmount(this.state.recipientAmount, Config)}{' '}
                             </Text>
@@ -966,7 +1028,7 @@ export class ConfirmScreen extends React.Component {
                             }}>
                                 <Text style={{
                                     color: this.props.screenProps.theme.primaryColour,
-                                    fontWeight: 'bold',
+                                    fontFamily: 'Montserrat-SemiBold',
                                 }}>
                                     Notes
                                 </Text>
@@ -1025,7 +1087,7 @@ export class ConfirmScreen extends React.Component {
                             width: '100%',
                             justifyContent: 'space-between'
                         }}>
-                            <Text style={{ fontSize: 15, color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
+                            <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 15, color: this.props.screenProps.theme.primaryColour }}>
                                 {this.state.payee.nickname}'s details
                             </Text>
 
@@ -1044,21 +1106,21 @@ export class ConfirmScreen extends React.Component {
 
                         <View style={{ borderWidth: 0.7, borderColor: 'lightgrey', width: '100%' }}/>
 
-                        <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
+                        <Text style={{ fontFamily: 'Montserrat-SemiBold', marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                             Address
                         </Text>
 
-                        <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
+                        <Text style={{ fontFamily: 'Montserrat-Regular', color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
                             {this.state.payee.address}
                         </Text>
 
                         {this.state.payee.paymentID !== '' &&
                         <View>
-                            <Text style={{ marginBottom: 5, marginTop: 20 }}>
+                            <Text style={{ fontFamily: 'Montserrat-SemiBold', marginBottom: 5, marginTop: 20 }}>
                                 Payment ID
                             </Text>
 
-                            <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
+                            <Text style={{ fontFamily: 'Montserrat-Regular', color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
                                 {this.state.payee.paymentID}
                             </Text>
                         </View>}
@@ -1070,7 +1132,7 @@ export class ConfirmScreen extends React.Component {
                             width: '100%',
                             justifyContent: 'space-between'
                         }}>
-                            <Text style={{ fontSize: 15, color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
+                            <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 15, color: this.props.screenProps.theme.primaryColour }}>
                                 Transfer details
                             </Text>
 
@@ -1093,58 +1155,58 @@ export class ConfirmScreen extends React.Component {
 
                         <View style={{ borderWidth: 0.7, borderColor: 'lightgrey', width: '100%' }}/>
 
-                        <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
+                        <Text style={{ fontFamily: 'Montserrat-Regular', marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                             You're sending
                         </Text>
 
-                        <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
+                        <Text style={{ fontFamily: 'Montserrat-Regular',color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
                             {prettyPrintAmount(this.state.sendAll ? this.state.unlockedBalance : this.state.recipientAmount + this.state.feeTotal, Config)}
                         </Text>
 
-                        <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
+                        <Text style={{ fontFamily: 'Montserrat-Regular', marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                             {this.state.payee.nickname} gets
                         </Text>
 
-                        <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
+                        <Text style={{ fontFamily: 'Montserrat-Regular',color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
                             {prettyPrintAmount(this.state.recipientAmount, Config)}
                         </Text>
 
-                        <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
+                        <Text style={{ fontFamily: 'Montserrat-Regular',marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                             Network fee
                         </Text>
 
-                        <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
+                        <Text style={{ fontFamily: 'Montserrat-Regular',color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
                             {prettyPrintAmount(this.state.fee, Config)}
                         </Text>
 
                         {this.state.devFee > 0 &&
                         <View>
-                            <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
+                            <Text style={{ fontFamily: 'Montserrat-Regular',marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                                 Developer fee
                             </Text>
 
-                            <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
+                            <Text style={{ fontFamily: 'Montserrat-Regular',color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
                                 {prettyPrintAmount(this.state.devFee, Config)}
                             </Text>
                         </View>}
 
                         {this.state.nodeFee > 0 &&
                         <View>
-                            <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
+                            <Text style={{ fontFamily: 'Montserrat-Regular',marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                                 Node fee
                             </Text>
 
-                            <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
+                            <Text style={{ fontFamily: 'Montserrat-Regular',color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
                                 {prettyPrintAmount(this.state.nodeFee, Config)}
                             </Text>
                         </View>}
 
                         <View>
-                            <Text style={{ marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
+                            <Text style={{ fontFamily: 'Montserrat-Regular',marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
                                 Total fee
                             </Text>
 
-                            <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
+                            <Text style={{ fontFamily: 'Montserrat-Regular',color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
                                 {prettyPrintAmount(this.state.feeTotal, Config)}
                             </Text>
                         </View>
@@ -1232,7 +1294,7 @@ export class ChoosePayeeScreen extends React.Component {
                     marginTop: 60,
                     marginRight: 10,
                 }}>
-                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 30 }}>
+                    <Text style={{ fontFamily: "Montserrat-SemiBold", color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 30 }}>
                         Who are you sending to?
                     </Text>
                 </View>
@@ -1259,6 +1321,7 @@ export class ChoosePayeeScreen extends React.Component {
                         }}
                         titleStyle={{
                             color: this.props.screenProps.theme.primaryColour,
+                            fontFamily: 'Montserrat-SemiBold'
                         }}
                         type="clear"
                     />
@@ -1301,7 +1364,7 @@ export class ChoosePayeeScreen extends React.Component {
                                 />
                             </View>
 
-                            <Text style={{ marginLeft: 15, color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
+                            <Text style={{ fontFamily: 'Montserrat-Regular', marginLeft: 15, color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
                                 Add a new recipient
                             </Text>
                         </View>
@@ -1412,7 +1475,7 @@ export class SendTransactionScreen extends React.Component {
                         color: this.props.screenProps.theme.primaryColour,
                         fontSize: 25,
                         marginBottom: 25,
-                        fontWeight: 'bold'
+                        fontFamily: "Montserrat-SemiBold",
                     }}
                     animation='tada'
                     delay={1000}
@@ -1420,18 +1483,18 @@ export class SendTransactionScreen extends React.Component {
                     Transaction complete
                 </Animatable.Text>
 
-                <Text style={{ fontSize: 13, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
-                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
+                <Text style={{ fontFamily: 'Montserrat-Regular', fontSize: 13, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
+                    <Text style={{ fontFamily: 'Montserrat-Regular',color: this.props.screenProps.theme.primaryColour }}>
                         {prettyPrintAmount(this.state.amount, Config)}{' '}
                     </Text>
                     was sent to{' '}
-                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
+                    <Text style={{ fontFamily: 'Montserrat-Regular', color: this.props.screenProps.theme.primaryColour }}>
                         {this.state.nickname}'s{' '}
                     </Text>
                     account.
                 </Text>
 
-                <Text style={{ fontSize: 15, color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold', marginTop: 15 }}>
+                <Text style={{ fontSize: 15, color: this.props.screenProps.theme.primaryColour, fontFamily: 'Montserrat-Regular', marginTop: 15 }}>
                     Transaction hash
                 </Text>
 

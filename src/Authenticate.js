@@ -163,6 +163,7 @@ export class RequestHardwareAuthScreen extends React.Component {
                                 fontSize: 22,
                                 color: this.props.screenProps.theme.slightlyMoreVisibleColour,
                                 marginHorizontal: 80,
+                                fontFamily: "Montserrat-SemiBold",
                             }]}>
                                 Touch the fingerprint sensor {this.props.navigation.state.params.subtitle}
                             </Text>
@@ -232,7 +233,8 @@ export class ChooseAuthMethodScreen extends React.Component {
                         fontSize: 25,
                         marginBottom: 40,
                         marginLeft: 30,
-                        marginRight: 20
+                        marginRight: 20,
+                        fontFamily: "Montserrat-SemiBold",
                     }}>
                         How would you like to secure your wallet?
                     </Text>
@@ -254,6 +256,7 @@ export class ChooseAuthMethodScreen extends React.Component {
                             <Text style={{
                                 fontSize: 15,
                                 color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                                fontFamily: "Montserrat-Regular",
                             }}>
                                 Use Hardware Authentication where available (Fingerprint, FaceID, TouchID), and if not available, fallback to a PIN Code.
                             </Text>
@@ -277,6 +280,7 @@ export class ChooseAuthMethodScreen extends React.Component {
                             <Text style={{
                                 fontSize: 15,
                                 color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                                fontFamily: "Montserrat-Regular",
                             }}>
                                 Use a 6 digit PIN Code.
                             </Text>
@@ -301,6 +305,7 @@ export class ChooseAuthMethodScreen extends React.Component {
                             <Text style={{
                                 fontSize: 15,
                                 color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                                fontFamily: "Montserrat-Regular",
                             }}>
                                 Use no authentication at all.
                             </Text>

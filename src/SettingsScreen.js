@@ -495,6 +495,7 @@ export class SwapCurrencyScreen extends React.Component {
                         renderItem={({item}) => (
                             <ListItem
                                 title={item.coinName}
+                                style={{borderBottomWidth: 0}}
                                 subtitle={item.symbol + ' / ' + item.ticker.toUpperCase()}
                                 leftIcon={
                                     <View style={{width: 30, alignItems: 'center', justifyContent: 'center', marginRight: 10}}>
@@ -817,6 +818,74 @@ export class SettingsScreen extends React.Component {
     }
 
     render() {
+      let getColor = (item) => {
+        switch(item.title) {
+           case "FAQ":
+              return "#5f86f2";
+              break;
+           case "Backup Keys":
+              return "#a65ff2";
+              break;
+            case "View logs":
+               return "#f25fd0";
+               break;
+           case "Rewind Wallet":
+              return "#f25f61";
+              break;
+           case "Speed Up Background Syncing":
+              return "#f2cb5f";
+              break;
+          case "Swap Node":
+             return "#abf25f";
+             break;
+         case "Swap Currency":
+            return "#5ff281";
+            break;
+          case "Limit data":
+             return "#5ff2f0";
+             break;
+           case "Enable dark mode":
+              return "#5f86f2";
+              break;
+          case "Enable PIN/Fingerprint confirmation":
+             return "#a65ff2";
+             break;
+             case "Change login method":
+                return "#f25fd0";
+                break;
+                case "Enable Notifications":
+                   return "#f25f61";
+                   break;
+                 case "Scan Coinbase Transactions":
+                    return "#f2cb5f";
+                    break;
+                   case "Enable Auto Optimization":
+                      return "#abf25f";
+                      break;
+                      case "Manually Optimize Wallet":
+                         return "#5ff281";
+                         break;
+                         case "View Kryptokrona Mobile Wallet on Google Play":
+                            return "#5ff2f0";
+                            break;
+                          case "View Kryptokrona Mobile Wallet on Github":
+                             return "#5f86f2";
+                             break;
+                            case "Resync Wallet":
+                               return "#a65ff2";
+                               break;
+                               case "Delete Wallet":
+                                  return "#f25fd0";
+                                  break;
+                                  case "Kryptokrona Mobile Wallet":
+                                     return "#f25f61";
+                                     break;
+                             default:
+                             return this.props.screenProps.theme.foregroundColour
+
+
+        }
+      }
         return(
             <View style={{
                 backgroundColor: this.props.screenProps.theme.backgroundColour,
@@ -1197,20 +1266,26 @@ export class SettingsScreen extends React.Component {
                         renderItem={({item}) => (
                             <ListItem
                                 title={item.title}
+                                noBorder
                                 subtitle={item.description}
+                                style={{borderBottomWidth: 0}}
                                 titleStyle={{
-                                    color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                                    color: this.props.screenProps.theme.primaryColour,
+                                    borderBottomWidth: 0,
+                                    fontFamily: 'Montserrat-SemiBold'
                                 }}
                                 subtitleStyle={{
                                     color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                                    borderBottomWidth: 0,
+                                    fontFamily: 'Montserrat-Regular'
                                 }}
                                 leftIcon={
-                                    <View style={{width: 30, alignItems: 'center', justifyContent: 'center', marginRight: 10}}>
-                                        <item.icon.IconType name={item.icon.iconName} size={25} color={this.props.screenProps.theme.primaryColour}/>
+                                    <View style={{borderBottomWidth: 0, color: 'magenta', width: 30, alignItems: 'center', justifyContent: 'center', marginRight: 10}}>
+                                        <item.icon.IconType name={item.icon.iconName} size={25} color={getColor(item)}/>
                                     </View>
                                 }
                                 rightIcon={item.checkbox &&
-                                    <View style={{width: 30, alignItems: 'center', justifyContent: 'center', marginRight: 10}}>
+                                    <View style={{borderBottomWidth: 0, width: 30, alignItems: 'center', justifyContent: 'center', marginRight: 10}}>
                                         <MaterialIcons name={item.checked ? 'check-box' : 'check-box-outline-blank'} size={25} color={this.props.screenProps.theme.primaryColour}/>
                                     </View>
                                 }

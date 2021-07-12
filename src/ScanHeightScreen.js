@@ -41,11 +41,11 @@ export class PickMonthScreen extends React.Component {
                     marginLeft: 30,
                     marginRight: 10,
                 }}>
-                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 5 }}>
+                    <Text style={{ fontFamily: 'Montserrat-SemiBold', color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 5 }}>
                         Which month did you create your wallet?
                     </Text>
 
-                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16, marginBottom: 60 }}>
+                    <Text style={{fontFamily: 'Montserrat-Regular', color: this.props.screenProps.theme.primaryColour, fontSize: 16, marginBottom: 60 }}>
                         This helps us scan your wallet faster.
                     </Text>
                 </View>
@@ -69,6 +69,7 @@ export class PickMonthScreen extends React.Component {
                                 color: this.props.screenProps.theme.primaryColour,
                                 fontSize: 16,
                                 marginRight: 10,
+                                fontFamily: 'Montserrat-SemiBold',
                             }}>
                                 Next
                             </Text>
@@ -78,13 +79,15 @@ export class PickMonthScreen extends React.Component {
                                 color: this.props.screenProps.theme.primaryColour,
                                 fontSize: 16,
                                 marginLeft: 10,
+                                fontFamily: 'Montserrat-SemiBold',
                             }}>
                                 Prev
                             </Text>
                         }
                         yearTextStyle={{
                             color: this.props.screenProps.theme.primaryColour,
-                            fontSize: 18
+                            fontSize: 18,
+                            fontFamily: 'Montserrat-SemiBold',
                         }}
                         selectedDate={this.state.month}
                         onMonthTapped={(date) => this.setState({ month: date})}
@@ -162,11 +165,11 @@ export class PickExactBlockHeightScreen extends React.Component {
                     marginLeft: 30,
                     marginRight: 10,
                 }}>
-                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 5 }}>
+                    <Text style={{ fontFamily: 'Montserrat-SemiBold', color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 5 }}>
                         What block did you create your wallet at?
                     </Text>
 
-                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16, marginBottom: 60 }}>
+                    <Text style={{ fontFamily: 'Montserrat-Regular', color: this.props.screenProps.theme.primaryColour, fontSize: 16, marginBottom: 60 }}>
                         This helps us scan your wallet faster.
                     </Text>
                 </View>
@@ -254,11 +257,11 @@ export class PickBlockHeightScreen extends React.Component {
                     marginLeft: 30,
                     marginRight: 10,
                 }}>
-                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 5 }}>
+                    <Text style={{fontFamily: 'Montserrat-SemiBold', color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 5 }}>
                         Between which block heights did you create your wallet?
                     </Text>
 
-                    <Text style={{ color: this.props.screenProps.theme.primaryColour, fontSize: 16, marginBottom: 60 }}>
+                    <Text style={{ fontFamily: 'Montserrat-Regular',color: this.props.screenProps.theme.primaryColour, fontSize: 16, marginBottom: 60 }}>
                         This helps us scan your wallet faster.
                     </Text>
                 </View>
@@ -280,7 +283,7 @@ export class PickBlockHeightScreen extends React.Component {
                                 <Button
                                     title={startHeight + ' - ' + endHeight}
                                     onPress={() => this.props.navigation.navigate('ImportKeysOrSeed', { scanHeight: startHeight })}
-                                    color={this.props.screenProps.theme.primaryColour}
+                                    color={this.props.screenProps.theme.buttonColour}
                                 />
                             </View>
                         );

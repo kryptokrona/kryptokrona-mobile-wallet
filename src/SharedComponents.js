@@ -152,7 +152,11 @@ export class BottomButton extends React.Component {
                     buttonStyle={{
                         backgroundColor: this.props.screenProps.theme.buttonColour,
                         height: 50,
-                        borderRadius: 0,
+                        borderRadius: 5,
+                        marginBottom: 48,
+                        width: "50%",
+                        marginLeft: "25%",
+                        fontFamily: 'Montserrat-SemiBold'
                     }}
                     disabledStyle={{
                         backgroundColor: this.props.screenProps.theme.disabledColour,

@@ -189,7 +189,7 @@ export class TransactionDetailsScreen extends React.Component {
                                 Linking.openURL(Config.explorerBaseURL + this.state.transaction.hash)
                                        .catch((err) => Globals.logger.addLogMessage('Failed to open url: ' + err));
                             }}
-                            color={this.props.screenProps.theme.primaryColour}
+                            color={this.props.screenProps.theme.buttonColour}
                         />
                     </View>}
                 </View>
@@ -294,7 +294,7 @@ export class TransactionsScreen extends React.Component {
 
         const noTransactions =
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: this.props.screenProps.theme.backgroundColour }}>
-                <Text style={{ borderRadius: 5,
+                <Text style={{ fontFamily: 'Montserrat-Regular', borderRadius: 5,
                 borderColor: this.props.screenProps.theme.borderColour,
                 borderWidth: 1, padding: 10, paddingBottom: 0, fontSize: 15, width: 200, color: this.props.screenProps.theme.primaryColour, justifyContent: 'center', textAlign: 'center' }}>
                     Looks like you haven't sent{"\n"}or received any transactions yet!{"\n"} {"\n"} 😥 {"\n"}
@@ -379,6 +379,7 @@ class TransactionList extends React.Component {
                         style: {
                             color: this.props.screenProps.theme.primaryColour,
                             fontSize: 16,
+                            fontFamily: 'Montserrat-SemiBold'
                         }
                     }}
                     rightComponent={{
@@ -413,10 +414,12 @@ class TransactionList extends React.Component {
                                     </View>
                                 }
                                 titleStyle={{
-                                    color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                                    color: this.props.screenProps.theme.primaryColour,
+                                    fontFamily: 'Montserrat-SemiBold'
                                 }}
                                 subtitleStyle={{
                                     color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                                    fontFamily: 'Montserrat-Regular'
                                 }}
                                 onPress={() => this.props.navigation.navigate('TransactionDetails', { transaction: item })}
                             />

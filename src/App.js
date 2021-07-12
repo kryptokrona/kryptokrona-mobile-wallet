@@ -77,6 +77,14 @@ TransactionNavigator.navigationOptions = ({ navigation, screenProps }) => ({
         inactiveBackgroundColor: screenProps.theme.backgroundColour,
         activeTintColor: screenProps.theme.primaryColour,
         inactiveTintColor: screenProps.theme.slightlyMoreVisibleColour,
+        showLabel: false,
+        style: {
+          borderTopWidth: 0,
+          height: 64,
+          textAlignVertical: "top",
+          backgroundColor: "#FF00FF",
+          marginBottom: 33
+        }
     }
 });
 
@@ -113,6 +121,14 @@ TransferNavigator.navigationOptions = ({ navigation, screenProps }) => {
             inactiveBackgroundColor: screenProps.theme.backgroundColour,
             activeTintColor: screenProps.theme.primaryColour,
             inactiveTintColor: screenProps.theme.slightlyMoreVisibleColour,
+            showLabel: false,
+            style: {
+              borderTopWidth: 0,
+              height: 64,
+              textAlignVertical: "top",
+              backgroundColor: "#FF00FF",
+              marginBottom: 33
+            }
         }
     };
 };
@@ -153,6 +169,14 @@ SettingsNavigator.navigationOptions = ({ navigation, screenProps }) => ({
         inactiveBackgroundColor: screenProps.theme.backgroundColour,
         activeTintColor: screenProps.theme.primaryColour,
         inactiveTintColor: screenProps.theme.slightlyMoreVisibleColour,
+        showLabel: false,
+        style: {
+          borderTopWidth: 0,
+          height: 64,
+          textAlignVertical: "top",
+          backgroundColor: "#FF00FF",
+          marginBottom: 33
+        }
     }
 });
 
@@ -182,6 +206,14 @@ RecipientNavigator.navigationOptions = ({ navigation, screenProps }) => ({
         inactiveBackgroundColor: screenProps.theme.backgroundColour,
         activeTintColor: screenProps.theme.primaryColour,
         inactiveTintColor: screenProps.theme.slightlyMoreVisibleColour,
+        showLabel: false,
+        style: {
+          borderTopWidth: 0,
+          height: 64,
+          textAlignVertical: "top",
+          backgroundColor: "#FF00FF",
+          marginBottom: 33
+        }
     }
 });
 
@@ -198,6 +230,14 @@ const HomeNavigator = createBottomTabNavigator(
         initialRouteName: 'Main',
         tabBarOptions: {
             activeTintColor: "Themes.darkMode.primaryColour",
+            showLabel: false,
+            style: {
+              borderTopWidth: 0,
+              height: 64,
+              textAlignVertical: "top",
+              backgroundColor: "#FF00FF",
+              marginBottom: 33
+            }
 
         },
         defaultNavigationOptions: ({ navigation }) => ({
@@ -224,7 +264,7 @@ const HomeNavigator = createBottomTabNavigator(
                     iconName = 'ios-settings';
                 }
 
-                return <IconComponent name={iconName} size={25} color={tintColor}/>;
+                return <IconComponent name={iconName} size={32} color={tintColor}/>;
             },
         }),
     }
@@ -355,7 +395,7 @@ export default class App extends React.Component {
         const notLoadedComponent = <View></View>;
 
         return(
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, backgroundColor: this.state.screenProps.theme.backgroundColour}}>
             <StatusBar hidden />
                 {this.state.loaded ? loadedComponent : notLoadedComponent}
             </View>

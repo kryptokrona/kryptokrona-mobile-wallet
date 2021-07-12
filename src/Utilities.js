@@ -43,7 +43,7 @@ export function navigateWithDisabledBack(route, routeParams) {
     return StackActions.reset({
         index: 0,
         actions: [
-            NavigationActions.navigate({ 
+            NavigationActions.navigate({
                 routeName: route,
                 params: routeParams,
             }),
@@ -67,13 +67,13 @@ export function prettyPrintDate(date) {
     return date.format('D MMM, YYYY HH:mm');
 }
 
-/** 
+/**
  * Gets the approximate height of the blockchain, based on the launch timestamp
  */
 export function getApproximateBlockHeight(date) {
     const difference = (date - Config.chainLaunchTimestamp) / 1000;
 
-    let blockHeight = Math.floor(difference / Config.blockTargetTime);
+    let blockHeight = Math.floor(difference / 90);
 
     if (blockHeight < 0) {
         blockHeight = 0;
@@ -194,12 +194,12 @@ export function parseURI(qrData) {
         }
 
         const existingPayee = Globals.payees.find((p) => p.nickname === name);
-        
+
         /* Payee exists already */
         if (existingPayee) {
             /* New payee doesn't match existing payee, get them to enter a new name */
             if (existingPayee.address !== newPayee.address ||
-                existingPayee.paymentID !== newPayee.paymentID) { 
+                existingPayee.paymentID !== newPayee.paymentID) {
                 return {
                     paymentID: paymentID || '',
                     address,
