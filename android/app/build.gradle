@@ -133,10 +133,10 @@ android {
         applicationId "com.xkr"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 102
-        versionName "v1.0.2"
+        versionCode 110
+        versionName "v1.1.0"
         ndk {
-            abiFilters "armeabi-v7a", "x86"
+            abiFilters "armeabi-v7a", "x86", "arm64-v8a"
             moduleName "TurtleCoin_jni"
             stl "stlport_static"
         }
