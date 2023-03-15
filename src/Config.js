@@ -182,13 +182,13 @@ const Config = new function() {
      * you just set this to an empty string. If you have another API you want
      * it to support, you're going to have to modify the code in Currency.js.
      */
-    this.priceApiLink = 'https://api.coingecko.com/api/v3/simple/price';
+    this.priceApiLink = 'https://api.coinpaprika.com/v1/tickers/xkr-kryptokrona';
 
     /**
      * Default daemon to use. Can either be a BlockchainCacheApi(baseURL, SSL),
      * or a ConventionalDaemon(url, port).
      */
-    this.defaultDaemon = new Daemon('gota.kryptokrona.se', 11898);
+    this.defaultDaemon = new Daemon('privacymine.net', 11898);
 
     /**
      * A link to where a bug can be reported for your wallet. Please update
@@ -232,7 +232,7 @@ const Config = new function() {
      * A url to fetch node info from. Should follow the turtlepay format
      * detailed here: https://docs.turtlepay.io/blockapi/
      */
-    this.nodeListURL = 'https://kryptokrona.se/nodelist.json';
+    this.nodeListURL = 'https://raw.githubusercontent.com/kryptokrona/kryptokrona-public-nodes/main/nodes.json';
 };
 
 module.exports = Config;

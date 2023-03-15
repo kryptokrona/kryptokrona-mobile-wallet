@@ -36,6 +36,43 @@ export function toastPopUp(message, short = true) {
     ToastAndroid.show(message, short ? ToastAndroid.SHORT : ToastAndroid.LONG);
 }
 
+export async function getBestNode(ssl=true) {
+
+    let recommended_node = undefined;
+
+    await Globals.updateNodeList();
+  
+    let node_requests = [];
+    let ssl_nodes =[];
+    if (ssl) {
+        ssl_nodes = Globals.daemons.filter(node => {return node.ssl});
+    } else {
+        ssl_nodes = Globals.daemons.filter(node => {return !node.ssl});
+    }
+  
+    ssl_nodes = ssl_nodes.sort((a, b) => 0.5 - Math.random());
+  
+    for (node in ssl_nodes) {
+      let this_node = ssl_nodes[node];
+  
+      let nodeURL = `${this_node.ssl ? 'https://' : 'http://'}${this_node.url}:${this_node.port}/info`;
+      try {
+        const resp = await fetch(nodeURL, {
+           method: 'GET'
+        }, 1000);
+  
+        if (resp.ok) {
+            recommended_node = this_node;
+            return(this_node);
+        }
+        } catch (e) {
+        console.log(e);
+        }
+
+    }
+}
+
+
 /* Navigate to a route, resetting the stack, so the user cannot go back.
    We want to do this so when we go from the splash screen to the menu screen,
    the user can't return, and get stuck there. */

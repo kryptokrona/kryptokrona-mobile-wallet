@@ -14,10 +14,10 @@ import Config from './Config';
 
 import { Styles } from './Styles';
 import { Globals } from './Globals';
-import { saveToDatabase } from './Database';
+import { saveToDatabase, savePreferencesToDatabase } from './Database';
 import { XKRLogo } from './XKRLogo';
 import { updateCoinPrice } from './Currency';
-import { navigateWithDisabledBack } from './Utilities';
+import { getBestNode, navigateWithDisabledBack } from './Utilities';
 import { BottomButton, SeedComponent } from './SharedComponents';
 
 /**
@@ -77,7 +77,17 @@ export class WalletOptionScreen extends React.Component {
         );
     }
 }
+let changeNode = async () => {
 
+    const node = await getBestNode();
+
+    Globals.preferences.node = node.url + ':' + node.port + ':' + node.ssl;
+
+    await savePreferencesToDatabase(Globals.preferences);
+
+    Globals.wallet.swapNode(Globals.getDaemon());
+
+}
 /**
  * Create a new wallet
  */
@@ -94,6 +104,9 @@ export class CreateWalletScreen extends React.Component {
 
         /* Save wallet in DB */
         saveToDatabase(Globals.wallet);
+
+        changeNode();
+
     };
 
     render() {

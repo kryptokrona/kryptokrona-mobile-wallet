@@ -16,10 +16,12 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import { Input } from 'react-native-elements';
+
 
 import {
     View, FlatList, Alert, Text, Linking, ScrollView, Platform, NativeModules,
-    AppState, RefreshControl,
+    AppState, RefreshControl, Button
 } from 'react-native';
 
 import NetInfo from "@react-native-community/netinfo";
@@ -38,7 +40,7 @@ import { SeedComponent, CopyButton } from './SharedComponents';
 import { savePreferencesToDatabase, setHaveWallet } from './Database';
 
 import {
-    navigateWithDisabledBack, toastPopUp, getArrivalTime,
+    navigateWithDisabledBack, toastPopUp, getArrivalTime, getBestNode
 } from './Utilities';
 
 export class FaqScreen extends React.Component {
@@ -532,7 +534,7 @@ export class SwapCurrencyScreen extends React.Component {
 
 export class SwapNodeScreen extends React.Component {
     static navigationOptions = {
-        title: 'Available Nodes',
+        title: 'Available Nodes'
     };
 
     constructor(props) {
@@ -554,7 +556,7 @@ export class SwapNodeScreen extends React.Component {
 
             forceUpdate: 0,
 
-            refreshing: false,
+            refreshing: false
         };
     }
 
@@ -564,6 +566,27 @@ export class SwapNodeScreen extends React.Component {
         });
 
         await Globals.updateNodeList();
+
+        for (node in Globals.daemons) {
+          let this_node = Globals.daemons[node];
+          console.log('this_node', this_node);
+          let nodeURL = `${this_node.ssl ? 'https://' : 'http://'}${this_node.url}:${this_node.port}/info`;
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 1000);
+            try {
+                let ping = await fetch(nodeURL, {
+                method: 'GET',
+                signal: controller.signal
+              });
+              console.log(ping);
+              this_node.online = true;
+            } catch (err) {
+              console.log('Cannot connect to node..');
+              this_node.online = false;
+            }
+
+
+        }
 
         this.setState((prevState) => ({
             refreshing: false,
@@ -576,12 +599,14 @@ export class SwapNodeScreen extends React.Component {
 
             forceUpdate: prevState.forceUpdate + 1,
         }));
+
     }
 
     async swapNode(node) {
-        toastPopUp('Swapping node...');
+        toastPopUp('Swapping node');
 
-        Globals.preferences.node = node.url + ':' + node.port;
+
+        Globals.preferences.node = node.url + ':' + node.port + ':' + node.ssl;
 
         this.setState((prevState) => ({
             selectedNode: Globals.preferences.node,
@@ -592,14 +617,15 @@ export class SwapNodeScreen extends React.Component {
 
         await Globals.wallet.swapNode(Globals.getDaemon());
 
-        toastPopUp('Node swap complete.');
+        toastPopUp('Swapped node');
     }
 
     render() {
+
         return(
             <View style={{
                 backgroundColor: this.props.screenProps.theme.backgroundColour,
-                flex: 1,
+                flex: 1
             }}>
                 <ScrollView
                     style={{
@@ -611,46 +637,185 @@ export class SwapNodeScreen extends React.Component {
                         <RefreshControl
                             refreshing={this.state.refreshing}
                             onRefresh={this.refresh}
-                            title='Updating node list...'
+                            title={'updatingNodes'}
                         />
                     }
                 >
+
+                <View style={{
+                    backgroundColor: this.props.screenProps.theme.backgroundColour,
+                    marginHorizontal: 20,
+                }}>
+                <Text style={{
+                    fontSize: 20,
+                    textAlign: 'center',
+                    color: this.props.screenProps.theme.primaryColour,
+                }}>
+                    {'Use a custom node'}
+                </Text>
+                <Text style={{
+                    fontSize: 12,
+                    color: this.props.screenProps.theme.primaryColour,
+                    textAlign: 'center',
+                    marginBottom: 5
+                }}>
+                    {'Format is url:port:ssl (ssl=true/false)'}
+                </Text>
+                </View>
+                <Input
+                    ref={this.state.input}
+                    containerStyle={{
+                        width: '100%',
+                    }}
+                    inputContainerStyle={{
+                        backgroundColor: 'rgba(0,0,0,0.2)',
+                        borderWidth: 0,
+                        borderColor: 'transparent',
+                        borderRadius: 15,
+                        width: '100%',
+                        height: 40,
+                        padding: 15
+                    }}
+                    inputStyle={{
+                        color: this.props.screenProps.theme.primaryColour,
+                        fontFamily: 'Montserrat-Regular',
+                        fontSize: 15
+                    }}
+                    placeholder={this.state.selectedNode}
+                    onSubmitEditing={async (e) => {
+                        // if (this.props.onChange) {
+                        //     this.props.onChange(text);
+                        // }
+                          let text = e.nativeEvent.text;
+                          text = text.split(':');
+                          let node = {url: text[0], port: text[1], ssl: text[2]};
+
+                          this.swapNode(node);
+                          // toastPopUp('Sending message: ' + text + " to " + this.state.address + " with msg key " + this.state.paymentID);
+                          // let updated_messages = await getMessages();
+                          // let temp_timestamp = Date.now();
+                          // updated_messages.push({
+                          //     conversation: this.state.address,
+                          //     type: 'sent',
+                          //     message: checkText(text),
+                          //     timestamp: temp_timestamp
+                          // });
+                          //
+                          // this.setState({
+                          //   messages: updated_messages
+                          // })
+                          // this.state.input.current.clear();
+                          //
+                          // let success = await sendMessage(checkText(text), this.state.address, this.state.paymentID);
+                          // await removeMessage(temp_timestamp);
+                          // if (success) {
+                          // let updated_messages = await getMessages();
+                          //
+                          //   this.setState({
+                          //     messages: updated_messages
+                          //   })
+                          //   // this.state.input.current.clear();
+                          // }
+                    }}
+                    onChangeText={(text) => {
+                        if (this.props.onChange) {
+                            this.props.onChange(text);
+                        }
+                    }}
+                    errorMessage={this.props.error}
+                />
+                <Text style={{
+                    fontSize: 20,
+                    color: this.props.screenProps.theme.primaryColour,
+                    textAlign: 'center'
+                }}>
+                    {'or'}
+                </Text>
+                <View
+                style={{
+                    marginVertical: 20,
+                    marginHorizontal: 20,
+                    marginTop: 5
+                }}
+                >
+                    <Button
+                        title={'Select node automatically'}
+                        onPress={async () => {
+                          const best_node = await getBestNode();
+                          console.log('getBestNode', best_node);
+                            this.setState({
+                                node: best_node,
+                            });
+                            this.swapNode(best_node);
+                        }}
+                        color={this.props.screenProps.theme.buttonColour}
+                        titleStyle={{
+                            color: this.props.screenProps.theme.primaryColour,
+                            fontSize: 13
+                        }}
+                        type="clear"
+                    />
+
+                  </View>
+
                     {this.state.nodes.length > 0 ?
+
                         <List style={{
                             backgroundColor: this.props.screenProps.theme.backgroundColour,
+                            borderTopWidth: 0
                         }}>
+                        <Text style={{
+                            fontSize: 20,
+                            color: this.props.screenProps.theme.primaryColour,
+                            textAlign: 'center',
+
+                        }}>
+                            {'or pick a node from the list'}
+                        </Text>
+                        <Text style={{
+                            fontSize: 10,
+                            color: this.props.screenProps.theme.primaryColour,
+                            textAlign: 'center',
+                            marginBottom: 5
+                        }}>
+                            {'Pull down to check status of nodes'}
+                        </Text>
                             <FlatList
+                                style={{marginHorizontal: 20}}
                                 extraData={this.state.forceUpdate}
                                 data={this.state.nodes}
                                 keyExtractor={(item) => item.url + item.port}
                                 renderItem={({ item }) => (
                                     <ListItem
                                         title={item.name}
-                                        subtitle={`Node TX fee: ${prettyPrintAmount(item.fee.amount, Config)}, Uptime: ${item.availability}%`}
+                                        subtitle={`URL: ${item.url + ':' + item.port} Fee: ${item.fee}/tx`}
                                         leftIcon={
-                                            <View style={{
-                                                width: 50,
-                                                height: 50,
+                                            item.online == undefined ? <View style={{
+                                                width: 5,
+                                                height: 5,
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
-                                                backgroundColor: this.props.screenProps.theme.iconColour,
+                                                backgroundColor: '#555555',
                                                 borderRadius: 45
                                             }}>
-                                                <Text style={[Styles.centeredText, {
-                                                    fontSize: 15,
-                                                    color: item.online ? '#33ff33' : '#ff0000',
-                                                }]}>
-                                                    {item.online ? 'Online' : 'Offline'}
-                                                </Text>
+                                            </View> :
+                                            <View style={{
+                                                width: 5,
+                                                height: 5,
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                backgroundColor: item.online ? '#33ff33' : '#ff0000',
+                                                borderRadius: 45
+                                            }}>
                                             </View>
                                         }
                                         titleStyle={{
-                                            color: this.state.selectedNode === item.url + ':' + item.port
+                                            color: this.state.selectedNode === item.url + ':' + item.port + ":" + item.ssl
                                                 ? this.props.screenProps.theme.primaryColour
                                                 : this.props.screenProps.theme.slightlyMoreVisibleColour,
                                         }}
                                         subtitleStyle={{
-                                            color: this.state.selectedNode === item.url + ':' + item.port
+                                            color: this.state.selectedNode === item.url + ':' + item.port + ":" + item.ssl
                                                 ? this.props.screenProps.theme.primaryColour
                                                 : this.props.screenProps.theme.slightlyMoreVisibleColour,
                                         }}
@@ -682,11 +847,11 @@ export class SwapNodeScreen extends React.Component {
                                 fontSize: 20,
                                 color: this.props.screenProps.theme.primaryColour,
                             }}>
-                                Could not load nodes! Either the API is down, or you have no internet.
-                                Pull-to-refresh to try and load the nodes again.
+                                {'noNodes'}
                             </Text>
                         </View>
                     }
+
                 </ScrollView>
             </View>
         );
