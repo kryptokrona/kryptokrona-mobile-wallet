@@ -98,6 +98,18 @@ export default Constants = {
             symbolLocation: 'postfix',
         },
         {
+            ticker: 'nok',
+            coinName: 'Norwegian Kroner',
+            symbol: 'kr',
+            symbolLocation: 'postfix',
+        },
+        {
+            ticker: 'dkk',
+            coinName: 'Danish Kroner',
+            symbol: 'kr',
+            symbolLocation: 'postfix',
+        },
+        {
             ticker: 'usd',
             coinName: 'United States Dollar',
             symbol: '$',

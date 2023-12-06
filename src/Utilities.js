@@ -12,7 +12,7 @@ import { StackActions, NavigationActions } from 'react-navigation';
 
 import {
     validateAddresses, WalletErrorCode, validatePaymentID, prettyPrintAmount,
-} from 'turtlecoin-wallet-backend';
+} from 'kryptokrona-wallet-backend-js';
 
 import * as Qs from 'query-string';
 
@@ -89,10 +89,13 @@ export function navigateWithDisabledBack(route, routeParams) {
 }
 
 export function prettyPrintUnixTimestamp(timestamp) {
+    console.log('tmsmp', timestamp);
     return prettyPrintDate(moment(timestamp * 1000));
 }
 
 export function prettyPrintDate(date) {
+
+    return date.toLocaleString('en-us').split("GMT")[0];
     if (date === undefined) {
         date = moment();
     }
@@ -164,6 +167,7 @@ export function handleURI(data, navigation) {
 
 export function parseURI(qrData) {
     /* It's a URI, try and get the data from it */
+    console.log(qrData);
     if (qrData.startsWith(Config.uriPrefix)) {
         /* Remove the turtlecoin:// prefix */
         let data = qrData.replace(Config.uriPrefix, '');
@@ -201,10 +205,12 @@ export function parseURI(qrData) {
             }
         }
 
-        const addressError = validateAddresses([address], true, Config);
+        //const addressError = validateAddresses([address], true, Config);
 
         /* Address isn't valid */
-        if (addressError.errorCode !== WalletErrorCode.SUCCESS) {
+        //if (addressError.errorCode !== WalletErrorCode.SUCCESS) {
+        if (address.length != 99 || !address.startsWith('SEKR')) {
+            console.log('IU suck')
             return {
                 valid: false,
                 error: 'QR Code is invalid',
@@ -266,9 +272,9 @@ export function parseURI(qrData) {
         }
     /* It's a standard address, try and parse it (or something else) */
     } else {
-        const addressError = validateAddresses([qrData], true, Config);
+        //const addressError = validateAddresses([qrData], true, Config);
 
-        if (addressError.errorCode !== WalletErrorCode.SUCCESS) {
+        if (qrData.length != 99 || !qrData.startsWith('SEKR')) {
             return {
                 valid: false,
                 error: 'QR code is invalid',

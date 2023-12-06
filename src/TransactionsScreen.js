@@ -9,9 +9,9 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import TextTicker from 'react-native-text-ticker';
 
 import { Header } from 'react-native-elements';
-import { View, Text, FlatList, Button, Linking, ScrollView } from 'react-native';
-import { prettyPrintAmount } from 'turtlecoin-wallet-backend';
+import { View, Text, FlatList, Button, Linking, ScrollView, Image } from 'react-native';
 
+import { prettyPrintAmount } from 'kryptokrona-wallet-backend-js';
 import Config from './Config';
 import ListItem from './ListItem';
 import List from './ListContainer';
@@ -76,8 +76,9 @@ export class TransactionDetailsScreen extends React.Component {
             complete: tx.timestamp !== 0,
             coinValue: '0',
             address: txDetails ? txDetails.address : undefined,
-            payee: txDetails ? txDetails.payee : undefined,
+            payee: txDetails && txDetails.payee != '' ? txDetails.payee : undefined,
             memo: txDetails ? txDetails.memo : undefined,
+            tipTo: null
         };
 
         (async () => {
@@ -93,6 +94,8 @@ export class TransactionDetailsScreen extends React.Component {
     }
 
     render() {
+        const { t } = this.props;
+        const tipTo = this.state.tipTo;
         return(
             <View style={{
                 flex: 1,
@@ -117,74 +120,75 @@ export class TransactionDetailsScreen extends React.Component {
                     >
                         <ItemDescription
                             title={this.state.transaction.totalAmount() > 0 ? 'Received' : 'Sent'}
-                            item={this.state.complete ? prettyPrintUnixTimestamp(this.state.transaction.timestamp) : prettyPrintDate()}
+                            item={this.state.complete ? prettyPrintUnixTimestamp(this.state.transaction.timestamp) : prettyPrintDate(Date.now()/1000)}
                             {...this.props}
                         />
 
                         {this.state.payee && <ItemDescription
-                            title='Recipient'
+                            title={'Recipient'}
                             item={this.state.payee}
                             {...this.props}
                         />}
 
                         <ItemDescription
-                            title='Amount'
+                            title={'Amount'}
                             item={prettyPrintAmount(this.state.amount, Config)}
                             {...this.props}
                         />
 
                         {this.state.transaction.totalAmount() < 0 && <ItemDescription
-                            title='Fee'
+                            title={'Fee'}
                             item={prettyPrintAmount(this.state.transaction.fee, Config)}
                             {...this.props}
                         />}
 
                         <ItemDescription
-                            title='Value'
+                            title={'Value'}
                             item={this.state.coinValue}
                             {...this.props}
                         />
 
                         {this.state.memo && this.state.memo !== '' && <ItemDescription
-                            title='Notes'
+                            title={'Notes'}
                             item={this.state.memo}
                             {...this.props}
                         />}
 
                         {this.state.address && <ItemDescription
-                            title='Address'
+                            title={'Address'}
                             item={this.state.address}
                             {...this.props}
                         />}
 
                         <ItemDescription
-                            title='State'
-                            item={this.state.complete ? 'Complete' : 'Processing'}
+                            title={'State'}
+                            item={this.state.complete ? 'Completed' : 'Processed'}
                             {...this.props}
                         />
 
                         {this.state.complete && <ItemDescription
-                            title='Block Height'
+                            title={'Block height'}
                             item={this.state.transaction.blockHeight.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                             {...this.props}
                         />}
 
                         <ItemDescription
-                            title='Hash'
+                            title={'Hash'}
                             item={this.state.transaction.hash}
                             {...this.props}
                         />
 
                         {this.state.transaction.paymentID !== '' && <ItemDescription
-                            title='Payment ID'
+                            title={'Payment ID'}
                             item={this.state.transaction.paymentID}
                             {...this.props}
                         />}
+
                     </ScrollView>
 
                     {this.state.complete && <View style={[Styles.buttonContainer, {width: '100%', marginBottom: 20 }]}>
                         <Button
-                            title='View on Block Explorer'
+                            title={'View in explorer'}
                             onPress={() => {
                                 Linking.openURL(Config.explorerBaseURL + this.state.transaction.hash)
                                        .catch((err) => Globals.logger.addLogMessage('Failed to open url: ' + err));
@@ -213,14 +217,13 @@ export class TransactionsScreen extends React.Component {
         const [walletHeight, localHeight, networkHeight] = Globals.wallet.getSyncStatus();
 
         /* Don't display fusions, and display newest first */
-        const transactions = Globals.wallet.getTransactions(0, Constants.numTransactionsPerPage, false);
+
 
         this.state = {
-            numTransactions: Globals.wallet.getNumTransactions(),
-            transactions,
             walletHeight,
             networkHeight,
             pageNum: 0,
+            numTransactions: 0
         };
 
         /* Only update transactions list when transaction is sent/received.
@@ -240,22 +243,43 @@ export class TransactionsScreen extends React.Component {
         this.changePage = this.changePage.bind(this);
     }
 
-    updateTransactions() {
-        /* Don't display fusions */
-        const transactions = Globals.wallet.getTransactions(
-            this.state.pageNum * Constants.numTransactionsPerPage,
-            Constants.numTransactionsPerPage,
-            false
-        );
+    async componentDidMount() {
+
+     const all_transactions = await Globals.wallet.getTransactions();
+
+     const filtered_transactions = all_transactions.filter(tx => {
+       return tx.totalAmount() > 1 || tx.totalAmount() < -10000;
+     });
+     const transactions = filtered_transactions.slice(0, Constants.numTransactionsPerPage);
+     const numTransactions = filtered_transactions.length; //await Globals.wallet.getNumTransactions();
+
+     this.setState({
+         numTransactions,
+         transactions,
+     });
+
+     this.interval = setInterval(() => this.tick(), 10000);
+ }
+
+    async updateTransactions() {
+
+
+       const all_transactions = await Globals.wallet.getTransactions();
+
+       let transactions_filtered = all_transactions.filter(tx => {
+         return tx.totalAmount() > 1 || tx.totalAmount() < -10000;
+       })
+
+       const transactions = transactions_filtered.slice(this.state.pageNum * Constants.numTransactionsPerPage, Constants.numTransactionsPerPage + (this.state.pageNum * Constants.numTransactionsPerPage) );
 
         this.setState({
-            numTransactions: Globals.wallet.getNumTransactions(),
+            numTransactions: transactions_filtered.length,
             transactions,
         });
     }
 
-    tick() {
-        const numTransactions = Globals.wallet.getNumTransactions();
+    async tick() {
+        const numTransactions = await Globals.wallet.getNumTransactions();
 
         /* If we have no transactions, update the heights, to display the
            not sent / not synced msg */
@@ -269,9 +293,6 @@ export class TransactionsScreen extends React.Component {
         }
     }
 
-    componentDidMount() {
-        this.interval = setInterval(() => this.tick(), 10000);
-    }
 
     componentWillUnmount() {
         clearInterval(this.interval);
@@ -288,16 +309,18 @@ export class TransactionsScreen extends React.Component {
     }
 
     render() {
+      const { t } = this.props;
+
         const syncedMsg = this.state.walletHeight + 10 >= this.state.networkHeight ?
             ''
-          : "\nYour wallet isn't fully synced. If you're expecting some transactions, please wait.";
+          : 'Your wallet is still syncing, please wait..';
 
         const noTransactions =
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: this.props.screenProps.theme.backgroundColour }}>
                 <Text style={{ fontFamily: 'Montserrat-Regular', borderRadius: 5,
                 borderColor: this.props.screenProps.theme.borderColour,
                 borderWidth: 1, padding: 10, paddingBottom: 0, fontSize: 15, width: 200, color: this.props.screenProps.theme.primaryColour, justifyContent: 'center', textAlign: 'center' }}>
-                    Looks like you haven't sent{"\n"}or received any transactions yet!{"\n"} {"\n"} 😥 {"\n"}
+                    {'No message'}
                     {syncedMsg}
                 </Text>
             </View>;
@@ -356,11 +379,23 @@ class TransactionList extends React.Component {
     }
 
     render() {
+      const { t } = this.props;
         return(
             <View style={{
                 backgroundColor: this.props.screenProps.theme.backgroundColour,
                 flex: 1,
             }}>
+                <View style={{
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
+                    marginLeft: 30,
+                    marginTop: 20,
+                    marginRight: 10,
+                }}>
+                    <Text style={{ fontFamily: "Montserrat-SemiBold", color: this.props.screenProps.theme.primaryColour, fontSize: 24 }}>
+                        {'Transaction history'}
+                    </Text>
+                </View>
                 <Header
                     containerStyle={{ borderBottomWidth:0, borderBottomColor:'transparent' }}
                     leftComponent={{
@@ -375,7 +410,7 @@ class TransactionList extends React.Component {
                         }
                     }}
                     centerComponent={{
-                        text: `PAGE ${this.props.pageNum + 1} / ${this.getMaxPage()}`,
+                        text: `${'Page'} ${this.props.pageNum + 1} / ${this.getMaxPage()}`,
                         style: {
                             color: this.props.screenProps.theme.primaryColour,
                             fontSize: 16,
@@ -401,13 +436,15 @@ class TransactionList extends React.Component {
                     borderTopWidth: 0
                 }}>
                     <FlatList
+                        style={{paddingLeft: 25, paddingRight: 25}}
                         extraData={this.state.index}
                         data={this.props.transactions}
                         keyExtractor={item => item.hash}
                         renderItem={({item}) => (
+
                             <ListItem
                                 title={prettyPrintAmount(Math.abs(item.totalAmount()) - (item.totalAmount() > 0 ? 0 : item.fee), Config)}
-                                subtitle={item.timestamp === 0 ? 'Processing at ' + prettyPrintDate() : 'Completed on ' + prettyPrintUnixTimestamp(item.timestamp)}
+                                subtitle={item.timestamp === 0 ? 'Processing ' + prettyPrintUnixTimestamp(Date.now() / 1000) : 'Completed ' + prettyPrintUnixTimestamp(item.timestamp)}
                                 leftIcon={
                                     <View style={{width: 30, alignItems: 'center', justifyContent: 'center', marginRight: 10}}>
                                         <Ionicons name={this.getIconName(item)} size={30} color={this.getIconColour(item)}/>
@@ -423,6 +460,7 @@ class TransactionList extends React.Component {
                                 }}
                                 onPress={() => this.props.navigation.navigate('TransactionDetails', { transaction: item })}
                             />
+
                         )}
                     />
                 </List>

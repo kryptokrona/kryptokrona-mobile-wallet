@@ -6,7 +6,7 @@ const request = require('request-promise-native');
 
 import * as _ from 'lodash';
 
-import { Daemon } from 'turtlecoin-wallet-backend';
+import { Daemon } from 'kryptokrona-wallet-backend-js';
 
 import { Alert } from 'react-native';
 
@@ -131,10 +131,16 @@ function updateConnection(connection) {
         Globals.wallet.start();
     }
 }
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 /* Note... you probably don't want to await this function. Can block for a while
    if no internet. */
 export async function initGlobals() {
+
+
+
     const payees = await loadPayeeDataFromDatabase();
 
     if (payees !== undefined) {
@@ -160,7 +166,27 @@ export async function initGlobals() {
         );
     } else {
         Globals.wallet.start();
-    }
+        if(Globals.scanHeight != undefined) {
+            let [walletHeight, localHeight, networkHeight] = Globals.wallet.getSyncStatus();
+            if (networkHeight === 0) {
+                await sleep(2000);
+                [walletHeight, localHeight, networkHeight] = Globals.wallet.getSyncStatus();
+            }
+            if (networkHeight < Globals.scanHeight) {
+                Globals.scanHeight = networkHeight;
+             }
+             if(Globals.scanHeight === 0) { 
+
+                Globals.wallet.rewind(networkHeight);
+    
+            } else {
+                Globals.wallet.rewind(Globals.scanHeight);
+            }
+             
+        }
+        }
+
+    
 
     await Globals.updateNodeList();
 }

@@ -26,7 +26,7 @@ import {
 
 import NetInfo from "@react-native-community/netinfo";
 
-import { prettyPrintAmount, Daemon, WalletErrorCode } from 'turtlecoin-wallet-backend';
+import { prettyPrintAmount, Daemon, WalletErrorCode } from 'kryptokrona-wallet-backend-js';
 
 import Config from './Config';
 import ListItem from './ListItem';
@@ -345,17 +345,22 @@ export class ExportKeysScreen extends React.Component {
 
     constructor(props) {
         super(props);
-
-        let [mnemonicSeed, error] = Globals.wallet.getMnemonicSeed();
-
+        
         const [privateSpendKey, privateViewKey] = Globals.wallet.getPrimaryAddressPrivateKeys();
 
         this.state = {
             privateSpendKey,
-            privateViewKey,
-            mnemonicSeed,
+            privateViewKey
         }
     }
+
+    async componentDidMount() {
+        const [mnemonicSeed, error] = await Globals.wallet.getMnemonicSeed();
+    
+            this.setState({
+                mnemonicSeed,
+            });
+        }
 
     render() {
         const noSeedComponent =

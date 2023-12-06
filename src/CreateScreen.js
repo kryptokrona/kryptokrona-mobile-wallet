@@ -8,7 +8,7 @@ import {
     View, Text, Button, Image,
 } from 'react-native';
 
-import { WalletBackend } from 'turtlecoin-wallet-backend';
+import { WalletBackend } from 'kryptokrona-wallet-backend-js';
 
 import Config from './Config';
 
@@ -100,14 +100,34 @@ export class CreateWalletScreen extends React.Component {
     constructor(props) {
         super(props);
 
-        Globals.wallet = WalletBackend.createWallet(Globals.getDaemon(), Config);
+        this.state = {
+            seed: ''
+        }
+
+    };
+
+    async componentDidMount() {
+
+        const recommended_node = await getBestNode();
+        Globals.preferences.node = recommended_node.url + ':' + recommended_node.port + ':' + recommended_node.ssl;
+        savePreferencesToDatabase(Globals.preferences);
+
+        Globals.wallet = await WalletBackend.createWallet(Globals.getDaemon(), Config);
+
+        const [ seed ] = await Globals.wallet.getMnemonicSeed();
+
+        this.setState({
+            seed
+        })
 
         /* Save wallet in DB */
         saveToDatabase(Globals.wallet);
 
+        Globals.scanHeight = 0;
+
         changeNode();
 
-    };
+    }
 
     render() {
         return(
@@ -134,11 +154,11 @@ export class CreateWalletScreen extends React.Component {
                 </View>
 
                 <View style={{ alignItems: 'center', flex: 1, justifyContent: 'flex-start' }}>
-                    <SeedComponent
-                        seed={Globals.wallet.getMnemonicSeed()[0]}
+                    {this.state.seed != '' && <SeedComponent
+                        seed={this.state.seed}
                         borderColour={'#BB4433'}
                         {...this.props}
-                    />
+                    />}
 
                     <BottomButton
                         title="Continue"

@@ -13,14 +13,15 @@ import {
 import {
     importWalletFromSeed, BlockchainCacheApi, WalletBackend, WalletError,
     isValidMnemonic, isValidMnemonicWord,
-} from 'turtlecoin-wallet-backend';
+} from 'kryptokrona-wallet-backend-js';
 
 import Config from './Config';
 
 import { Styles } from './Styles';
 import { Globals } from './Globals';
-import { saveToDatabase } from './Database';
+import { saveToDatabase, savePreferencesToDatabase } from './Database';
 import { BottomButton } from './SharedComponents';
+import { getBestNode } from './Utilities';
 
 /**
  * Import a wallet from keys/seed
@@ -170,7 +171,7 @@ export class ImportSeedScreen extends React.Component {
         });
     }
 
-    checkSeedIsValid() {
+    async checkSeedIsValid() {
         const words = this.state.seed.toLowerCase().split(' ');
 
         const invalidWords = [];
@@ -201,7 +202,7 @@ export class ImportSeedScreen extends React.Component {
             return false;
         }
 
-        const [valid, error] = isValidMnemonic(words.join(' '), Config);
+        const [valid, error] = await isValidMnemonic(words.join(' '), Config);
 
         if (!valid) {
             this.setState({
@@ -216,8 +217,14 @@ export class ImportSeedScreen extends React.Component {
         return valid;
     }
 
-    importWallet() {
-        const [wallet, error] = WalletBackend.importWalletFromSeed(
+  
+
+    async importWallet() {
+
+        const recommended_node = await getBestNode();
+        Globals.preferences.node = recommended_node.url + ':' + recommended_node.port + ':' + recommended_node.ssl;
+        savePreferencesToDatabase(Globals.preferences);
+        let [wallet, error] = await WalletBackend.importWalletFromSeed(
             Globals.getDaemon(), this.scanHeight, this.state.seed.toLowerCase(), Config
         );
 
@@ -226,6 +233,9 @@ export class ImportSeedScreen extends React.Component {
             Globals.logger.addLogMessage('Failed to import wallet: ' + error.toString());
             this.props.navigation.navigate('Login');
         }
+
+        Globals.scanHeight = this.scanHeight;
+        console.log('halp1', Globals.scanHeight);
 
         Globals.wallet = wallet;
 
@@ -357,7 +367,11 @@ export class ImportKeysScreen extends React.Component {
         return [true, ''];
     }
 
-    importWallet() {
+    async importWallet() {
+        const recommended_node = await getBestNode();
+        console.log(recommended_node);
+        Globals.preferences.node = recommended_node.url + ':' + recommended_node.port + ':' + recommended_node.ssl;
+        savePreferencesToDatabase(Globals.preferences);
         const [wallet, error] = WalletBackend.importWalletFromKeys(
             Globals.getDaemon(), this.scanHeight, this.state.privateViewKey,
             this.state.privateSpendKey, Config
@@ -370,6 +384,8 @@ export class ImportKeysScreen extends React.Component {
         }
 
         Globals.wallet = wallet;
+
+        Globals.scanHeight = this.scanHeight;
 
         saveToDatabase(Globals.wallet);
 

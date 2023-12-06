@@ -21,12 +21,12 @@ import {
 
 import NetInfo from "@react-native-community/netinfo";
 
-import { prettyPrintAmount, LogLevel } from 'turtlecoin-wallet-backend';
+import { prettyPrintAmount, LogLevel } from 'kryptokrona-wallet-backend-js';
 
 import Config from './Config';
 
 import { Styles } from './Styles';
-import { handleURI, toastPopUp } from './Utilities';
+import { handleURI, toastPopUp, getBestNode } from './Utilities';
 import { ProgressBar } from './ProgressBar';
 import { saveToDatabase } from './Database';
 import { Globals, initGlobals } from './Globals';
@@ -52,15 +52,20 @@ async function init(navigation) {
         sendNotification(transaction);
     });
 
-    Globals.wallet.on('deadnode', () => {
-        toastPopUp('Node may be offline, check the settings screen to swap nodes', false);
+    Globals.wallet.on('deadnode', async () => {
+        toastPopUp('Node may be offline, auto swapping..', false);
+        const recommended_node = await getBestNode();
+        Globals.preferences.node = recommended_node.url + ':' + recommended_node.port + ':' + recommended_node.ssl;
+        savePreferencesToDatabase(Globals.preferences);
+        await Globals.wallet.swapNode(Globals.getDaemon());
+        toastPopUp('Swapped node to ' + recommended_node.url);
     });
 
     Globals.wallet.setLoggerCallback((prettyMessage, message) => {
         Globals.logger.addLogMessage(message);
     });
 
-    Globals.wallet.setLogLevel(LogLevel.DEBUG);
+    Globals.wallet.setLogLevel(LogLevel.WARNING);
 
     /* Don't launch if already started */
     if (Globals.backgroundSaveTimer === undefined) {
@@ -151,12 +156,11 @@ export class MainScreen extends React.Component {
         this.handleNetInfoChange = this.handleNetInfoChange.bind(this);
         this.unsubscribe = () => {};
 
-        const [unlockedBalance, lockedBalance] = Globals.wallet.getBalance();
-
         this.state = {
             addressOnly: false,
-            unlockedBalance,
-            lockedBalance,
+            unlockedBalance: 0,
+            lockedBalance: 0,
+            address: Globals.wallet.getPrimaryAddress()
         }
 
         this.updateBalance();
@@ -176,6 +180,15 @@ export class MainScreen extends React.Component {
         });
     }
 
+    async componentDidMount() {
+        const [unlockedBalance, lockedBalance] = await Globals.wallet.getBalance();
+
+        this.setState({
+            unlockedBalance,
+            lockedBalance
+        })
+    }
+
     async updateBalance() {
         const tmpPrice = await getCoinPriceFromAPI();
 
@@ -183,7 +196,7 @@ export class MainScreen extends React.Component {
             Globals.coinPrice = tmpPrice;
         }
 
-        const [unlockedBalance, lockedBalance] = Globals.wallet.getBalance();
+        const [unlockedBalance, lockedBalance] = await Globals.wallet.getBalance();
 
         const coinValue = await coinsToFiat(
             unlockedBalance + lockedBalance, Globals.preferences.currency

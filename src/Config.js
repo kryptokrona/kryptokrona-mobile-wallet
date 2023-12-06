@@ -4,7 +4,7 @@
 
 import { Platform } from 'react-native';
 
-import { MixinLimit, MixinLimits, Daemon } from 'turtlecoin-wallet-backend';
+import { MixinLimit, MixinLimits, Daemon } from 'kryptokrona-wallet-backend-js';
 
 import {
     derivePublicKey, generateKeyDerivation, generateRingSignatures,
@@ -182,7 +182,7 @@ const Config = new function() {
      * you just set this to an empty string. If you have another API you want
      * it to support, you're going to have to modify the code in Currency.js.
      */
-    this.priceApiLink = 'https://api.coinpaprika.com/v1/tickers/xkr-kryptokrona';
+    this.priceApiLink = 'https://api.coingecko.com/api/v3/simple/price?ids=kryptokrona&vs_currencies=usd,sek,btc,eth,ltc,aud,cad,cny,chf,eur,gbp,inr,jpy,mxn,nzd,rub,nok,dkk';
 
     /**
      * Default daemon to use. Can either be a BlockchainCacheApi(baseURL, SSL),

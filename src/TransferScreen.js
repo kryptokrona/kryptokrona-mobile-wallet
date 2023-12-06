@@ -19,7 +19,7 @@ import { HeaderBackButton, StackActions } from 'react-navigation';
 
 import {
     validateAddresses, WalletErrorCode, validatePaymentID, prettyPrintAmount,
-} from 'turtlecoin-wallet-backend';
+} from 'kryptokrona-wallet-backend-js';
 
 import {
     View, Text, TextInput, TouchableWithoutFeedback, FlatList, Platform,
@@ -193,21 +193,30 @@ export class TransferScreen extends React.Component {
     constructor(props) {
         super(props);
 
-        const [unlockedBalance, lockedBalance] = Globals.wallet.getBalance();
-
         this.state = {
-            unlockedBalance,
-            lockedBalance,
             errMsg: '',
             continueEnabled: false,
-            unlockedBalanceHuman: fromAtomic(unlockedBalance),
             sendAll: false,
             amountFontSize: 30,
+            unlockedBalance: 0,
+            lockedBalance: 0,
+            unlockedBalanceHuman: 0,
         }
     }
 
-    tick() {
-        const [unlockedBalance, lockedBalance] = Globals.wallet.getBalance();
+    async componentDidMount() {
+        const [unlockedBalance, lockedBalance] = await Globals.wallet.getBalance();
+        this.setState({
+            unlockedBalance: unlockedBalance,
+            lockedBalance: lockedBalance,
+            unlockedBalanceHuman: fromAtomic(unlockedBalance),
+        });
+
+        this.interval = setInterval(() => this.tick(), 10000);
+    }
+
+    async tick() {
+        const [unlockedBalance, lockedBalance] = await Globals.wallet.getBalance();
 
         this.setState({
             unlockedBalance,
@@ -237,10 +246,6 @@ export class TransferScreen extends React.Component {
                 errMsg: error,
             });
         }
-    }
-
-    componentDidMount() {
-        this.interval = setInterval(() => this.tick(), 10000);
     }
 
     componentWillUnmount() {
@@ -572,7 +577,7 @@ export class NewPayeeScreen extends React.Component {
     checkErrors() {
         (async() => {
 
-            const [addressValid, addressError] = await this.validAddress(this.state.address);
+            const [addressValid, addressError] = [true, true];
             const [paymentIDValid, paymentIDError] = this.validPaymentID(this.state.paymentID);
             const [nicknameValid, nicknameError] = this.validNickname(this.state.nickname);
 
@@ -822,9 +827,17 @@ export class ConfirmScreen extends React.Component {
     constructor(props) {
         super(props);
 
-        const [unlockedBalance, lockedBalance] = Globals.wallet.getBalance();
+        this.state = {}
+
+    }
+
+    async componentDidMount() {
+
+        const [unlockedBalance, lockedBalance] = await Globals.wallet.getBalance();
 
         const { payee, amount, sendAll } = this.props.navigation.state.params;
+
+        console.log(payee);
 
         const fullAmount = sendAll ? unlockedBalance : amount;
 
@@ -832,7 +845,7 @@ export class ConfirmScreen extends React.Component {
 
         const [feeAddress, nodeFee] = Globals.wallet.getNodeFee();
 
-        this.state = {
+        this.setState({
             memo: '',
             modifyMemo: false,
             preparedTransaction: false,
@@ -843,7 +856,9 @@ export class ConfirmScreen extends React.Component {
             unlockedBalance,
             devFee,
             nodeFee,
-        }
+        });
+
+        console.log(this.state);
 
         this.prepareTransaction();
     }
@@ -875,7 +890,7 @@ export class ConfirmScreen extends React.Component {
         const result = await Globals.wallet.sendTransactionAdvanced(
             payments, // destinations,
             undefined, // mixin
-            undefined, // fee
+            {fixedFee: 1000, isFixedFee: true}, // fee
             this.state.payee.paymentID,
             undefined, // subWalletsToTakeFrom
             undefined, // changeAddress
@@ -901,7 +916,7 @@ export class ConfirmScreen extends React.Component {
                              - this.state.devFee
                              - this.state.nodeFee;
             }
-
+            console.log(this.state);
             this.setState({
                 preparedTransaction: true,
                 haveError: false,
@@ -910,6 +925,7 @@ export class ConfirmScreen extends React.Component {
                 recipientAmount: actualAmount,
                 feeTotal: result.fee + this.state.devFee + this.state.nodeFee,
             });
+            console.log(this.state);
         } else {
             this.setState({
                 preparedTransaction: true,
@@ -917,6 +933,8 @@ export class ConfirmScreen extends React.Component {
                 error: result.error,
             });
         }
+
+        console.log(this.state);
     }
 
     preparingScreen() {
@@ -1010,7 +1028,7 @@ export class ConfirmScreen extends React.Component {
                             </Text>
                             will reach{' '}
                             <Text style={{ color: this.props.screenProps.theme.primaryColour, fontWeight: 'bold' }}>
-                                {this.state.payee.nickname}'s{' '}
+                                {this.state.payee?.nickname}'s{' '}
                             </Text>
                             account, in {getArrivalTime()}
                         </Text>
@@ -1088,7 +1106,7 @@ export class ConfirmScreen extends React.Component {
                             justifyContent: 'space-between'
                         }}>
                             <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 15, color: this.props.screenProps.theme.primaryColour }}>
-                                {this.state.payee.nickname}'s details
+                                {this.state.payee?.nickname}'s details
                             </Text>
 
                             <Button
@@ -1111,17 +1129,17 @@ export class ConfirmScreen extends React.Component {
                         </Text>
 
                         <Text style={{ fontFamily: 'Montserrat-Regular', color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                            {this.state.payee.address}
+                            {this.state.payee?.address}
                         </Text>
 
-                        {this.state.payee.paymentID !== '' &&
+                        {this.state.payee?.paymentID !== '' &&
                         <View>
                             <Text style={{ fontFamily: 'Montserrat-SemiBold', marginBottom: 5, marginTop: 20 }}>
                                 Payment ID
                             </Text>
 
                             <Text style={{ fontFamily: 'Montserrat-Regular', color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                                {this.state.payee.paymentID}
+                                {this.state.payee?.paymentID}
                             </Text>
                         </View>}
 
@@ -1164,7 +1182,7 @@ export class ConfirmScreen extends React.Component {
                         </Text>
 
                         <Text style={{ fontFamily: 'Montserrat-Regular', marginBottom: 5, marginTop: 20, color: this.props.screenProps.theme.slightlyMoreVisibleColour }}>
-                            {this.state.payee.nickname} gets
+                            {this.state.payee?.nickname} gets
                         </Text>
 
                         <Text style={{ fontFamily: 'Montserrat-Regular',color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
@@ -1216,6 +1234,7 @@ export class ConfirmScreen extends React.Component {
                 <BottomButton
                     title="Send Transaction"
                     onPress={() => {
+                        console.log(this.state);
                         const params = {
                             amount: this.state.recipientAmount,
                             address: this.state.payee.address,

@@ -4,7 +4,7 @@
 
 import React from 'react';
 
-import { WalletBackend } from 'turtlecoin-wallet-backend';
+import { WalletBackend } from 'kryptokrona-wallet-backend-js';
 
 import { Animated, View, Alert } from 'react-native';
 
@@ -24,7 +24,7 @@ function fail(msg) {
         'Failed to open wallet',
         msg,
         [
-            {text: 'OK'},
+            { text: 'OK' },
         ]
     );
 }
@@ -49,7 +49,7 @@ async function tryLoadWallet(navigation) {
             return;
         }
 
-        const [wallet, walletError] = WalletBackend.loadWalletFromJSON(
+        const [wallet, walletError] = await WalletBackend.loadWalletFromJSON(
             Globals.getDaemon(), walletData, Config
         );
 
@@ -102,36 +102,36 @@ export class SplashScreen extends React.Component {
     }
 
 
-        componentWillMount() {
-          this.animatedValue = new Animated.Value(0);
-        }
+    componentWillMount() {
+        this.animatedValue = new Animated.Value(0);
+    }
 
-        componentDidMount() {
+    componentDidMount() {
 
-            Animated.timing(this.animatedValue, {
-              toValue: 224,
-              duration: 3000
-            }).start(() => {
-          Animated.timing(this.animatedValue,{
-            toValue:0,
+        Animated.timing(this.animatedValue, {
+            toValue: 224,
             duration: 3000
-          }).start()
+        }).start(() => {
+            Animated.timing(this.animatedValue, {
+                toValue: 0,
+                duration: 3000
+            }).start()
         });
-        }
+    }
 
 
     render() {
 
-                 const interpolateColor =  this.animatedValue.interpolate({
-                 inputRange: [0, 32, 64, 96, 128, 160, 192, 224],
-                 outputRange:['#5f86f2','#a65ff2','#f25fd0','#f25f61','#f2cb5f','#abf25f','#5ff281','#5ff2f0']
-               });
+        const interpolateColor = this.animatedValue.interpolate({
+            inputRange: [0, 32, 64, 96, 128, 160, 192, 224],
+            outputRange: ['#5f86f2', '#a65ff2', '#f25fd0', '#f25f61', '#f2cb5f', '#abf25f', '#5ff281', '#5ff2f0']
+        });
 
-        return(
+        return (
             /* Fade in a spinner logo */
-            <Animated.View style={{justifyContent: 'center', alignItems: 'stretch', backgroundColor: interpolateColor, flex: 1}}>
+            <Animated.View style={{ justifyContent: 'center', alignItems: 'stretch', backgroundColor: interpolateColor, flex: 1 }}>
 
-                    <Spinner/>
+                <Spinner />
 
             </Animated.View>
         );

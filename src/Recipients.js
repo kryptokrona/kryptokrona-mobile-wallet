@@ -13,7 +13,7 @@ import {
 
 import {
     validateAddresses, WalletErrorCode, validatePaymentID,
-} from 'turtlecoin-wallet-backend';
+} from 'kryptokrona-wallet-backend-js';
 
 import { Button as RNEButton, Alert } from 'react-native';
 
