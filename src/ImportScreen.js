@@ -369,7 +369,6 @@ export class ImportKeysScreen extends React.Component {
 
     async importWallet() {
         const recommended_node = await getBestNode();
-        console.log(recommended_node);
         Globals.preferences.node = recommended_node.url + ':' + recommended_node.port + ':' + recommended_node.ssl;
         savePreferencesToDatabase(Globals.preferences);
         const [wallet, error] = WalletBackend.importWalletFromKeys(

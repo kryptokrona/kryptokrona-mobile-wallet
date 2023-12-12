@@ -2,7 +2,7 @@
 //
 // Please see the included LICENSE file for more information.
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 
@@ -28,7 +28,7 @@ import Config from './Config';
 import { Styles } from './Styles';
 import { handleURI, toastPopUp, getBestNode } from './Utilities';
 import { ProgressBar } from './ProgressBar';
-import { saveToDatabase } from './Database';
+import { saveToDatabase, savePreferencesToDatabase } from './Database';
 import { Globals, initGlobals } from './Globals';
 import { reportCaughtException } from './Sentry';
 import { processBlockOutputs, makePostRequest } from './NativeCode';
@@ -351,7 +351,7 @@ export class MainScreen extends React.Component {
 
                       elevation: 15,
                     }}>
-                    <Animated.View style={{backgroundColor: interpolateColor, flex: 1, borderBottomLeftRadius: 25, borderBottomRightRadius: 25}}>
+                    <View style={{ flex: 1, borderBottomLeftRadius: 25, borderBottomRightRadius: 25}}>
                         <BalanceComponent
                             unlockedBalance={this.state.unlockedBalance}
                             lockedBalance={this.state.lockedBalance}
@@ -359,7 +359,11 @@ export class MainScreen extends React.Component {
                             {...this.props}
                         />
 
-                    </Animated.View>
+                    </View>
+
+                    
+
+                    <LineGraph points={priceHistory} color="#4484B2" />
 
                     </View>
 
@@ -459,7 +463,7 @@ class BalanceComponent extends React.Component {
 
     render() {
         const compactBalance = <OneLineText
-                                     style={{marginTop: 20, fontFamily: 'MajorMonoDisplay-Regular', fontWeight: 'bolder', color: this.props.lockedBalance === 0 ? 'black' : 'black', fontSize: 32}}
+                                     style={{marginTop: 20, fontFamily: 'RobotoMono-Regular', color: this.props.screenProps.theme.accentColour, fontSize: 32}}
                                      onPress={() => this.setState({
                                          expandedBalance: !this.state.expandedBalance
                                      })}
@@ -468,30 +472,15 @@ class BalanceComponent extends React.Component {
                                      {prettyPrintAmount(this.props.unlockedBalance + this.props.lockedBalance, Config).slice(0,-4)}
                                </OneLineText>;
 
-        const lockedBalance = <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                                    <FontAwesome name={'lock'} size={16} color={'black'} style={{marginRight: 7, marginTop: 3}}/>
-                                    <OneLineText style={{ fontFamily: 'MajorMonoDisplay-Regular', color: 'black', fontSize: 25}}
-                                          onPress={() => this.setState({
-                                             expandedBalance: !this.state.expandedBalance
-                                          })}>
-                                        {prettyPrintAmount(this.props.lockedBalance, Config).slice(0,-4)}
-                                    </OneLineText>
-                              </View>;
+        const fiatBalance = <OneLineText
+                                style={{marginTop: 20, fontFamily: 'RobotoMono-Regular', color: this.props.screenProps.theme.accentColour, fontSize: 32}}
+                                onPress={() => this.setState({
+                                    expandedBalance: !this.state.expandedBalance
+                                })}
+                                >
 
-        const unlockedBalance = <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                                    <FontAwesome name={'unlock'} size={16} color={'black'} style={{marginRight: 7, marginTop: 3}}/>
-                                    <OneLineText style={{ fontFamily: 'MajorMonoDisplay-Regular', color: 'black', fontSize: 25}}
-                                          onPress={() => this.setState({
-                                             expandedBalance: !this.props.expandedBalance
-                                          })}>
-                                        {prettyPrintAmount(this.props.unlockedBalance, Config).slice(0,-4)}
-                                    </OneLineText>
-                                </View>;
-
-        const expandedBalance = <View style={{ textAlignVertical: 'bottom', alignItems: 'center', justifyContent: 'center' }}>
-                                    {unlockedBalance}
-                                    {lockedBalance}
-                                </View>;
+                                    {this.props.coinValue}
+                                </OneLineText>;
 
 
         return(
@@ -499,14 +488,13 @@ class BalanceComponent extends React.Component {
 
 
                     <Animatable.View ref={this.balanceRef}>
-                        {this.state.expandedBalance ? expandedBalance : compactBalance}
+                        {this.state.expandedBalance ? fiatBalance : compactBalance}
                     </Animatable.View>
 
                     <Animatable.Text
                         ref={this.valueRef}
                         style={{ color: this.props.screenProps.theme.slightlyMoreVisibleColour, fontSize: 20, marginTop: 30, fontFamily: 'Montserrat-Regular' }}
                     >
-                        {this.props.coinValue}
                     </Animatable.Text>
             </View>
         );
