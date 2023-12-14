@@ -35,6 +35,11 @@ import { processBlockOutputs, makePostRequest } from './NativeCode';
 import { initBackgroundSync } from './BackgroundSync';
 import { CopyButton, OneLineText } from './SharedComponents';
 import { coinsToFiat, getCoinPriceFromAPI } from './Currency';
+import { AreaChart, Grid } from 'react-native-svg-charts';
+import * as shape from 'd3-shape';
+import { Defs, LinearGradient, Stop } from 'react-native-svg'
+
+
 
 async function init(navigation) {
     Globals.wallet.scanCoinbaseTransactions(Globals.preferences.scanCoinbaseTransactions);
@@ -160,7 +165,8 @@ export class MainScreen extends React.Component {
             addressOnly: false,
             unlockedBalance: 0,
             lockedBalance: 0,
-            address: Globals.wallet.getPrimaryAddress()
+            address: Globals.wallet.getPrimaryAddress(),
+            chartData: []
         }
 
         this.updateBalance();
@@ -250,11 +256,27 @@ export class MainScreen extends React.Component {
     }
 
 
-    componentDidMount() {
+    async componentDidMount() {
         this.unsubscribe = NetInfo.addEventListener(this.handleNetInfoChange);
         AppState.addEventListener('change', this.handleAppStateChange);
         Linking.addEventListener('url', this.handleURI);
         initBackgroundSync();
+
+        const all_transactions = await Globals.wallet.getTransactions();
+
+        all_transactions.reverse();
+
+        let balance = 0;
+        let chartData = [];
+
+        for (tx in all_transactions) {
+            const this_tx = all_transactions[tx];
+            balance += this_tx.totalAmount();
+            chartData.push(balance);
+        }
+
+        this.setState({chartData: chartData});
+
         let flipFlop = false;
 
         let keepAnimating = () => {
@@ -297,6 +319,8 @@ export class MainScreen extends React.Component {
         });
     }
 
+    
+
     render() {
         /* If you touch the address component, it will hide the other stuff.
            This is nice if you want someone to scan the QR code, but don't
@@ -306,6 +330,19 @@ export class MainScreen extends React.Component {
            inputRange: [0, 32, 64, 96, 128, 160, 192, 224],
            outputRange:['#5f86f2','#a65ff2','#f25fd0','#f25f61','#f2cb5f','#abf25f','#5ff281','#5ff2f0']
            })
+
+           const Gradient = ({ index }) => (
+            <Defs key={index}>
+                <LinearGradient id={'gradient'} x1={'0%'} y1={'0%'} x2={'0%'} y2={'100%'}>
+                    <Stop offset={'0%'} stopColor={this.props.screenProps.theme.accentColour} stopOpacity={0.8}/>
+                    <Stop offset={'100%'} stopColor={this.props.screenProps.theme.accentColour} stopOpacity={0}/>
+                </LinearGradient>
+            </Defs> );
+
+            const data = this.state.chartData;
+
+            console.log(data);
+
 
         return(
             <ScrollView
@@ -361,15 +398,25 @@ export class MainScreen extends React.Component {
 
                     </View>
 
-                    
-
-                    <LineGraph points={priceHistory} color="#4484B2" />
-
                     </View>
 
-                    <TouchableOpacity onPress={() => this.setState({ addressOnly: !this.state.addressOnly })}>
+                    {/* <TouchableOpacity onPress={() => this.setState({ addressOnly: !this.state.addressOnly })}>
                         <AddressComponent {...this.props}/>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
+
+                    {data &&
+    
+                            <AreaChart
+                            style={{ height: 200 }}
+                            data={data}
+                            contentInset={{ top: 20, bottom: 20 }}
+                            svg={{ fill: 'url(#gradient)' }}
+                            curve={shape.curveNatural}
+                        >
+                            <Gradient/>
+                        </AreaChart>
+                    
+                    }
 
                     <View style={{ opacity: this.state.addressOnly ? 0 : 100, flex: 1 }}>
                         <SyncComponent {...this.props}/>
@@ -463,39 +510,44 @@ class BalanceComponent extends React.Component {
 
     render() {
         const compactBalance = <OneLineText
-                                     style={{marginTop: 20, fontFamily: 'RobotoMono-Regular', color: this.props.screenProps.theme.accentColour, fontSize: 32}}
+                                     style={{marginTop: -15, marginLeft: 10, fontFamily: 'Roboto-Thin', color: this.props.screenProps.theme.accentColour, fontSize: 32}}
                                      onPress={() => this.setState({
                                          expandedBalance: !this.state.expandedBalance
                                      })}
                                 >
-
                                      {prettyPrintAmount(this.props.unlockedBalance + this.props.lockedBalance, Config).slice(0,-4)}
                                </OneLineText>;
 
         const fiatBalance = <OneLineText
-                                style={{marginTop: 20, fontFamily: 'RobotoMono-Regular', color: this.props.screenProps.theme.accentColour, fontSize: 32}}
+                                style={{marginTop: -15, fontFamily: 'Roboto-Thin', color: this.props.screenProps.theme.accentColour, fontSize: 32}}
                                 onPress={() => this.setState({
                                     expandedBalance: !this.state.expandedBalance
                                 })}
                                 >
-
                                     {this.props.coinValue}
                                 </OneLineText>;
 
 
         return(
-            <View style={{flex: 1, padding: 20, paddingBottom: 10, paddingTop: 40, justifyContent: 'center', alignItems: 'center'}}>
+            <View style={{flex: 1, padding: 20, paddingBottom: 10, paddingTop: 40, justifyContent: 'center', alignItems: 'center', position: 'relative', flexDirection: 'row'}}>
+
+                    <Animatable.Text
+                        ref={this.valueRef}
+                        style={{
+                            color: this.props.screenProps.theme.accentColour,
+                            fontSize: this.state.expandedBalance ?  0 : 42,
+                            fontFamily: 'icomoon',
+                           }}
+                    >
+                        
+                    </Animatable.Text>
 
 
                     <Animatable.View ref={this.balanceRef}>
                         {this.state.expandedBalance ? fiatBalance : compactBalance}
                     </Animatable.View>
 
-                    <Animatable.Text
-                        ref={this.valueRef}
-                        style={{ color: this.props.screenProps.theme.slightlyMoreVisibleColour, fontSize: 20, marginTop: 30, fontFamily: 'Montserrat-Regular' }}
-                    >
-                    </Animatable.Text>
+
             </View>
         );
     }
