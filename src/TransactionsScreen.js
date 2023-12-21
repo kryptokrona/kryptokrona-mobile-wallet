@@ -320,8 +320,8 @@ export class TransactionsScreen extends React.Component {
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: this.props.screenProps.theme.backgroundColour }}>
                 <Text style={{ fontFamily: 'Montserrat-Regular', borderRadius: 5,
                 borderColor: this.props.screenProps.theme.borderColour,
-                borderWidth: 1, padding: 10, paddingBottom: 0, fontSize: 15, width: 200, color: this.props.screenProps.theme.primaryColour, justifyContent: 'center', textAlign: 'center' }}>
-                    {'No message'}
+                borderWidth: 1, padding: 10, fontSize: 15, width: 200, color: this.props.screenProps.theme.primaryColour, justifyContent: 'center', textAlign: 'center' }}>
+                    {'No transactions yet 👻'}
                     {syncedMsg}
                 </Text>
             </View>;

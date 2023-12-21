@@ -366,18 +366,18 @@ export class MainScreen extends React.Component {
                 </LinearGradient>
             </Defs> );
 
-            const data = this.state.chartData;
-            const transactions = this.state.transactions;
-            console.log(transactions);
-
             const noTransactions =
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: this.props.screenProps.theme.backgroundColour }}>
                 <Text style={{ fontFamily: 'Montserrat-Regular', borderRadius: 5,
                 borderColor: this.props.screenProps.theme.borderColour,
-                borderWidth: 1, padding: 10, paddingBottom: 0, fontSize: 15, width: 200, color: this.props.screenProps.theme.primaryColour, justifyContent: 'center', textAlign: 'center' }}>
-                      {'You don\'t have any transactions yet 😥'}
+                borderWidth: 1, padding: 10, fontSize: 15, width: 200, color: this.props.screenProps.theme.primaryColour, justifyContent: 'center', textAlign: 'center' }}>
+                    {'No transactions yet 👻'}
                 </Text>
             </View>;
+
+
+            const data = this.state.chartData;
+            const transactions = this.state.transactions;
 
 
         return(
@@ -450,6 +450,11 @@ export class MainScreen extends React.Component {
                         </AreaChart>
                     
                     }
+
+                    {transactions.length == 0 &&
+                    noTransactions
+                    }
+
                     {transactions.length > 0 && 
                         <List style={{
                     backgroundColor: this.props.screenProps.theme.backgroundColour,
