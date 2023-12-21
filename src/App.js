@@ -5,6 +5,8 @@
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import CustomIcon from './CustomIcon.js'
+
 
 import React from 'react';
 
@@ -45,6 +47,10 @@ import {
     TransferScreen, ChoosePayeeScreen, NewPayeeScreen, ConfirmScreen,
     QrScannerScreen, SendTransactionScreen,
 } from './TransferScreen';
+
+import {
+    ReceiveScreen
+} from './ReceiveScreen';
 
 import {
     ImportWalletScreen, ImportKeysOrSeedScreen, ImportSeedScreen,
@@ -101,6 +107,24 @@ const TransferNavigator = createStackNavigator(
     },
     {
         initialRouteName: 'ChoosePayee',
+        headerLayoutPreset: 'center',
+        defaultNavigationOptions: {
+            headerTitleStyle: {
+                fontWeight: 'bold',
+                color: Themes.darkMode.primaryColour,
+            },
+            headerTransparent: true,
+            headerTintColor: Themes.darkMode.primaryColour,
+        },
+    }
+);
+
+const ReceiveNavigator = createStackNavigator(
+    {
+        Receive: ReceiveScreen
+    },
+    {
+        initialRouteName: 'Receive',
         headerLayoutPreset: 'center',
         defaultNavigationOptions: {
             headerTitleStyle: {
@@ -180,6 +204,23 @@ SettingsNavigator.navigationOptions = ({ navigation, screenProps }) => ({
     }
 });
 
+ReceiveNavigator.navigationOptions = ({ navigation, screenProps }) => ({
+    tabBarOptions: {
+        activeBackgroundColor: screenProps.theme.backgroundColour,
+        inactiveBackgroundColor: screenProps.theme.backgroundColour,
+        activeTintColor: screenProps.theme.primaryColour,
+        inactiveTintColor: screenProps.theme.slightlyMoreVisibleColour,
+        showLabel: false,
+        style: {
+          borderTopWidth: 0,
+          height: 64,
+          textAlignVertical: "top",
+          backgroundColor: "#FF00FF",
+          marginBottom: 33
+        }
+    }
+});
+
 const RecipientNavigator = createStackNavigator(
     {
         Recipients: RecipientsScreen,
@@ -223,6 +264,7 @@ const HomeNavigator = createBottomTabNavigator(
         Main: MainScreen,
         Transactions: TransactionNavigator,
         Transfer: TransferNavigator,
+        Receive: ReceiveNavigator,
         Recipients: RecipientNavigator,
         Settings: SettingsNavigator,
     },
@@ -235,7 +277,7 @@ const HomeNavigator = createBottomTabNavigator(
               borderTopWidth: 0,
               height: 64,
               textAlignVertical: "top",
-              backgroundColor: "#FF00FF",
+              backgroundColor: "black",
               marginBottom: 33
             }
 
@@ -248,20 +290,23 @@ const HomeNavigator = createBottomTabNavigator(
                 let IconComponent;
 
                 if (routeName === 'Main') {
-                    IconComponent = Entypo;
+                    IconComponent = CustomIcon;
                     iconName = 'wallet';
                 } else if (routeName === 'Transactions') {
                     IconComponent = Ionicons;
                     iconName = 'ios-list';
                 } else if (routeName === 'Transfer') {
-                    IconComponent = Ionicons;
-                    iconName = 'ios-send';
+                    IconComponent = CustomIcon;
+                    iconName = 'money-send';
+                } else if (routeName === 'Receive') {
+                    IconComponent = CustomIcon;
+                    iconName = 'money-recive'; // I blame the spelling error on the icon set creator
                 } else if (routeName === 'Recipients') {
                     IconComponent = SimpleLineIcons;
                     iconName = 'people';
                 } else if (routeName === 'Settings') {
-                    IconComponent = Ionicons;
-                    iconName = 'ios-settings';
+                    IconComponent = CustomIcon;
+                    iconName = 'setting-2';
                 }
 
                 return <IconComponent name={iconName} size={32} color={tintColor}/>;
