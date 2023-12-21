@@ -16,8 +16,13 @@ import { NavigationActions, NavigationEvents } from 'react-navigation';
 
 import {
     Animated, Text, View, Image, ImageBackground, TouchableOpacity, PushNotificationIOS,
-    AppState, Platform, Linking, ScrollView, RefreshControl, Dimensions,
+    AppState, Platform, Linking, ScrollView, RefreshControl, Dimensions, FlatList
 } from 'react-native';
+
+import ListItem from './ListItem';
+import List from './ListContainer';
+
+import CustomIcon from "./CustomIcon";
 
 import NetInfo from "@react-native-community/netinfo";
 
@@ -26,13 +31,14 @@ import { prettyPrintAmount, LogLevel } from 'kryptokrona-wallet-backend-js';
 import Config from './Config';
 
 import { Styles } from './Styles';
-import { handleURI, toastPopUp, getBestNode } from './Utilities';
+import { handleURI, toastPopUp, getBestNode, prettyPrintUnixTimestamp } from './Utilities';
 import { ProgressBar } from './ProgressBar';
 import { saveToDatabase, savePreferencesToDatabase } from './Database';
 import { Globals, initGlobals } from './Globals';
 import { reportCaughtException } from './Sentry';
 import { processBlockOutputs, makePostRequest } from './NativeCode';
 import { initBackgroundSync } from './BackgroundSync';
+import { TransactionList } from './TransactionsScreen';
 import { CopyButton, OneLineText } from './SharedComponents';
 import { coinsToFiat, getCoinPriceFromAPI } from './Currency';
 import { AreaChart, Grid } from 'react-native-svg-charts';
@@ -166,7 +172,8 @@ export class MainScreen extends React.Component {
             unlockedBalance: 0,
             lockedBalance: 0,
             address: Globals.wallet.getPrimaryAddress(),
-            chartData: []
+            chartData: [],
+            transactions: []
         }
 
         this.updateBalance();
@@ -208,10 +215,27 @@ export class MainScreen extends React.Component {
             unlockedBalance + lockedBalance, Globals.preferences.currency
         );
 
+        const all_transactions = await Globals.wallet.getTransactions();
+
+        const transactions = all_transactions.slice(0, 3);
+
+        all_transactions.reverse();
+
+        let balance = 0;
+        let chartData = [];
+
+        for (tx in all_transactions) {
+            const this_tx = all_transactions[tx];
+            balance += this_tx.totalAmount();
+            chartData.push(balance);
+        }
+
         this.setState({
             unlockedBalance,
             lockedBalance,
             coinValue,
+            chartData,
+            transactions
         });
     }
 
@@ -262,21 +286,6 @@ export class MainScreen extends React.Component {
         Linking.addEventListener('url', this.handleURI);
         initBackgroundSync();
 
-        const all_transactions = await Globals.wallet.getTransactions();
-
-        all_transactions.reverse();
-
-        let balance = 0;
-        let chartData = [];
-
-        for (tx in all_transactions) {
-            const this_tx = all_transactions[tx];
-            balance += this_tx.totalAmount();
-            chartData.push(balance);
-        }
-
-        this.setState({chartData: chartData});
-
         let flipFlop = false;
 
         let keepAnimating = () => {
@@ -319,6 +328,24 @@ export class MainScreen extends React.Component {
         });
     }
 
+    getIconName(transaction) {
+        if (transaction.totalAmount() >= 0) {
+            return 'money-recive';
+        }
+
+        return 'money-send';
+    }
+
+    getIconColour(transaction) {
+        if (transaction.totalAmount() >= 0) {
+            /* Intentionally using the TurtleCoin green here, instead of the
+               theme colour - we want green/red, not to change based on theme */
+            return '#40C18E';
+        }
+
+        return 'red';
+    }
+
     
 
     render() {
@@ -340,8 +367,17 @@ export class MainScreen extends React.Component {
             </Defs> );
 
             const data = this.state.chartData;
+            const transactions = this.state.transactions;
+            console.log(transactions);
 
-            console.log(data);
+            const noTransactions =
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: this.props.screenProps.theme.backgroundColour }}>
+                <Text style={{ fontFamily: 'Montserrat-Regular', borderRadius: 5,
+                borderColor: this.props.screenProps.theme.borderColour,
+                borderWidth: 1, padding: 10, paddingBottom: 0, fontSize: 15, width: 200, color: this.props.screenProps.theme.primaryColour, justifyContent: 'center', textAlign: 'center' }}>
+                      {'You don\'t have any transactions yet 😥'}
+                </Text>
+            </View>;
 
 
         return(
@@ -375,7 +411,6 @@ export class MainScreen extends React.Component {
                       height: '14%',
                       flexDirection: 'row',
                       justifyContent: 'space-between',
-                      marginBottom: 30,
                       padding: 0,
                       opacity: this.state.addressOnly ? 0 : 100,
                       shadowColor: "#000",
@@ -400,11 +435,9 @@ export class MainScreen extends React.Component {
 
                     </View>
 
-                    {/* <TouchableOpacity onPress={() => this.setState({ addressOnly: !this.state.addressOnly })}>
-                        <AddressComponent {...this.props}/>
-                    </TouchableOpacity> */}
 
-                    {data &&
+
+                    {this.state.chartData.length > 0 &&
     
                             <AreaChart
                             style={{ height: 200 }}
@@ -417,65 +450,48 @@ export class MainScreen extends React.Component {
                         </AreaChart>
                     
                     }
+                    {transactions.length > 0 && 
+                        <List style={{
+                    backgroundColor: this.props.screenProps.theme.backgroundColour,
+                    borderTopWidth: 0
+                }}>
+                    <FlatList
+                        style={{paddingLeft: 25, paddingRight: 25}}
+                        data={transactions}
+                        keyExtractor={item => item.hash}
+                        renderItem={({item}) => (
+
+                            <ListItem
+                                title={prettyPrintAmount(Math.abs(item.totalAmount()) - (item.totalAmount() > 0 ? 0 : item.fee), Config)}
+                                subtitle={item.timestamp === 0 ? 'Processing ' + prettyPrintUnixTimestamp(Date.now() / 1000) : 'Completed ' + prettyPrintUnixTimestamp(item.timestamp)}
+                                leftIcon={
+                                    <View style={{width: 30, alignItems: 'center', justifyContent: 'center', marginRight: 10}}>
+                                        <CustomIcon name={this.getIconName(item)} size={30} color={this.getIconColour(item)}/>
+                                    </View>
+                                }
+                                titleStyle={{
+                                    color: this.props.screenProps.theme.primaryColour,
+                                    fontFamily: 'Montserrat-SemiBold'
+                                }}
+                                subtitleStyle={{
+                                    color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                                    fontFamily: 'Montserrat-Regular'
+                                }}
+                                onPress={() => this.props.navigation.navigate('TransactionDetails', { transaction: item })}
+                            />
+
+                        )}
+                    />
+                </List>
+
+                    }
+
 
                     <View style={{ opacity: this.state.addressOnly ? 0 : 100, flex: 1 }}>
                         <SyncComponent {...this.props}/>
                     </View>
                 </View>
             </ScrollView>
-        );
-    }
-}
-
-/* Display address, and QR code */
-class AddressComponent extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            address: Globals.wallet.getPrimaryAddress(),
-        };
-    }
-
-    render() {
-        return(
-            <View style={{ alignItems: 'center' }}>
-                <Text style={ [Styles.centeredText, {
-                    color: this.props.screenProps.theme.primaryColour,
-                    fontSize: 20,
-                    marginBottom: 15,
-                    fontFamily: 'Montserrat-Regular'
-                }]}>
-                    Your Wallet Address:
-                </Text>
-
-                <View style={{ borderRadius: 5, borderWidth: 1, borderColor: this.props.screenProps.theme.borderColour, padding: 8, backgroundColor: this.props.screenProps.theme.qrCode.backgroundColour }}>
-                    <QRCode
-                        value={this.state.address}
-                        size={200}
-                        backgroundColor={this.props.screenProps.theme.qrCode.backgroundColour}
-                        color={this.props.screenProps.theme.qrCode.foregroundColour}
-                    />
-                </View>
-
-                <Text style={[Styles.centeredText, {
-                    color: this.props.screenProps.theme.primaryColour,
-                    width: 215,
-                    fontSize: 15,
-                    marginTop: 10,
-                    marginRight: 20,
-                    marginLeft: 20,
-                    fontFamily: 'Montserrat-Regular'
-                }]}>
-                    {this.state.address}
-                </Text>
-
-                <CopyButton
-                    data={this.state.address}
-                    name='Address'
-                    {...this.props}
-                />
-            </View>
         );
     }
 }
@@ -509,6 +525,7 @@ class BalanceComponent extends React.Component {
     }
 
     render() {
+
         const compactBalance = <OneLineText
                                      style={{marginTop: -15, marginLeft: 10, fontFamily: 'Roboto-Thin', color: this.props.screenProps.theme.accentColour, fontSize: 32}}
                                      onPress={() => this.setState({
