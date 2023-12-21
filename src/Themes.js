@@ -18,6 +18,8 @@ export const Themes = {
 
         borderColour: 'rgba(0,0,0,0.1)',
 
+        accentColour: 'rgb(83,86,92)',
+
         /**
          * Colour for the background circles on the pin page
          */
@@ -92,7 +94,7 @@ export const Themes = {
          */
         primaryColour: 'rgba(255,255,255,0.8)',
 
-        accentColour: '#5a8bdb',
+        accentColour: 'rgba(255,255,255,0.8)',
 
         buttonColour: '#161616',
 

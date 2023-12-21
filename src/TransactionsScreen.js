@@ -21,6 +21,7 @@ import { Styles } from './Styles';
 import { Globals } from './Globals';
 import { coinsToFiat } from './Currency';
 import { prettyPrintUnixTimestamp, prettyPrintDate } from './Utilities';
+import CustomIcon from './CustomIcon.js'
 
 class ItemDescription extends React.Component {
     constructor(props) {
@@ -339,7 +340,7 @@ export class TransactionsScreen extends React.Component {
     }
 }
 
-class TransactionList extends React.Component {
+export class TransactionList extends React.Component {
     constructor(props) {
         super(props);
 
@@ -350,10 +351,10 @@ class TransactionList extends React.Component {
 
     getIconName(transaction) {
         if (transaction.totalAmount() >= 0) {
-            return 'ios-arrow-dropleft';
+            return 'money-recive';
         }
 
-        return 'ios-arrow-dropright';
+        return 'money-send';
     }
 
     getIconColour(transaction) {
@@ -447,7 +448,7 @@ class TransactionList extends React.Component {
                                 subtitle={item.timestamp === 0 ? 'Processing ' + prettyPrintUnixTimestamp(Date.now() / 1000) : 'Completed ' + prettyPrintUnixTimestamp(item.timestamp)}
                                 leftIcon={
                                     <View style={{width: 30, alignItems: 'center', justifyContent: 'center', marginRight: 10}}>
-                                        <Ionicons name={this.getIconName(item)} size={30} color={this.getIconColour(item)}/>
+                                        <CustomIcon name={this.getIconName(item)} size={30} color={this.getIconColour(item)}/>
                                     </View>
                                 }
                                 titleStyle={{

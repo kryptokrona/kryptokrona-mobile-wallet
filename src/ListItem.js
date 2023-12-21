@@ -15,9 +15,12 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         paddingRight: 10,
         paddingBottom: 10,
-        borderBottomColor: 'rgba(125,125,125,0.3)',
-        borderBottomWidth: 1,
         backgroundColor: "transparent",
+        borderRadius: 15,
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor:  '#252525',
+        marginBottom: 10
     },
 });
 

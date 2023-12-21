@@ -989,79 +989,15 @@ export class SettingsScreen extends React.Component {
 
     render() {
       let getColor = (item) => {
-        switch(item.title) {
-           case "FAQ":
-              return "#5f86f2";
-              break;
-           case "Backup Keys":
-              return "#a65ff2";
-              break;
-            case "View logs":
-               return "#f25fd0";
-               break;
-           case "Rewind Wallet":
-              return "#f25f61";
-              break;
-           case "Speed Up Background Syncing":
-              return "#f2cb5f";
-              break;
-          case "Swap Node":
-             return "#abf25f";
-             break;
-         case "Swap Currency":
-            return "#5ff281";
-            break;
-          case "Limit data":
-             return "#5ff2f0";
-             break;
-           case "Enable dark mode":
-              return "#5f86f2";
-              break;
-          case "Enable PIN/Fingerprint confirmation":
-             return "#a65ff2";
-             break;
-             case "Change login method":
-                return "#f25fd0";
-                break;
-                case "Enable Notifications":
-                   return "#f25f61";
-                   break;
-                 case "Scan Coinbase Transactions":
-                    return "#f2cb5f";
-                    break;
-                   case "Enable Auto Optimization":
-                      return "#abf25f";
-                      break;
-                      case "Manually Optimize Wallet":
-                         return "#5ff281";
-                         break;
-                         case "View Kryptokrona Mobile Wallet on Google Play":
-                            return "#5ff2f0";
-                            break;
-                          case "View Kryptokrona Mobile Wallet on Github":
-                             return "#5f86f2";
-                             break;
-                            case "Resync Wallet":
-                               return "#a65ff2";
-                               break;
-                               case "Delete Wallet":
-                                  return "#f25fd0";
-                                  break;
-                                  case "Kryptokrona Mobile Wallet":
-                                     return "#f25f61";
-                                     break;
-                             default:
-                             return this.props.screenProps.theme.foregroundColour
-
-
-        }
+        return this.props.screenProps.theme.primaryColour;
       }
         return(
             <View style={{
                 backgroundColor: this.props.screenProps.theme.backgroundColour,
                 borderColor: this.props.screenProps.theme.backgroundColour,
                 flex: 1,
-                borderWidth: 0
+                borderWidth: 0,
+                padding: 10
             }}>
                 <List style={{
                     backgroundColor: this.props.screenProps.theme.backgroundColour,

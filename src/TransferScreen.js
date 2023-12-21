@@ -22,7 +22,7 @@ import {
 } from 'kryptokrona-wallet-backend-js';
 
 import {
-    View, Text, TextInput, TouchableWithoutFeedback, FlatList, Platform,
+    View, Text, TextInput, TouchableOpacity, FlatList, Platform,
     ScrollView, Clipboard, Image
 } from 'react-native';
 
@@ -38,12 +38,16 @@ import { Authenticate } from './Authenticate';
 import { Hr, BottomButton } from './SharedComponents';
 import { removeFee, toAtomic, fromAtomic, addFee } from './Fee';
 
+import { coinsToFiat, getCoinPriceFromAPI } from './Currency';
+
 import {
     getArrivalTime, navigateWithDisabledBack, delay, toastPopUp, handleURI,
-    validAmount,
+    validAmount, get_avatar
 } from './Utilities';
 
 import Identicon from 'identicon.js';
+
+import CustomIcon from './CustomIcon';
 
 const intToRGB = (int) => {
 
@@ -117,9 +121,10 @@ class AmountInput extends React.Component {
                     marginBottom: this.props.marginBottom || 0,
                 }}
                 inputContainerStyle={{
-                    borderColor: this.props.screenProps.theme.notVeryVisibleColour,
                     borderWidth: 1,
-                    borderRadius: 2,
+                    borderRadius: 15,
+                    backgroundColor: this.props.screenProps.theme.backgroundEmphasis,
+                    borderColor: this.props.screenProps.theme.borderColour
                 }}
                 label={this.props.label}
                 labelStyle={{
@@ -201,6 +206,7 @@ export class TransferScreen extends React.Component {
             unlockedBalance: 0,
             lockedBalance: 0,
             unlockedBalanceHuman: 0,
+            fiat: false
         }
     }
 
@@ -225,12 +231,17 @@ export class TransferScreen extends React.Component {
         });
     }
 
-    checkErrors(amount) {
+    async checkErrors(amount) {
+        console.log(amount);
+        const coinValue = await coinsToFiat(
+            amount * (10 ** Config.decimalPlaces), Globals.preferences.currency
+        );
         if (this.state.sendAll) {
             if (this.state.unlockedBalance > 1) {
                 this.setState({
                     continueEnabled: true,
                     amountAtomic: this.state.unlockedBalance,
+                    coinValue
                 });
             } else {
                 this.setState({
@@ -244,6 +255,7 @@ export class TransferScreen extends React.Component {
             this.setState({
                 continueEnabled: valid,
                 errMsg: error,
+                coinValue
             });
         }
     }
@@ -253,6 +265,7 @@ export class TransferScreen extends React.Component {
     }
 
     render() {
+        
         return(
             <View style={{
                 backgroundColor: this.props.screenProps.theme.backgroundColour,
@@ -293,6 +306,31 @@ export class TransferScreen extends React.Component {
                         errorMessage={this.state.errMsg}
                         {...this.props}
                     />
+                    <View style={{ marginTop: 20, justifyContent: 'space-between', width: "100%", alignItems: 'center' }}>
+
+                    {this.state.amount > 0 &&
+                        <Text
+                        style={{color: this.props.screenProps.theme.primaryColour,
+                        fontSize: 10,
+                        fontFamily: 'Montserrat-SemiBold'}}
+                        >
+
+                            {this.state.coinValue}
+
+                        </Text>
+                  }
+                {!this.state.amount &&
+                        <Text
+                        style={{color: 'transparent',
+                        fontSize: 10,
+                        fontFamily: 'Montserrat-SemiBold'}}
+                        >
+
+                            
+
+                        </Text>
+                  }
+                  </View>
 
                     <View style={{ marginLeft: '70%' }}>
                         <Button
@@ -526,7 +564,7 @@ export class NewPayeeScreen extends React.Component {
             });
         }
 
-        const addressError = validateAddresses([address], true, Config);
+        const addressError = await validateAddresses([address], true, Config);
 
         if (addressError.errorCode !== WalletErrorCode.SUCCESS) {
             errorMessage = addressError.toString();
@@ -574,10 +612,10 @@ export class NewPayeeScreen extends React.Component {
         return [true, errorMessage];
     }
 
-    checkErrors() {
-        (async() => {
+    async checkErrors() {
 
-            const [addressValid, addressError] = [true, true];
+
+            const [addressValid, addressError] = await this.validAddress(this.state.address);
             const [paymentIDValid, paymentIDError] = this.validPaymentID(this.state.paymentID);
             const [nicknameValid, nicknameError] = this.validNickname(this.state.nickname);
 
@@ -588,7 +626,7 @@ export class NewPayeeScreen extends React.Component {
                 nicknameError,
             });
 
-        })();
+
     }
 
     render() {
@@ -598,14 +636,20 @@ export class NewPayeeScreen extends React.Component {
                 flex: 1,
             }}>
                 <View style={{
-                    alignItems: 'flex-start',
+                    alignItems: 'center',
                     justifyContent: 'flex-start',
                     flex: 1,
                     marginTop: 60,
                 }}>
                     <Text style={{ fontFamily: "Montserrat-SemiBold", color: this.props.screenProps.theme.primaryColour, fontSize: 25, marginBottom: 40, marginLeft: 30 }}>
-                        New contact
+                        Add contact
                     </Text>
+
+                    <Image
+                      style={{width: 50, height: 50}}
+                      source={{uri: get_avatar(this.state.address)}}
+                    />
+
 
                     <Input
                         containerStyle={{
@@ -615,11 +659,11 @@ export class NewPayeeScreen extends React.Component {
                             fontFamily: 'Montserrat-Regular',
                         }}
                         inputContainerStyle={{
-                            borderColor: this.props.screenProps.theme.notVeryVisibleColour,
                             borderWidth: 1,
-                            borderRadius: 2,
+                            borderRadius: 15,
+                            backgroundColor: this.props.screenProps.theme.backgroundEmphasis,
+                            borderColor: this.props.screenProps.theme.borderColour
                         }}
-                        label={'Name'}
                         labelStyle={{
                             fontFamily: 'Montserrat-Regular',
                             marginBottom: 5,
@@ -628,10 +672,11 @@ export class NewPayeeScreen extends React.Component {
                         }}
                         inputStyle={{
                             color: this.props.screenProps.theme.primaryColour,
-                            fontSize: 30,
+                            fontSize: 14,
                             marginLeft: 5,
                             fontFamily: 'Montserrat-SemiBold',
                         }}
+                        label={'Name'}
                         value={this.state.nickname}
                         onChangeText={(text) => {
                             this.setState({
@@ -642,28 +687,32 @@ export class NewPayeeScreen extends React.Component {
                     />
 
                     <Input
-                        containerStyle={{
-                            width: '90%',
-                            marginLeft: 20,
-                        }}
-                        inputContainerStyle={{
-                            borderColor: this.props.screenProps.theme.notVeryVisibleColour,
-                            borderWidth: 1,
-                            borderRadius: 2,
-                        }}
+                    containerStyle={{
+                        width: '90%',
+                        marginLeft: 20,
+                        marginBottom: 30,
+                        fontFamily: 'Montserrat-Regular',
+                    }}
+                    inputContainerStyle={{
+                        borderWidth: 1,
+                        borderRadius: 15,
+                        backgroundColor: this.props.screenProps.theme.backgroundEmphasis,
+                        borderColor: this.props.screenProps.theme.borderColour
+                    }}
+                    labelStyle={{
+                        fontFamily: 'Montserrat-Regular',
+                        marginBottom: 5,
+                        marginRight: 2,
+                        color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                    }}
+                    inputStyle={{
+                        color: this.props.screenProps.theme.primaryColour,
+                        fontSize: 14,
+                        marginLeft: 5,
+                        fontFamily: 'Montserrat-SemiBold',
+                    }}
                         maxLength={Config.integratedAddressLength}
-                        label={'Recipient\'s address'}
-                        labelStyle={{
-                            fontFamily: 'Montserrat-Regular',
-                            marginBottom: 5,
-                            marginRight: 2,
-                            color: this.props.screenProps.theme.slightlyMoreVisibleColour,
-                        }}
-                        inputStyle={{
-                            color: this.props.screenProps.theme.primaryColour,
-                            fontSize: 15,
-                            marginLeft: 5
-                        }}
+                        label={'Address'}
                         value={this.state.address}
                         onChangeText={(text) => {
                             this.setState({
@@ -672,60 +721,34 @@ export class NewPayeeScreen extends React.Component {
                         }}
                         errorMessage={this.state.addressError}
                     />
-
-                    <View style={{ marginLeft: '63%', marginTop: 8, borderRadius: 3, paddingTop: 0,
-                                    borderColor: this.props.screenProps.theme.borderColour,
-                                    borderWidth: 1,}}>
-                        <Button
-                            title='Scan QR Code'
-                            onPress={() => {
-                                const func = (data) => {
-                                    if (data.startsWith(Config.uriPrefix)) {
-                                        handleURI(data, this.props.navigation);
-                                    } else {
-                                        this.setState({
-                                            address: data,
-                                        }, () => this.checkErrors());
-                                    }
-                                };
-
-                                this.props.navigation.navigate('QrScanner', {
-                                    setAddress: func
-                                });
-                            }}
-                            titleStyle={{
-                                color: this.props.screenProps.theme.primaryColour,
-                                fontFamily: 'Montserrat-SemiBold'
-
-                            }}
-                            type="clear"
-                        />
-                    </View>
-
+                    {this.state.address != '' &&
                     <Input
-                        containerStyle={{
-                            width: '90%',
-                            marginLeft: 20,
-                        }}
-                        inputContainerStyle={{
-                            borderColor: this.props.screenProps.theme.notVeryVisibleColour,
-                            borderWidth: 1,
-                            borderRadius: 2,
-                        }}
+                    containerStyle={{
+                        width: '90%',
+                        marginLeft: 20,
+                        marginBottom: 30,
+                        fontFamily: 'Montserrat-Regular',
+                    }}
+                    inputContainerStyle={{
+                        borderWidth: 1,
+                        borderRadius: 15,
+                        backgroundColor: this.props.screenProps.theme.backgroundEmphasis,
+                        borderColor: this.props.screenProps.theme.borderColour
+                    }}
+                    labelStyle={{
+                        fontFamily: 'Montserrat-Regular',
+                        marginBottom: 5,
+                        marginRight: 2,
+                        color: this.props.screenProps.theme.slightlyMoreVisibleColour,
+                    }}
+                    inputStyle={{
+                        color: this.props.screenProps.theme.primaryColour,
+                        fontSize: 14,
+                        marginLeft: 5,
+                        fontFamily: 'Montserrat-SemiBold',
+                    }}
                         maxLength={64}
-                        label={'Recipient\'s Payment ID (optional)'}
-                        labelStyle={{
-                            marginBottom: 5,
-                            marginRight: 2,
-                            color: this.props.screenProps.theme.slightlyMoreVisibleColour,
-                            fontFamily: 'Montserrat-Regular'
-                        }}
-                        inputStyle={{
-                            color: this.props.screenProps.theme.primaryColour,
-                            fontSize: 15,
-                            marginLeft: this.state.paymentIDEnabled ? 5 : 0,
-                            backgroundColor: this.state.paymentIDEnabled ? this.props.screenProps.theme.backgroundColour : this.props.screenProps.theme.disabledColour,
-                        }}
+                        label={'Payment ID (optional)'}
                         value={this.state.paymentID}
                         onChangeText={(text) => {
                             this.setState({
@@ -735,9 +758,52 @@ export class NewPayeeScreen extends React.Component {
                         editable={this.state.paymentIDEnabled}
                         errorMessage={this.state.paymentIDError}
                     />
+                    }
+                    
+
+                        <TouchableOpacity
+                                        style={{
+                                            backgroundColor: 'rgba(255,255,255,0.02)',
+                                            borderWidth: 1,
+                                            borderColor: this.props.screenProps.theme.borderColour,
+                                            borderRadius: 15,
+                                            padding: 10,
+                                            flexDirection: 'row',
+                                            alignContent: 'center',
+                                            justifyContent: 'space-between',
+                                            marginBottom: 10,
+                                        }}
+                                        onPress={() => {
+                                            const func = (data) => {
+                                                if (data.startsWith(Config.uriPrefix)) {
+                                                    handleURI(data, this.props.navigation);
+                                                } else {
+                                                    this.setState({
+                                                        address: data,
+                                                        // paymentID: data.substring(99),
+                                                    }, () => this.checkErrors());
+                                                }
+                                            };
+            
+                                            this.props.navigation.navigate('QrScanner', {
+                                                setAddress: func
+                                            });
+                                        }}
+                                    >
+                                        <CustomIcon name='scan-barcode' size={18} style={{marginRight: 4, color: this.props.screenProps.theme.primaryColour}} />
+                                        <Text style={{
+                                            color: this.props.screenProps.theme.primaryColour,
+                                            textAlign: 'left',
+                                            fontSize: 14,
+                                            fontFamily: 'Montserrat-Bold',
+                                            textAlign: 'center'
+                                        }}>
+                                            Scan QR
+                                        </Text>
+                            </TouchableOpacity>
 
                     <BottomButton
-                        title="Continue"
+                        title={'Continue'}
                         onPress={() => {
                             const payee = {
                                 nickname: this.state.nickname,
@@ -748,10 +814,18 @@ export class NewPayeeScreen extends React.Component {
                             /* Add payee to global payee store */
                             Globals.addPayee(payee);
 
-                            const finishFunction = this.props.navigation.getParam('finishFunction', undefined);
+                            const finishFunction = Globals.fromChat; // = this.props.navigation.getParam('finishFunction', undefined);
 
                             if (finishFunction) {
-                                finishFunction();
+                              Globals.fromChat = false;
+                              this.props.navigation.dispatch(StackActions.popToTop());
+                              this.props.navigation.navigate(
+                                  'TransferScreen', {
+                                      payee: payee,
+                                  });
+
+                                  return;
+
                             } else {
                                 const amount = this.props.navigation.getParam('amount', undefined);
 
@@ -1319,75 +1393,36 @@ export class ChoosePayeeScreen extends React.Component {
                 </View>
 
                 <View style={{
-                    marginLeft: 24,
-                    width: 120,
-                    alignItems: 'flex-start',
-                    justifyContent: 'flex-start',
-                    borderRadius: 3, paddingTop: 0,
-                                    borderColor: this.props.screenProps.theme.borderColour,
-                                    borderWidth: 1
-                }}>
-                    <Button
-                        title='Scan QR Code'
-                        onPress={() => {
-                            const func = (data) => {
-                                handleURI(data, this.props.navigation);
-                            };
-
-                            this.props.navigation.navigate('QrScanner', {
-                                setAddress: func
-                            });
-                        }}
-                        titleStyle={{
-                            color: this.props.screenProps.theme.primaryColour,
-                            fontFamily: 'Montserrat-SemiBold'
-                        }}
-                        type="clear"
-                    />
-                </View>
-
-                <View style={{
-                    alignItems: 'flex-start',
-                    justifyContent: 'flex-start',
-                    marginLeft: 30,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginLeft: 10,
                     marginRight: 10,
                 }}>
 
 
-                    <TouchableWithoutFeedback
-                        onPress={() => {
-                            this.props.navigation.navigate('NewPayee');
-                        }}
-                    >
-                        <View style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            marginTop: 10,
-
-                        }}>
-                            <View style={{
-                                height: 37,
-                                width: 37,
-                                borderWidth: 1,
-                                borderColor: this.props.screenProps.theme.borderColour,
-                                borderRadius: 45,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                            }}>
-                                <SimpleLineIcons
-                                    name={'user-follow'}
-                                    size={24}
-                                    color={this.props.screenProps.theme.slightlyMoreVisibleColour}
-                                    padding={5}
-                                />
-                            </View>
-
-                            <Text style={{ fontFamily: 'Montserrat-Regular', marginLeft: 15, color: this.props.screenProps.theme.primaryColour, fontSize: 16 }}>
-                                Add a new recipient
-                            </Text>
-                        </View>
-                    </TouchableWithoutFeedback>
+                   <TouchableOpacity
+                                style={{
+                                    borderWidth: 1,
+                                    borderColor: this.props.screenProps.theme.borderColour,
+                                    borderRadius: 15,
+                                    padding: 10,
+                                    flexDirection: 'row',
+                                    alignContent: 'center',
+                                    justifyContent: 'space-between'
+                                  }}
+                              onPress={() => this.props.navigation.navigate('NewPayee')}
+                            >
+                                <CustomIcon name='user-add' size={18} style={{marginRight: 4, color: this.props.screenProps.theme.primaryColour}} />
+                                <Text style={{
+                                    color: this.props.screenProps.theme.primaryColour,
+                                    textAlign: 'left',
+                                    fontSize: 14,
+                                    fontFamily: 'Montserrat-Bold',
+                                    textAlign: 'center'
+                                }}>
+                                    Add new recipient
+                                </Text>
+                    </TouchableOpacity>
 
 
 

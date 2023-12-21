@@ -3,12 +3,11 @@
 // Please see the included LICENSE file for more information.
 
 import React from 'react';
-import Identicon from 'identicon.js';
 
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import CustomIcon from './CustomIcon';
 
 import {
-    View, Text, ScrollView, FlatList, Platform, TouchableWithoutFeedback, Image
+    View, Text, ScrollView, FlatList, TouchableOpacity, Image
 } from 'react-native';
 
 import {
@@ -23,68 +22,12 @@ import Config from './Config';
 import ListItem from './ListItem';
 import List from './ListContainer';
 
+import {get_avatar} from './Utilities';
+
 import { Styles } from './Styles';
 import { Globals } from './Globals';
 import { Hr, BottomButton } from './SharedComponents';
 
-const intToRGB = (int) => {
-
-  if (typeof int !== 'number') throw new Error(errorMessage);
-  if (Math.floor(int) !== int) throw new Error(errorMessage);
-  if (int < 0 || int > 16777215) throw new Error(errorMessage);
-
-  var red = int >> 16;
-  var green = int - (red << 16) >> 8;
-  var blue = int - (red << 16) - (green << 8);
-
-  return {
-    red: red,
-    green: green,
-    blue: blue
-  }
-}
-
-
-String.prototype.hashCode = function() {
-    var hash = 0;
-    if (this.length == 0) {
-        return hash;
-    }
-    for (var i = 0; i < this.length; i++) {
-        var char = this.charCodeAt(i);
-        hash = ((hash<<5)-hash)+char;
-        hash = hash & hash; // Convert to 32bit integer
-    }
-    return hash;
-}
-
-const hashCode = (str) => {
-		let hash = Math.abs(str.hashCode())*0.007812499538;
-    return Math.floor(hash);
-
-}
-
-
-            function get_avatar(hash) {
-              // Displays a fixed identicon until user adds new contact address in the input field
-              if (hash.length < 15) {
-                hash = 'SEKReYanL2qEQF2HA8tu9wTpKBqoCA8TNb2mNRL5ZDyeFpxsoGNgBto3s3KJtt5PPrRH36tF7DBEJdjUn5v8eaESN2T5DPgRLVY';
-              }
-              // Get custom color scheme based on address
-              let rgb = intToRGB(hashCode(hash));
-
-              // Options for avatar
-              var options = {
-                    foreground: [rgb.red, rgb.green, rgb.blue, 255],               // rgba black
-                    background: [parseInt(rgb.red/10), parseInt(rgb.green/10), parseInt(rgb.blue/10), 0],         // rgba white
-                    margin: 0.2,                              // 20% margin
-                    size: 50,                                // 420px square
-                    format: 'png'                           // use SVG instead of PNG
-                  };
-
-              // create a base64 encoded SVG
-              return 'data:image/png;base64,' + new Identicon(hash, options).toString();
-            }
 
 export class RecipientsScreen extends React.Component {
     constructor(props) {
@@ -194,48 +137,36 @@ export class RecipientsScreen extends React.Component {
                     marginTop: 60,
                     width: '85%'
                 }}>
-                    <TouchableWithoutFeedback
-                        onPress={() => {
-                            this.props.navigation.navigate('NewPayee', {
-                                finishFunction: () => {
-                                    this.props.navigation.navigate('Recipients');
-                                }
-                            })
-                        }}
-                    >
                         <View style={{
-                            flexDirection: 'row',
-                            alignItems: 'flex-start',
-                            justifyContent: 'flex-start',
-                            height: 40,
-                        }}>
-                            <View style={{
-                                height: 37,
-                                width: 37,
-                                borderWidth: 1,
-                                borderColor: this.props.screenProps.theme.notVeryVisibleColour,
-                                borderRadius: 45,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                            }}>
-                                <SimpleLineIcons
-                                    name={'user-follow'}
-                                    size={24}
-                                    color={this.props.screenProps.theme.slightlyMoreVisibleColour}
-                                    padding={5}
-                                />
-                            </View>
-
-                            <Text style={{
-                                marginLeft: 15,
-                                color: this.props.screenProps.theme.primaryColour,
-                                fontSize: 24,
-                                fontFamily: "Montserrat-SemiBold"
-                            }}>
-                                Add a new recipient
-                            </Text>
-                        </View>
-                    </TouchableWithoutFeedback>
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginLeft: 10,
+                    marginRight: 10,
+                }}>
+                     <TouchableOpacity
+                                style={{
+                                    borderWidth: 1,
+                                    borderColor: this.props.screenProps.theme.borderColour,
+                                    borderRadius: 15,
+                                    padding: 10,
+                                    flexDirection: 'row',
+                                    alignContent: 'center',
+                                    justifyContent: 'space-between'
+                                  }}
+                              onPress={() => this.props.navigation.navigate('NewPayee')}
+                            >
+                                <CustomIcon name='user-add' size={18} style={{marginRight: 4, color: this.props.screenProps.theme.primaryColour}} />
+                                <Text style={{
+                                    color: this.props.screenProps.theme.primaryColour,
+                                    textAlign: 'left',
+                                    fontSize: 14,
+                                    fontFamily: 'Montserrat-Bold',
+                                    textAlign: 'center'
+                                }}>
+                                    Add new recipient
+                                </Text>
+                    </TouchableOpacity>
+                    </View>
 
 
                     <View style={{
